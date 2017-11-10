@@ -1,14 +1,14 @@
 [client]
 user            = root
 port            = 3309
-socket          = /Users/totten/src/mynix/var/mysql/mysql.sock
+socket          = %%BKNIXDIR%%/var/mysql/mysql.sock
 
 [mysqld]
-pid_file	= /Users/totten/src/mynix/var/mysql/mysql.pid
-tmpdir		= /Users/totten/src/mynix/var/mysql/tmp
-datadir		= /Users/totten/src/mynix/var/mysql/data
+pid_file	= %%BKNIXDIR%%/var/mysql/mysql.pid
+tmpdir		= %%BKNIXDIR%%/var/mysql/tmp
+datadir		= %%BKNIXDIR%%/var/mysql/data
 port            = 3309
-socket          = /Users/totten/src/mynix/var/mysql/mysql.sock
+socket          = %%BKNIXDIR%%/var/mysql/mysql.sock
 
 innodb_file_per_table=1
 

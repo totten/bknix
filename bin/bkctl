@@ -9,9 +9,10 @@
 ## Variables
 
 PROG=$(basename "$0")
-DATADIR=/Users/totten/src/mynix/var
-MYSQL_BASE="$DATADIR/mysql"
-HTTPD_BASE="$DATADIR/httpd"
+BKNIXDIR=/Users/totten/src/mynix
+DATADIR="$BKNIXDIR/var"
+MYSQL_BASE="$BKNIXDIR/var/mysql"
+HTTPD_BASE="$BKNIXDIR/var/httpd"
 
 ###########################################################
 ## Library
@@ -24,16 +25,21 @@ function cmd_init() {
     echo "Missing expected variable: AMPHOME"
     exit 10
   fi
+  if [ -z "$MYSQL_HOME" ]; then
+    echo "Missing expected variable: MYSQL_HOME"
+    exit 10
+  fi
 
   ## General init
-  mkdir -p "$DATADIR" "$HTTPD_BASE"
+  mkdir -p "$HTTPD_BASE"
 
   ## DB init
-  mkdir -p "$MYSQL_BASE" "$MYSQL_BASE/tmp"
+  mkdir -p "$MYSQL_BASE" "$MYSQL_BASE/tmp" "$MYSQL_BASE/conf"
+  sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" < "$BKNIXDIR/config/my.cnf.tmpl" > "$MYSQL_BASE/conf/my.cnf"
   # rm -rf "$MYSQL_BASE/data" ## REVERT
   if [ ! -d "$MYSQL_BASE/data" ]; then
     echo "($PROG) Initialize MySQL database"
-    mysql_install_db --datadir="$MYSQL_BASE/data"
+    mysql_install_db
   fi
 
   ## AMP init
@@ -95,7 +101,7 @@ function cmd_help() {
 
 ###########################################################
 ## Main
-if [ "JoP1GUxV" != "$BKCTL" ]; then
+if [ "JoP1GUxV" != "$BKNXAUTH" ]; then
   echo "($PROG) Aborting. This command should only run within nix-shell."
   exit 2
 fi
