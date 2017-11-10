@@ -5,11 +5,15 @@
 ##
 ## I'd like to see something more like http://supervisord.org/ (which is a non-root process manager)...
 
+if [ -z "$BKNIXDIR" -o ! -d "$BKNIXDIR" ]; then
+  echo "Aborting. This command should only run within nix-shell."
+  exit 2
+fi
+
 ###########################################################
 ## Variables
 
 PROG=$(basename "$0")
-BKNIXDIR=/Users/totten/src/mynix
 DATADIR="$BKNIXDIR/var"
 MYSQL_BASE="$BKNIXDIR/var/mysql"
 HTTPD_BASE="$BKNIXDIR/var/httpd"
@@ -101,10 +105,7 @@ function cmd_help() {
 
 ###########################################################
 ## Main
-if [ "JoP1GUxV" != "$BKNXAUTH" ]; then
-  echo "($PROG) Aborting. This command should only run within nix-shell."
-  exit 2
-fi
+
 case "$1" in
   init) cmd_init ;;
   mysql:start) cmd_mysql_start ;;

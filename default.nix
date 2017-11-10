@@ -11,10 +11,10 @@ stdenv.mkDerivation rec {
   ];
 
   shellHook = ''
-    export BKNXAUTH=JoP1GUxV
-    export PATH="$PWD/bin:$PATH"
-    export AMPHOME=$PWD/var/amp
-    export MYSQL_HOME=$PWD/var/mysql/conf
+    export BKNIXDIR="$PWD"
+    export PATH="$BKNIXDIR/bin:$PATH"
+    export AMPHOME="$BKNIXDIR/var/amp"
+    export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
     alias ls='ls --color=auto'
     alias lsc='ls --color=auto -F'
     alias lsx='ls --color=auto -lF'
