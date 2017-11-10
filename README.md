@@ -13,4 +13,7 @@ git clone https://github.com/totten/bknix
 ```
 cd bknix
 nix-shell
+bkctl start
 ```
+
+This puts you in a development environment with Apache and MySQL running.
