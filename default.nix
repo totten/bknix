@@ -9,4 +9,12 @@ stdenv.mkDerivation rec {
     php56
     apacheHttpd
   ];
+
+  shellHook = ''
+    export BKCTL=JoP1GUxV
+    export PATH="$PWD/bin:$PATH"
+    export AMPHOME=$PWD/var/amp
+    export MYSQL_HOME=$PWD/etc/mysql
+    bkctl init
+  '';
 }

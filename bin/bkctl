@@ -1,0 +1,112 @@
+#!/bin/bash
+
+## I shouldn't exist! Yet I do! This is a quick hack that doesn't really do
+## a nice job of managing processes.
+##
+## I'd like to see something more like http://supervisord.org/ (which is a non-root process manager)...
+
+###########################################################
+## Variables
+
+PROG=$(basename "$0")
+DATADIR=/Users/totten/src/mynix/var
+MYSQL_BASE="$DATADIR/mysql"
+HTTPD_BASE="$DATADIR/httpd"
+
+###########################################################
+## Library
+
+function cmd_init() {
+  echo "($PROG) init"
+
+  ## Pre-flight validation
+  if [ -z "$AMPHOME" ]; then
+    echo "Missing expected variable: AMPHOME"
+    exit 10
+  fi
+
+  ## General init
+  mkdir -p "$DATADIR" "$HTTPD_BASE"
+
+  ## DB init
+  mkdir -p "$MYSQL_BASE" "$MYSQL_BASE/tmp"
+  # rm -rf "$MYSQL_BASE/data" ## REVERT
+  if [ ! -d "$MYSQL_BASE/data" ]; then
+    echo "($PROG) Initialize MySQL database"
+    mysql_install_db --datadir="$MYSQL_BASE/data"
+  fi
+
+  ## AMP init
+  mkdir -p "$AMPHOME"
+  if [ ! -f "$AMPHOME/services.yml" ]; then
+    echo "($PROG) Initialize amp config"
+    amp config:set \
+      --httpd_type=apache24 \
+      --httpd_restart_command="apachectl graceful" \
+      --httpd_visibility="local" \
+      --hosts_type="file" \
+      --db_type="mysql_dsn" \
+      --mysql_dsn="mysql://root:@127.0.0.1:3309" \
+      --perm_type=none
+  fi
+}
+
+function cmd_mysql_start() {
+  echo "($PROG) Start mysqld"
+  mysqld_safe &
+}
+
+function cmd_mysql_stop() {
+  echo "($PROG) Stop mysqld"
+  [ -f "$MYSQL_BASE/mysql.pid" ] && kill $(cat "$MYSQL_BASE/mysql.pid")
+}
+
+function cmd_httpd_start() {
+  echo "($PROG) Start httpd"
+  echo " ==> TODO"
+}
+
+function cmd_httpd_stop() {
+  echo "($PROG) Stop httpd"
+  echo " ==> TODO"
+}
+
+function cmd_start() {
+  cmd_mysql_start
+  cmd_httpd_start
+}
+
+function cmd_stop() {
+  cmd_httpd_stop
+  cmd_mysql_stop
+}
+
+function cmd_help() {
+    echo "usage:"
+    echo "  $PROG help            Show help"
+    echo "  $PROG init            Initialize config and data files"
+    echo "  $PROG start           Start all daemons"
+    echo "  $PROG stop            Stop all daemons"
+    echo "  $PROG mysql:start     Start MySQL daemon"
+    echo "  $PROG mysql:stop      Stop MySQL daemon"
+    echo "  $PROG httpd:start     Start HTTP daemon"
+    echo "  $PROG httpd:stop      Stop HTTP daemon"
+}
+
+###########################################################
+## Main
+if [ "JoP1GUxV" != "$BKCTL" ]; then
+  echo "($PROG) Aborting. This command should only run within nix-shell."
+  exit 2
+fi
+case "$1" in
+  init) cmd_init ;;
+  mysql:start) cmd_mysql_start ;;
+  mysql:stop) cmd_mysql_stop ;;
+  httpd:start) cmd_httpd_start ;;
+  httpd:stop) cmd_httpd_stop ;;
+  start) cmd_start ;;
+  stop) cmd_stop ;;
+  help) cmd_help ;;
+  *) cmd_help ; exit 1 ;;
+esac
