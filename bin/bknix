@@ -142,6 +142,13 @@ function cmd_purge() {
   fi
 }
 
+function cmd_bkit_update() {
+  pushd "$BKIT_BASE" >> /dev/null
+    git pull
+    ./bin/civi-download-tools
+  popd >> /dev/null
+}
+
 function cmd_help() {
     echo "usage:"
     echo "  $PROG help            Show help"
@@ -151,6 +158,7 @@ function cmd_help() {
     echo "  $PROG stop            Stop all daemons"
     echo ""
     echo "  $PROG bkit:init       Initialize config and data files"
+    echo "  $PROG bkit:update     Update tools"
     echo ""
     #echo "  $PROG mysql:init      Start MySQL daemon"
     #echo "  $PROG mysql:start     Start MySQL daemon"
@@ -180,6 +188,7 @@ case "$1" in
   mysql:stop)    bknix_validate; cmd_mysql_stop ;;
 
   bkit:init)     bknix_validate; cmd_bkit_init ;;
+  bkit:update)   bknix_validate; cmd_bkit_init; cmd_bkit_update ;;
 
   init)          bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init ;;
   restart)       bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_stop; cmd_start ;;
