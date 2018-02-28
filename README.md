@@ -41,8 +41,9 @@ civibuild create wpmaster
 
 ## Tips
 
-* If you don't already have `git`, patch `default.nix` and add it to the list of `buildInputs`.
-* If you're doing development on the initialization, use `bknix purge` to produce a clean folder (without any data or config).
+* If you don't already have `git` on your system, patch `default.nix` and add it to the list of `buildInputs`.
+  However, if you already have it, then leave the default. (This would prevent potential concerns about different programs managing the same `.git` folders.)
+* If you're doing development on the bknix initialization process, use `bknix purge` to produce a clean folder (without any data or config).
 * If you want to customize some of the `amp` policies, then:
 
 ```bash
@@ -56,7 +57,7 @@ bknix init
 
 ## Alter the configuration, e.g.
 amp config
-vi civicrm-buildkit/app/civibild.conf
+vi civicrm-buildkit/app/civibuild.conf
 
 ## Start servies
 bknix start
