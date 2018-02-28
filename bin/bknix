@@ -126,6 +126,22 @@ function cmd_stop() {
   cmd_mysql_stop
 }
 
+function cmd_purge() {
+  echo "About to purge all configuration and data."
+  echo "Please ensure that you've stopped any running services first."
+  echo -n "Continue? (y/N) "
+  read resp
+  if [ "$resp" = "y" ]; then
+    echo "Purging..."
+    [ -d "$HTTPD_BASE" ] && rm -rf "$HTTPD_BASE"
+    [ -d "$AMPHOME" ] && rm -rf "$AMPHOME"
+    [ -d "$MYSQL_HOME" ] && rm -rf "$MYSQL_HOME"
+    [ -f "$BKIT_BASE/app/civibuild.conf" ] && rm -f "$BKIT_BASE/app/civibuild.conf"
+  else
+    echo "Nevermind"
+  fi
+}
+
 function cmd_help() {
     echo "usage:"
     echo "  $PROG help            Show help"
@@ -169,6 +185,7 @@ case "$1" in
   restart)       bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_stop; cmd_start ;;
   start)         bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_start ;;
   stop)          bknix_validate; cmd_stop ;;
+  purge)         bknix_validate; cmd_purge ;;
 
   help)          cmd_help ;;
   *)             cmd_help ; exit 1 ;;
