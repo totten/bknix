@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   shellHook = ''
     export BKNIXDIR="$PWD"
-    export PATH="$BKNIXDIR/bin:$PATH"
+    export PATH="$BKNIXDIR/bin:$BKNIXDIR/civicrm-buildkit/bin:$PATH"
     export AMPHOME="$BKNIXDIR/var/amp"
     export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
     alias ls='ls --color=auto'

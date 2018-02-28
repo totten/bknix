@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 ## I shouldn't exist! Yet I do! This is a quick hack that doesn't really do
 ## a nice job of managing processes.
@@ -15,16 +16,15 @@ fi
 
 PROG=$(basename "$0")
 DATADIR="$BKNIXDIR/var"
+BKIT_BASE="$BKNIXDIR/civicrm-buildkit"
 MYSQL_BASE="$BKNIXDIR/var/mysql"
 HTTPD_BASE="$BKNIXDIR/var/httpd"
+BKIT_PORT=8001
 
 ###########################################################
 ## Library
 
-function cmd_init() {
-  echo "($PROG) init"
-
-  ## Pre-flight validation
+function bkctl_validate() {
   if [ -z "$AMPHOME" ]; then
     echo "Missing expected variable: AMPHOME"
     exit 10
@@ -33,52 +33,87 @@ function cmd_init() {
     echo "Missing expected variable: MYSQL_HOME"
     exit 10
   fi
+}
 
-  ## General init
-  mkdir -p "$HTTPD_BASE"
+function cmd_httpd_init() {
+  if [ ! -e "$HTTPD_BASE" ]; then
+    echo "($PROG) Initialize httpd config ($HTTPD_BASE)"
+    REALHTTPDIR=$(dirname $(dirname $(which httpd)))
+    mkdir -p "$HTTPD_BASE" "$HTTPD_BASE/logs" "$HTTPD_BASE/conf" "$HTTPD_BASE/htdocs"
+    if [ ! -f "$HTTPD_BASE/htdocs/index.html" ]; then
+      echo "<html><body>mynix laceholder</body></html>" > "$HTTPD_BASE/htdocs/index.html"
+    fi
+    for SUBDIR in bin cgi-bin error icons modules ;do
+      [ ! -e "$HTTPD_BASE/$SUBDIR" ] && ln -s "$REALHTTPDIR/$SUBDIR" "$HTTPD_BASE/$SUBDIR"
+    done
+  fi
+  rsync -a "$BKNIXDIR/config/httpd/./" "$HTTPD_BASE/conf/./"
+  cat "$BKNIXDIR/config/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
+}
 
+function cmd_mysql_init() {
+  if false; then echo; fi
   ## DB init
-  mkdir -p "$MYSQL_BASE" "$MYSQL_BASE/tmp" "$MYSQL_BASE/conf"
-  sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" < "$BKNIXDIR/config/my.cnf.tmpl" > "$MYSQL_BASE/conf/my.cnf"
-  # rm -rf "$MYSQL_BASE/data" ## REVERT
-  if [ ! -d "$MYSQL_BASE/data" ]; then
-    echo "($PROG) Initialize MySQL database"
-    mysql_install_db
+  #m mkdir -p "$MYSQL_BASE" "$MYSQL_BASE/tmp" "$MYSQL_BASE/conf"
+  #m sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" < "$BKNIXDIR/config/my.cnf.tmpl" > "$MYSQL_BASE/conf/my.cnf"
+  #m rm -rf "$MYSQL_BASE/data" ## REVERT
+  #m if [ ! -d "$MYSQL_BASE/data" ]; then
+  #m  echo "($PROG) Initialize MySQL database"
+  #m  mysql_install_db
+  #m fi
+}
+
+function cmd_bkit_init() {
+  if [ ! -e "$BKIT_BASE" ]; then
+    echo "($PROG) Download buildkit ($BKIT_BASE)"
+    git clone https://github.com/civicrm/civicrm-buildkit "$BKIT_BASE"
+    civi-download-tools
   fi
 
-  ## AMP init
-  mkdir -p "$AMPHOME"
-  if [ ! -f "$AMPHOME/services.yml" ]; then
-    echo "($PROG) Initialize amp config"
+  if [ ! -e "$AMPHOME/services.yml" ]; then
+    echo "($PROG) Initialize amp config ($AMPHOME)"
+    mkdir -p "$AMPHOME"
     amp config:set \
       --httpd_type=apache24 \
-      --httpd_restart_command="apachectl graceful" \
+      --httpd_restart_command="apachectl -d $HTTPD_BASE -k graceful" \
       --httpd_visibility="local" \
+      --httpd_shared_ports="80,$BKIT_PORT" \
       --hosts_type="file" \
-      --db_type="mysql_dsn" \
-      --mysql_dsn="mysql://root:@127.0.0.1:3309" \
+      --db_type="mysql_ram_disk" \
       --perm_type=none
+  fi
+
+  if [ ! -e "$BKIT_BASE/app/civibuild.conf" ]; then
+    echo "($PROG) Initialize civibuild config ($BKIT_BASE/app/civibuild.conf)"
+    echo "BLDDIR=\"$BKNIXDIR/build\"" >> "$BKIT_BASE/app/civibuild.conf"
+    echo "URL_TEMPLATE=\"http://%SITE_NAME%.bknix:$BKIT_PORT\"" >> "$BKIT_BASE/app/civibuild.conf"
   fi
 }
 
 function cmd_mysql_start() {
-  echo "($PROG) Start mysqld"
-  mysqld_safe &
+  echo "($PROG) Start mysqld -- Not implemented: mysqld will auto-start on demand in a ramdisk"
+  #mysqld_safe &
 }
 
 function cmd_mysql_stop() {
   echo "($PROG) Stop mysqld"
-  [ -f "$MYSQL_BASE/mysql.pid" ] && kill $(cat "$MYSQL_BASE/mysql.pid")
+  # [ -f "$MYSQL_BASE/mysql.pid" ] && kill $(cat "$MYSQL_BASE/mysql.pid")
+  [ -f "$AMPHOME/ram_disk/mysqld.pid" ] && kill $(cat "$AMPHOME/ram_disk/mysqld.pid" )
 }
 
 function cmd_httpd_start() {
   echo "($PROG) Start httpd"
-  echo " ==> TODO"
+  apachectl -d "$HTTPD_BASE" -k start
+}
+
+function cmd_httpd_test() {
+  echo "($PROG) Test httpd config"
+  apachectl -d "$HTTPD_BASE" -t
 }
 
 function cmd_httpd_stop() {
   echo "($PROG) Stop httpd"
-  echo " ==> TODO"
+  apachectl -d "$HTTPD_BASE" -k stop
 }
 
 function cmd_start() {
@@ -96,10 +131,20 @@ function cmd_help() {
     echo "  $PROG help            Show help"
     echo "  $PROG init            Initialize config and data files"
     echo "  $PROG start           Start all daemons"
+    echo "  $PROG restart         Restart all daemons"
     echo "  $PROG stop            Stop all daemons"
-    echo "  $PROG mysql:start     Start MySQL daemon"
+    echo ""
+    echo "  $PROG bkit:init       Initialize config and data files"
+    echo ""
+    #echo "  $PROG mysql:init      Start MySQL daemon"
+    #echo "  $PROG mysql:start     Start MySQL daemon"
+    #echo "  $PROG mysql:restart   Retart MySQL daemon"
     echo "  $PROG mysql:stop      Stop MySQL daemon"
+    echo ""
+    echo "  $PROG httpd:init      Test HTTP daemon"
+    echo "  $PROG httpd:test      Test HTTP daemon"
     echo "  $PROG httpd:start     Start HTTP daemon"
+    echo "  $PROG httpd:restart   Restart HTTP daemon"
     echo "  $PROG httpd:stop      Stop HTTP daemon"
 }
 
@@ -107,13 +152,24 @@ function cmd_help() {
 ## Main
 
 case "$1" in
-  init) cmd_init ;;
-  mysql:start) cmd_mysql_start ;;
-  mysql:stop) cmd_mysql_stop ;;
-  httpd:start) cmd_httpd_start ;;
-  httpd:stop) cmd_httpd_stop ;;
-  start) cmd_start ;;
-  stop) cmd_stop ;;
-  help) cmd_help ;;
-  *) cmd_help ; exit 1 ;;
+  httpd:init)    bkctl_validate; cmd_httpd_init  ;;
+  httpd:restart) bkctl_validate; cmd_httpd_init; cmd_httpd_stop; sleep 1; cmd_httpd_start ;;
+  httpd:start)   bkctl_validate; cmd_httpd_init; cmd_httpd_start ;;
+  httpd:stop)    bkctl_validate; cmd_httpd_stop ;;
+  httpd:test)    bkctl_validate; cmd_httpd_init ;cmd_httpd_test ;;
+
+  mysql:init)    bkctl_validate; cmd_mysql_init ;;
+  mysql:restart) bkctl_validate; cmd_mysql_init; cmd_mysql_stop; cmd_mysql_start ;;
+  mysql:start)   bkctl_validate; cmd_mysql_init; cmd_mysql_start ;;
+  mysql:stop)    bkctl_validate; cmd_mysql_stop ;;
+
+  bkit:init)     bkctl_validate; cmd_bkit_init ;;
+
+  init)          bkctl_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init ;;
+  restart)       bkctl_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_stop; cmd_start ;;
+  start)         bkctl_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_start ;;
+  stop)          bkctl_validate; cmd_stop ;;
+
+  help)          cmd_help ;;
+  *)             cmd_help ; exit 1 ;;
 esac
