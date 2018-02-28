@@ -18,8 +18,8 @@ nix-shell
 ```
 
 This puts you in a development environment with Apache and MySQL. You can
-start and stop the services using `bkctl`, eg
+start and stop the services using `bknix`, eg
 
 ```
-bkctl start
+bknix start
 ```

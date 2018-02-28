@@ -24,7 +24,7 @@ BKIT_PORT=8001
 ###########################################################
 ## Library
 
-function bkctl_validate() {
+function bknix_validate() {
   if [ -z "$AMPHOME" ]; then
     echo "Missing expected variable: AMPHOME"
     exit 10
@@ -152,23 +152,23 @@ function cmd_help() {
 ## Main
 
 case "$1" in
-  httpd:init)    bkctl_validate; cmd_httpd_init  ;;
-  httpd:restart) bkctl_validate; cmd_httpd_init; cmd_httpd_stop; sleep 1; cmd_httpd_start ;;
-  httpd:start)   bkctl_validate; cmd_httpd_init; cmd_httpd_start ;;
-  httpd:stop)    bkctl_validate; cmd_httpd_stop ;;
-  httpd:test)    bkctl_validate; cmd_httpd_init ;cmd_httpd_test ;;
+  httpd:init)    bknix_validate; cmd_httpd_init  ;;
+  httpd:restart) bknix_validate; cmd_httpd_init; cmd_httpd_stop; sleep 1; cmd_httpd_start ;;
+  httpd:start)   bknix_validate; cmd_httpd_init; cmd_httpd_start ;;
+  httpd:stop)    bknix_validate; cmd_httpd_stop ;;
+  httpd:test)    bknix_validate; cmd_httpd_init ;cmd_httpd_test ;;
 
-  mysql:init)    bkctl_validate; cmd_mysql_init ;;
-  mysql:restart) bkctl_validate; cmd_mysql_init; cmd_mysql_stop; cmd_mysql_start ;;
-  mysql:start)   bkctl_validate; cmd_mysql_init; cmd_mysql_start ;;
-  mysql:stop)    bkctl_validate; cmd_mysql_stop ;;
+  mysql:init)    bknix_validate; cmd_mysql_init ;;
+  mysql:restart) bknix_validate; cmd_mysql_init; cmd_mysql_stop; cmd_mysql_start ;;
+  mysql:start)   bknix_validate; cmd_mysql_init; cmd_mysql_start ;;
+  mysql:stop)    bknix_validate; cmd_mysql_stop ;;
 
-  bkit:init)     bkctl_validate; cmd_bkit_init ;;
+  bkit:init)     bknix_validate; cmd_bkit_init ;;
 
-  init)          bkctl_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init ;;
-  restart)       bkctl_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_stop; cmd_start ;;
-  start)         bkctl_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_start ;;
-  stop)          bkctl_validate; cmd_stop ;;
+  init)          bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init ;;
+  restart)       bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_stop; cmd_start ;;
+  start)         bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_start ;;
+  stop)          bknix_validate; cmd_stop ;;
 
   help)          cmd_help ;;
   *)             cmd_help ; exit 1 ;;

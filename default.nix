@@ -18,6 +18,6 @@ stdenv.mkDerivation rec {
     alias ls='ls --color=auto'
     alias lsc='ls --color=auto -F'
     alias lsx='ls --color=auto -lF'
-    bkctl init
+    bknix init
   '';
 }
