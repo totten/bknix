@@ -7,7 +7,7 @@ invisible filesystems, special accounts, or magic permissions.  To optimize DB p
 > __STATUS__: This is currently incomplete.  `bknix` needs to be patched so that (a) `bknix start` launches `php-fpm`
 > and (b) the httpd uses `php-fpm`.
 
-## Pre-requisites
+## Requirements
 
 * Use Linux or OS X on the local workstation
 * Install the [nix package manager](https://nixos.org/nix/)
@@ -18,7 +18,7 @@ invisible filesystems, special accounts, or magic permissions.  To optimize DB p
     * Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
     * Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
 
-## download
+## Download
 
 ```
 git clone https://github.com/totten/bknix
