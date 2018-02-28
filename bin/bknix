@@ -156,9 +156,9 @@ function cmd_help() {
     echo "  $PROG start           Start all daemons"
     echo "  $PROG restart         Restart all daemons"
     echo "  $PROG stop            Stop all daemons"
+    echo "  $PROG update          Update tools"
     echo ""
     echo "  $PROG bkit:init       Initialize config and data files"
-    echo "  $PROG bkit:update     Update tools"
     echo ""
     #echo "  $PROG mysql:init      Start MySQL daemon"
     #echo "  $PROG mysql:start     Start MySQL daemon"
@@ -195,6 +195,7 @@ case "$1" in
   start)         bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_start ;;
   stop)          bknix_validate; cmd_stop ;;
   purge)         bknix_validate; cmd_purge ;;
+  update)        bknix_validate; cmd_bkit_init; cmd_bkit_update ;;
 
   help)          cmd_help ;;
   *)             cmd_help ; exit 1 ;;
