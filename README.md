@@ -4,8 +4,14 @@ related CMS's).  It combines system binaries from [nix](https://nixos.org/nix) w
 All development is done in the current user's local Linux/macOS *without* any virtualization, containerization,
 invisible filesystems, special accounts, or magic permissions.  To optimize DB performance, `mysqld` runs in ram-disk.
 
-> __STATUS__: This is currently incomplete.  `bknix` needs to be patched so that (a) `bknix start` launches `php-fpm`
-> and (b) the httpd uses `php-fpm`.
+## TODO
+
+This project is a work-in-progress. Some tasks:
+
+* Update `bin/bknix` to start `php-fpm`
+* Update httpd config to use `php-fpm`
+* Sort out xdebug
+* Sort out php-imagemagick, php-imap
 
 ## Requirements
 
