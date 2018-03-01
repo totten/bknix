@@ -73,7 +73,6 @@ Some of these policies/opinions can be changed, as described below ("Alternate i
 * If you don't already have `git` on your system, patch `default.nix` and add it to the list of `buildInputs`.
   However, if you already have it, then leave the default. (This would prevent potential concerns about different programs managing the same `.git` folders.)
 * If you're doing development on the bknix initialization process, use `bknix purge` to produce a clean folder (without any data or config).
-* If you want to customize some of the `amp` policies, then:
 * When you shutdown, the mysql ramdisk remains in memory. To remove or reset it, unmount it with `umount` (in Linux) or *Disk Utility* (in OS X).
 
 ## Alternate installation for custom policies
