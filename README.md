@@ -12,6 +12,7 @@ This project is a work-in-progress. Some tasks:
 * Update httpd config to use `php-fpm`
 * Sort out xdebug
 * Sort out php-imagemagick, php-imap
+* Sort out php.ini (Currently using `/etc/php.d/adhoc.ini` to set `date.timezone`)
 
 ## Requirements
 
