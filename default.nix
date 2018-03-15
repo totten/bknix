@@ -1,17 +1,10 @@
 let
     pkgs = import <nixpkgs> {};
     stdenv = pkgs.stdenv;
+    phpIniSnippet = ./config/php.ini;
     phpIni = pkgs.runCommand "php.ini"
     { options = ''
             zend_extension=${pkgs.php56Packages.xdebug}/lib/php/extensions/xdebug.so
-            max_execution_time = 0
-            xdebug.remote_autostart=on
-            xdebug.remote_enable=on
-            xdebug.remote_mode=req
-            xdebug.remote_handler=dbgp
-            xdebug.remote_host=localhost
-            xdebug.remote_port=9001
-
             extension=${pkgs.php56Packages.redis}/lib/php/extensions/redis.so
             extension=${pkgs.php56Packages.imagick}/lib/php/extensions/imagick.so
       '';
@@ -19,6 +12,7 @@ let
     ''
       cat "${pkgs.php56}/etc/php.ini" > $out
       echo "$options" >> $out
+      cat "${phpIniSnippet}" >> $out
     '';
 
     # make an own version of php with the new php.ini from above

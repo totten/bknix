@@ -10,7 +10,6 @@ This project is a work-in-progress. Some tasks:
 
 * Try out xdebug, php-imagemagick
 * Sort out php-imap
-* Sort out php.ini (Currently using `/etc/php.d/adhoc.ini` to set `date.timezone`)
 * Create variants for php56, php70, php71
 
 ## Requirements
