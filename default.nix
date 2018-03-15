@@ -22,6 +22,7 @@ let
         buildInputs = [pkgs.php56 pkgs.php56Packages.xdebug pkgs.php56Packages.redis pkgs.php56Packages.imagick pkgs.makeWrapper];
         buildCommand = ''
           makeWrapper ${pkgs.php56}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
+          makeWrapper ${pkgs.php56}/bin/php-fpm $out/bin/php-fpm --add-flags -c --add-flags "${phpIni}"
         '';
     };
 in rec {
@@ -29,6 +30,7 @@ in rec {
         name = "bknix";
         buildInputs = [
             phpOverride
+            pkgs.php56
             pkgs.nodejs-6_x
             pkgs.curl
             pkgs.apacheHttpd
