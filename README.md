@@ -8,9 +8,10 @@
 
 This project is a work-in-progress. Some tasks:
 
-* Sort out xdebug
-* Sort out php-imagemagick, php-imap
+* Try out xdebug, php-imagemagick
+* Sort out php-imap
 * Sort out php.ini (Currently using `/etc/php.d/adhoc.ini` to set `date.timezone`)
+* Create variants for php56, php70, php71
 
 ## Requirements
 
@@ -64,7 +65,8 @@ civibuild create wpmaster
 * All builds are given the URL `http://<name>.bknix:8001`.
 * All hostnames are registered in `/etc/hosts` using `sudo`.
 * MySQL launches on-demand with all-ram-disk-based storage, and it listens on TCP port 3307. (Launching is triggered when calling `amp create`, `civibuild create`, `civibuild reinstall`, `civibuild restore`, or similar).
-* PHP is serviced php-fpm, which listens on TCP port 9009.
+* PHP enables `xdebug`, which listens on port 9001.
+* PHP is serviced by `php-fpm`, which listens on TCP port 9009.
 
 Some of these policies/opinions can be changed, as described below ("Alternate installation for custom policies")
 
