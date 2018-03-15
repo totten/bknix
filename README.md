@@ -1,28 +1,33 @@
 `bknix` is a highly opinionated environment for developing in PHP/JS (esp developing patches/add-ons for CiviCRM and related CMS's):
+
  * It combines system binaries from [nix](https://nixos.org/nix) with a toolchain from [buildkit](https://github.com/civicrm/civicrm-buildkit) and an unsophisticated process-management script (`bknix`).  
- * To optimize DB performance, `mysqld` runs in ram-disk.
- * All development is done in the current user's local Linux/macOS *without* any virtualization, containerization, invisible filesystems, special accounts, or magic permissions. 
- * And yet, all development is also isolated to avoid conflicts with services and runtimes that you've installed by other means.
+ * To facilitate quick development with any IDE/editor, all file-storage and development-tasks run in the current users' local Linux/macOS (*without* any virtualization, containerization, invisible filesystems, or magic permissions).
+ * To optimize DB performance, `mysqld` stores all its data in a ramdisk.
+ * To avoid conflicts with other tools on your system, all binaries are stored in their own folders, and services run on their own ports.
 
 ## TODO
 
-This project is a work-in-progress. Some tasks:
+This project is a work-in-progress. Some tasks (roughly descending priority):
 
 * Try out xdebug, php-imagemagick
 * Sort out php-imap
-* Create variants for php56, php70, php71
-* Instead of putting most code in `./civicrm-buildkit`, put it in `$out`.
+* Make it easier to switch between php56, php70, php71. (Currently, you need to search/replace in `default.nix`.)
+* Instead of putting most code in `./civicrm-buildkit`, put it in `$out`. (Preferrably... without neutering git cache.)
 
 ## Requirements
 
-* Use Linux or OS X on the local workstation
+The system should meet two basic requirement:
+
+* Run Linux or OS X on the local workstation
 * Install the [nix package manager](https://nixos.org/nix/)
-* Have some basic understanding of:
-    * Git
-    * PHP/JS development (e.g. `composer`, `npm`)
-    * Unix CLI (e.g. `bash`, `PATH`)
-    * Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
-    * Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
+
+Additionally, you should have some basic understanding of the tools/systems involved:
+
+* Git
+* PHP/JS development (e.g. `composer`, `npm`)
+* Unix CLI (e.g. `bash`)
+* Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
+* Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
 
 ## Quick Start: Download
 
