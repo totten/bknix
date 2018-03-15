@@ -23,13 +23,15 @@ This project is a work-in-progress. Some tasks:
     * Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
     * Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
 
-## Download
+## Quick Start: Download
+
+After installing [nix package manager](https://nixos.org/nix/), simply clone this repo:
 
 ```
 git clone https://github.com/totten/bknix
 ```
 
-## Usage
+## Quick Start: Usage
 
 Navigate into the project folder and run `nix-shell`:
 
@@ -67,7 +69,7 @@ civibuild create wpmaster
 * PHP enables `xdebug`, which listens on port 9001.
 * PHP is serviced by `php-fpm`, which listens on TCP port 9009.
 
-Some of these policies/opinions can be changed, as described below ("Alternate installation for custom policies")
+Some of these policies/opinions can be changed, as described below ("Extended installation")
 
 ## Tips
 
@@ -77,7 +79,7 @@ Some of these policies/opinions can be changed, as described below ("Alternate i
 * If you're doing development on the bknix initialization process, use `bknix purge` to produce a clean folder (without any data or config).
 * When you shutdown, the mysql ramdisk remains in memory. To remove or reset it, unmount it with `umount` (in Linux) or *Disk Utility* (in OS X).
 
-## Alternate installation for custom policies
+## Extended installation
 
 Some of the policies/opinions are amenable to customization. If you were
 setting up a clean build with some customizations, the flow would look
@@ -108,5 +110,6 @@ Note how we interject with steps 2 and 3. For example, I often do these around s
 * Setup wildcard DNS for `*.bknix` using `dnsmasq`.  (Search for instructions for installing `dnsmasq` on your
   platform.) Then, configure `amp` to disable management of `/etc/hosts` (`amp config:set --hosts_type=none`). 
   This saves you from running `sudo` or entering a password.
+* Set the PHP timezone in `config/php.ini`
 
 (*Aside*: You can update these settings after initial setup, but some settings may require destroying/rebuilding.)
