@@ -11,6 +11,7 @@ This project is a work-in-progress. Some tasks:
 * Try out xdebug, php-imagemagick
 * Sort out php-imap
 * Create variants for php56, php70, php71
+* Instead of putting most code in `./civicrm-buildkit`, put it in `$out`.
 
 ## Requirements
 
@@ -40,8 +41,8 @@ cd bknix
 nix-shell
 ```
 
-> __Note__: When you first run `nix-shell`, it may download additional tooling.
-> This is because I don't really know how to write good `*.nix` files.
+> __Note__: When you first run `nix-shell`, it downloads a large number of
+> dependencies.
 
 This puts you in a CLI development environment with access to various binaries (PHP, NodeJS, Apache, MySQL, etc).  You
 can start and stop the services using `bknix`, as in:
@@ -57,6 +58,14 @@ When you have the services running, you can create builds, e.g.
 civibuild create empty
 civibuild create dmaster
 civibuild create wpmaster
+```
+
+If you shutdown MySQL or reboot the system, it may destroy any active databases. You can restore them
+to a clean baseline by running `civibuild restore` or `civibuild reinstall`, e.g.
+
+```
+civibuild restore dmaster
+civibuild reinstall wpmaster
 ```
 
 ## Policies/Opinions
@@ -114,3 +123,16 @@ Note how we interject with steps 2 and 3. For example, I often do these around s
 * Set the PHP timezone in `config/php.ini`.
 
 (*Aside*: You can update these settings after initial setup, but some settings may require destroying/rebuilding.)
+
+## Updates
+
+There are a few levels of updates. They run a spectrum from regular (daily)
+to irregular (once every months).
+
+* (*Most frequent; possibly every day you work on Civi*) [Update the code in a site you installed with civibuild](https://docs.civicrm.org/dev/en/latest/tools/civibuild/#upgrade-site)
+* (*Mid-level; probably every couple weeks*) Update the PHP/NodeJS CLI tooling -- run `bknix update`.
+* (*Least frequent; probably every 3 months*) Update the full stack (mysqld/httpd/etc)
+    * If you haven't already, shutdown any active services (`bknix stop`).
+    * Exit any active `nix-shell` environments.
+    * In the `bknix` directory, update the git repo (i.e. `git pull`).
+    * Open a new `nix-shell` and run `bknix update`
