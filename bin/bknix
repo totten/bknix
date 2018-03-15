@@ -19,6 +19,7 @@ DATADIR="$BKNIXDIR/var"
 BKIT_BASE="$BKNIXDIR/civicrm-buildkit"
 MYSQL_BASE="$BKNIXDIR/var/mysql"
 HTTPD_BASE="$BKNIXDIR/var/httpd"
+PHPFPM_BASE="$BKNIXDIR/var/php-fpm"
 BKIT_PORT=8001
 
 ###########################################################
@@ -96,9 +97,37 @@ function cmd_mysql_start() {
 }
 
 function cmd_mysql_stop() {
-  echo "($PROG) Stop mysqld"
   # [ -f "$MYSQL_BASE/mysql.pid" ] && kill $(cat "$MYSQL_BASE/mysql.pid")
-  [ -f "$AMPHOME/ram_disk/mysqld.pid" ] && kill $(cat "$AMPHOME/ram_disk/mysqld.pid" )
+  if [ -f "$AMPHOME/ram_disk/mysqld.pid" ]; then
+    echo "($PROG) Stop mysqld"
+    kill $(cat "$AMPHOME/ram_disk/mysqld.pid" )
+    rm -f "$AMPHOME/ram_disk/mysqld.pid"
+  else
+    echo "($PROG) Already stopped mysqld"
+  fi
+}
+
+function cmd_phpfpm_init() {
+  if [ ! -e "$PHPFPM_BASE" ]; then
+    echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE)"
+    mkdir -p "$PHPFPM_BASE"
+  fi
+  cat "$BKNIXDIR/config/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
+}
+
+function cmd_phpfpm_start() {
+  echo "($PROG) Start php-fpm"
+  php-fpm -y "$PHPFPM_BASE/php-fpm.conf" -D
+}
+
+function cmd_phpfpm_stop() {
+  if [ -f "$PHPFPM_BASE/php-fpm.pid" ]; then
+    echo "($PROG) Stop php-fpm"
+    kill $(cat "$PHPFPM_BASE/php-fpm.pid" )
+    rm -f "$PHPFPM_BASE/php-fpm.pid"
+  else
+    echo "($PROG) Already stopped php-fpm"
+  fi
 }
 
 function cmd_httpd_start() {
@@ -116,13 +145,22 @@ function cmd_httpd_stop() {
   apachectl -d "$HTTPD_BASE" -k stop
 }
 
+function cmd_init() {
+  cmd_mysql_init
+  cmd_phpfpm_init
+  cmd_httpd_init
+  cmd_bkit_init
+}
+
 function cmd_start() {
   cmd_mysql_start
+  cmd_phpfpm_start
   cmd_httpd_start
 }
 
 function cmd_stop() {
   cmd_httpd_stop
+  cmd_phpfpm_stop
   cmd_mysql_stop
 }
 
@@ -165,6 +203,10 @@ function cmd_help() {
     #echo "  $PROG mysql:restart   Retart MySQL daemon"
     echo "  $PROG mysql:stop      Stop MySQL daemon"
     echo ""
+    echo "  $PROG php-fpm:start   Start PHP-FPM daemon"
+    echo "  $PROG php-fpm:restart Restart PHP-FPM daemon"
+    echo "  $PROG php-fpm:stop    Stop PHP-FPM daemon"
+    echo ""
     echo "  $PROG httpd:init      Test HTTP daemon"
     echo "  $PROG httpd:test      Test HTTP daemon"
     echo "  $PROG httpd:start     Start HTTP daemon"
@@ -183,17 +225,23 @@ case "$1" in
   httpd:test)    bknix_validate; cmd_httpd_init ;cmd_httpd_test ;;
 
   mysql:init)    bknix_validate; cmd_mysql_init ;;
-  mysql:restart) bknix_validate; cmd_mysql_init; cmd_mysql_stop; cmd_mysql_start ;;
+  mysql:restart) bknix_validate; cmd_mysql_init; cmd_mysql_stop; sleep 1; cmd_mysql_start ;;
   mysql:start)   bknix_validate; cmd_mysql_init; cmd_mysql_start ;;
   mysql:stop)    bknix_validate; cmd_mysql_stop ;;
+
+  php-fpm:init)    bknix_validate; cmd_phpfpm_init ;;
+  php-fpm:restart) bknix_validate; cmd_phpfpm_init; cmd_phpfpm_stop; sleep 1; cmd_phpfpm_start ;;
+  php-fpm:start)   bknix_validate; cmd_phpfpm_init; cmd_phpfpm_start ;;
+  php-fpm:stop)    bknix_validate; cmd_phpfpm_stop ;;
 
   bkit:init)     bknix_validate; cmd_bkit_init ;;
   bkit:update)   bknix_validate; cmd_bkit_init; cmd_bkit_update ;;
 
-  init)          bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init ;;
-  restart)       bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_stop; cmd_start ;;
-  start)         bknix_validate; cmd_httpd_init; cmd_mysql_init; cmd_bkit_init; cmd_start ;;
+  init)          bknix_validate; cmd_init ;;
+  restart)       bknix_validate; cmd_init; cmd_stop; sleep 1; cmd_start ;;
+  start)         bknix_validate; cmd_init; cmd_start ;;
   stop)          bknix_validate; cmd_stop ;;
+
   purge)         bknix_validate; cmd_purge ;;
   update)        bknix_validate; cmd_bkit_init; cmd_bkit_update ;;
 
