@@ -72,24 +72,40 @@ Some of these policies/opinions can be changed, as described below ("Alternate i
 
 * If you don't already have `git` on your system, patch `default.nix` and add it to the list of `buildInputs`.
   However, if you already have it, then leave the default. (This would prevent potential concerns about different programs managing the same `.git` folders.)
+* To open a MySQL command prompt with admin credentials, run `amp sql -a`.
 * If you're doing development on the bknix initialization process, use `bknix purge` to produce a clean folder (without any data or config).
 * When you shutdown, the mysql ramdisk remains in memory. To remove or reset it, unmount it with `umount` (in Linux) or *Disk Utility* (in OS X).
 
 ## Alternate installation for custom policies
 
+Some of the policies/opinions are amenable to customization. If you were
+setting up a clean build with some customizations, the flow would look
+generally like this;
+
 ```bash
-## Setup a clean environment
+## 1. Setup a clean environment
 git clone https://github.com/totten/bknix
 cd bknix
 nix-shell
 
-## Initialize default configuration
+## 2. Initialize default configuration
 bknix init
 
-## Alter the configuration, e.g.
+## 3. Alter the configuration, e.g.
 amp config
+less civicrm-buildkit/app/civibuild.conf.tmpl
 vi civicrm-buildkit/app/civibuild.conf
 
-## Start servies
+## 4. Start servies
 bknix start
 ```
+
+Note how we interject with steps 2 and 3. For example, I often do these around step #3:
+
+* Set a default admin password for new websites by editing `civicrm-buildkit/app/civibuild.conf`. This way you don't
+  need to lookup random passwords for each build.
+* Setup wildcard DNS for `*.bknix` using `dnsmasq`.  (Search for instructions for installing `dnsmasq` on your
+  platform.) Then, configure `amp` to disable management of `/etc/hosts` (`amp config:set --hosts_type=none`). 
+  This saves you from running `sudo` or entering a password.
+
+(*Aside*: You can update these settings after initial setup, but some settings may require destroying/rebuilding.)
