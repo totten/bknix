@@ -43,12 +43,9 @@ in rec {
           export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
           bknix init
 
-          alias ls='ls --color=auto'
-          alias lsc='ls --color=auto -F'
-          alias lsx='ls --color=auto -lF'
-          alias rm='rm -i'
-          alias mv='mv -i'
-          alias cp='cp -i'
+          if [ -f "$BKNIXDIR/config/bashrc.local" ]; then
+            source "$BKNIXDIR/config/bashrc.local"
+          fi
         '';
     };
 }
