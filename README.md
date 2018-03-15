@@ -105,7 +105,7 @@ bknix start
 
 Note how we interject with steps 2 and 3. For example, I often do these around step #3:
 
-* Set a default admin password for new websites by editing `civicrm-buildkit/app/civibuild.conf`. This way you don't
+* Set a default `ADMIN_PASS` for new websites by editing `civicrm-buildkit/app/civibuild.conf`. This way you don't
   need to lookup random passwords for each build.
 * Setup wildcard DNS for `*.bknix` using `dnsmasq`.  (Search for instructions for installing `dnsmasq` on your
   platform.) Then, configure `amp` to disable management of `/etc/hosts` (`amp config:set --hosts_type=none`). 
