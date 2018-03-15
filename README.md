@@ -61,12 +61,13 @@ civibuild create wpmaster
 
 ## Policies/Opinions
 
-* All services run as the current, logged-in user. This means that files require no special permissions.
+* A "build" is a collection of PHP/JS/CSS/etc source-code projects, with a database and an HTTP virtual host. You can edit/commit directly in the source-tree.
 * All builds are stored in the `build` folder.
-* All builds are given the URL `http://<name>.bknix:8001`.
-* All hostnames are registered in `/etc/hosts` using `sudo`.
+* All builds are given the URL `http://<name>.bknix:8001`. (Changeable)
+* All hostnames are registered in `/etc/hosts` using `sudo`. (Changeable)
+* All services run as the current, logged-in user. This means that files require no special permissions.
 * MySQL launches on-demand with all-ram-disk-based storage, and it listens on TCP port 3307. (Launching is triggered when calling `amp create`, `civibuild create`, `civibuild reinstall`, `civibuild restore`, or similar).
-* PHP enables `xdebug`, which listens on port 9001.
+* PHP enables `xdebug`, which listens on port 9001. (Changeable)
 * PHP is serviced by `php-fpm`, which listens on TCP port 9009.
 
 Some of these policies/opinions can be changed, as described below ("Extended installation")
@@ -110,6 +111,6 @@ Note how we interject with steps 2 and 3. For example, I often do these around s
 * Setup wildcard DNS for `*.bknix` using `dnsmasq`.  (Search for instructions for installing `dnsmasq` on your
   platform.) Then, configure `amp` to disable management of `/etc/hosts` (`amp config:set --hosts_type=none`). 
   This saves you from running `sudo` or entering a password.
-* Set the PHP timezone in `config/php.ini`
+* Set the PHP timezone in `config/php.ini`.
 
 (*Aside*: You can update these settings after initial setup, but some settings may require destroying/rebuilding.)
