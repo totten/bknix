@@ -129,9 +129,9 @@ Note how we interject with steps 2 and 3. For example, I often do these around s
 There are a few levels of updates. They run a spectrum from regular (daily)
 to irregular (once every months).
 
-* (*Most frequent; possibly every day you work on Civi*) [Update the code in a site you installed with civibuild](https://docs.civicrm.org/dev/en/latest/tools/civibuild/#upgrade-site)
-* (*Mid-level; probably every couple weeks*) Update the PHP/NodeJS CLI tooling -- run `bknix update`.
-* (*Least frequent; probably every 3 months*) Update the full stack (mysqld/httpd/etc)
+* (*Most frequent; perhaps every day*) *Update the CiviCRM source*: See [CiviCRM Developer Guide: civibuild](https://docs.civicrm.org/dev/en/latest/tools/civibuild/#upgrade-site)
+* (*Mid-level; perhaps every couple weeks*) *Update buildkit's CLI tools*: Run `bknix update`.
+* (*Least frequent; perhaps every couple months*) *Update the full `bknix` stack (mysqld/httpd/etc)*: This takes a few steps.
     * If you haven't already, shutdown any active services (`bknix stop`).
     * Exit any active `nix-shell` environments.
     * In the `bknix` directory, update the git repo (i.e. `git pull`).
