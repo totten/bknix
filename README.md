@@ -7,9 +7,11 @@
 
 ## TODO
 
-This project is a work-in-progress. Some tasks (roughly descending priority):
+This project is a work-in-progress. Some tasks/issues (roughly descending priority):
 
-* Try out xdebug, php-imagemagick
+* To run Civi unit tests with xdebug in PHPStorm...
+    * You need to register the PHP wrapper. Run `nix-shell` and `which php`. Register that in PHPStorm's list of PHP interpreters.
+    * You need to set the PATH. Run `nix-shell` and `echo $PATH`; then copy that value to your default Run configuration for PHPUnit.
 * Sort out php-imap
 * Make it easier to switch between php56, php70, php71. (Currently, you need to search/replace in `default.nix`.)
 * Instead of putting most code in `./civicrm-buildkit`, put it in `$out`. (Preferrably... without neutering git cache.)
