@@ -1,6 +1,6 @@
 `bknix` is a highly opinionated environment for developing in PHP/JS (esp developing patches/add-ons for CiviCRM and related CMS's):
 
- * It combines system binaries from [nix](https://nixos.org/nix) with a toolchain from [buildkit](https://github.com/civicrm/civicrm-buildkit) and an unsophisticated process-management script (`bknix`).
+ * It combines service binaries (`mysqld`, `httpd`, etc) from [nix](https://nixos.org/nix) and a toolchain from [buildkit](https://github.com/civicrm/civicrm-buildkit) and an unsophisticated process-management script (`bknix`).
  * To facilitate quick development with any IDE/editor, all file-storage and development-tasks run in the current users' local Linux/macOS (*without* any virtualization, containerization, invisible filesystems, or magic permissions).
  * To optimize DB performance, `mysqld` stores all its data in a ramdisk.
  * To avoid conflicts with other tools on your system, all binaries are stored in their own folders, and services run on their own ports.
