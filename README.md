@@ -1,20 +1,11 @@
 `bknix` is a highly opinionated environment for developing in PHP/JS (esp developing patches/add-ons for CiviCRM and related CMS's):
 
- * It combines system binaries from [nix](https://nixos.org/nix) with a toolchain from [buildkit](https://github.com/civicrm/civicrm-buildkit) and an unsophisticated process-management script (`bknix`).  
+ * It combines system binaries from [nix](https://nixos.org/nix) with a toolchain from [buildkit](https://github.com/civicrm/civicrm-buildkit) and an unsophisticated process-management script (`bknix`).
  * To facilitate quick development with any IDE/editor, all file-storage and development-tasks run in the current users' local Linux/macOS (*without* any virtualization, containerization, invisible filesystems, or magic permissions).
  * To optimize DB performance, `mysqld` stores all its data in a ramdisk.
  * To avoid conflicts with other tools on your system, all binaries are stored in their own folders, and services run on their own ports.
 
-## TODO
-
-This project is a work-in-progress. Some tasks/issues (roughly descending priority):
-
-* To run Civi unit tests with xdebug in PHPStorm...
-    * You need to register the PHP wrapper. Run `nix-shell` and `which php`. Register that in PHPStorm's list of PHP interpreters.
-    * You need to set the PATH. Run `nix-shell` and `echo $PATH`; then copy that value to your default Run configuration for PHPUnit.
-* Sort out php-imap
-* Make it easier to switch between php56, php70, php71. (Currently, you need to search/replace in `default.nix`.)
-* Instead of putting most code in `./civicrm-buildkit`, put it in `$out`. (Preferrably... without neutering git cache.)
+This project is a work-in-progress. Some tasks/issues are described further down.
 
 ## Requirements
 
@@ -88,8 +79,24 @@ civibuild reinstall wpmaster
 
 Some of these policies/opinions can be changed, as described below ("Extended installation")
 
+## TODO/Issues
+
+* Sort out php-imap
+* Make it easier to switch between php56, php70, php71. (Currently, you need to search/replace in `default.nix`.)
+* Instead of putting most code in `./civicrm-buildkit`, put it in `$out`. (Preferrably... without neutering git cache.)
+* PHPStorm doesn't like using the `phpunit4` PHAR unless the filename has the `.phar` extension.
+
 ## Tips
 
+* To run Civi unit tests with xdebug in PHPStorm...
+    * Lookup and register the PHP interpreter.
+        * In CLI, run `nix-shell` and `which php`.
+        * In PHPStorm, open "Preferences" and find list of PHP interpreters. Register this one.
+    * Lookup and register the PATH.
+        * In CLI, run `nix-shell` and `echo $PATH`.
+        * In PHPStorm, open "Run => Edit Configurations". For the default PHPUnit, add an environment variable `PATH` with the given value.
+        * If there are active PHPUnit configurations, update them or delete them (so they can be regenerated on-demand).
+    * In the future -- whenever you upgrade the PHP runtime -- you may need to update these settings.
 * If you don't already have `git` on your system, patch `default.nix` and add it to the list of `buildInputs`.
   However, if you already have it, then leave the default. (This would prevent potential concerns about different programs managing the same `.git` folders.)
 * To open a MySQL command prompt with admin credentials, run `amp sql -a`.
@@ -125,7 +132,7 @@ Note how we interject with steps 2 and 3. For example, I often do these around s
 * Set a default `ADMIN_PASS` for new websites by editing `civicrm-buildkit/app/civibuild.conf`. This way you don't
   need to lookup random passwords for each build.
 * Setup wildcard DNS for `*.bknix` using `dnsmasq`.  (Search for instructions for installing `dnsmasq` on your
-  platform.) Then, configure `amp` to disable management of `/etc/hosts` (`amp config:set --hosts_type=none`). 
+  platform.) Then, configure `amp` to disable management of `/etc/hosts` (`amp config:set --hosts_type=none`).
   This saves you from running `sudo` or entering a password.
 * Set the PHP timezone in `config/php.ini`.
 * Create `config/bashrc.local` with some CLI customizations
@@ -144,3 +151,4 @@ to irregular (once every months).
     * Exit any active `nix-shell` environments.
     * In the `bknix` directory, update the git repo (i.e. `git pull`).
     * Open a new `nix-shell` and run `bknix update`
+    * If you have an IDE configuration which references the PHP interpreter or PATH, update the IDE.
