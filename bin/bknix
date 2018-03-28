@@ -20,6 +20,7 @@ BKIT_BASE="$BKNIXDIR/civicrm-buildkit"
 MYSQL_BASE="$BKNIXDIR/var/mysql"
 HTTPD_BASE="$BKNIXDIR/var/httpd"
 PHPFPM_BASE="$BKNIXDIR/var/php-fpm"
+REDIS_BASE="$BKNIXDIR/var/redis"
 BKIT_PORT=8001
 
 ###########################################################
@@ -146,8 +147,32 @@ function cmd_httpd_stop() {
   apachectl -d "$HTTPD_BASE" -k stop
 }
 
+function cmd_redis_init() {
+  if [ ! -e "$REDIS_BASE" ]; then
+    echo "($PROG) Initialize redis config ($REDIS_BASE)"
+    mkdir -p "$REDIS_BASE"
+  fi
+  cat "$BKNIXDIR/config/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
+}
+
+function cmd_redis_start() {
+  echo "($PROG) Start redis"
+  redis-server "$REDIS_BASE/redis.conf"
+}
+
+function cmd_redis_stop() {
+  if [ -f "$REDIS_BASE/redis.pid" ]; then
+    echo "($PROG) Stop redis"
+    kill $(cat "$REDIS_BASE/redis.pid" )
+    rm -f "$REDIS_BASE/redis.pid"
+  else
+    echo "($PROG) Already stopped redis"
+  fi
+}
+
 function cmd_init() {
   cmd_mysql_init
+  cmd_redis_init
   cmd_phpfpm_init
   cmd_httpd_init
   cmd_bkit_init
@@ -155,12 +180,14 @@ function cmd_init() {
 
 function cmd_start() {
   cmd_mysql_start
+  cmd_redis_start
   cmd_phpfpm_start
   cmd_httpd_start
 }
 
 function cmd_stop() {
   cmd_httpd_stop
+  cmd_redis_stop
   cmd_phpfpm_stop
   cmd_mysql_stop
 }
@@ -199,20 +226,11 @@ function cmd_help() {
     echo ""
     echo "  $PROG bkit:init       Initialize config and data files"
     echo ""
-    #echo "  $PROG mysql:init      Start MySQL daemon"
-    #echo "  $PROG mysql:start     Start MySQL daemon"
-    #echo "  $PROG mysql:restart   Retart MySQL daemon"
-    echo "  $PROG mysql:stop      Stop MySQL daemon"
-    echo ""
-    echo "  $PROG php-fpm:start   Start PHP-FPM daemon"
-    echo "  $PROG php-fpm:restart Restart PHP-FPM daemon"
-    echo "  $PROG php-fpm:stop    Stop PHP-FPM daemon"
-    echo ""
-    echo "  $PROG httpd:init      Test HTTP daemon"
-    echo "  $PROG httpd:test      Test HTTP daemon"
-    echo "  $PROG httpd:start     Start HTTP daemon"
-    echo "  $PROG httpd:restart   Restart HTTP daemon"
-    echo "  $PROG httpd:stop      Stop HTTP daemon"
+    echo "  $PROG <service>:init      Initialize config and data files (Supported by: php-fpm, redis, http)"
+    echo "  $PROG <service>:start     Start daemon (Supported by: php-fpm, redis, http)"
+    echo "  $PROG <service>:restart   Restart daemon (Supported by: php-fpm, redis, http)"
+    echo "  $PROG <service>:stop      Stop daemon (Supported by: php-fpm, redis, http, mysql)"
+    echo "  $PROG <service>:test      Test daemon (Supported by: http)"
 }
 
 ###########################################################
@@ -234,6 +252,11 @@ case "$1" in
   php-fpm:restart) bknix_validate; cmd_phpfpm_init; cmd_phpfpm_stop; sleep 1; cmd_phpfpm_start ;;
   php-fpm:start)   bknix_validate; cmd_phpfpm_init; cmd_phpfpm_start ;;
   php-fpm:stop)    bknix_validate; cmd_phpfpm_stop ;;
+
+  redis:init)    bknix_validate; cmd_redis_init ;;
+  redis:restart) bknix_validate; cmd_redis_init; cmd_redis_stop; sleep 1; cmd_redis_start ;;
+  redis:start)   bknix_validate; cmd_redis_init; cmd_redis_start ;;
+  redis:stop)    bknix_validate; cmd_redis_stop ;;
 
   bkit:init)     bknix_validate; cmd_bkit_init ;;
   bkit:update)   bknix_validate; cmd_bkit_init; cmd_bkit_update ;;

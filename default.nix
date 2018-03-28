@@ -35,6 +35,7 @@ in rec {
             pkgs.curl
             pkgs.apacheHttpd
             pkgs.mysql55
+            pkgs.redis
         ];
         shellHook = ''
           export BKNIXDIR="$PWD"
