@@ -34,7 +34,7 @@ in rec {
             pkgs.nodejs-6_x
             pkgs.curl
             pkgs.apacheHttpd
-            pkgs.mysql55
+            pkgs.mysql57
             pkgs.redis
         ];
         shellHook = ''
