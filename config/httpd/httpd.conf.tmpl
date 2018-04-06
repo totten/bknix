@@ -58,9 +58,9 @@ DocumentRoot "%%BKNIXDIR%%/var/httpd/htdocs"
     Require all denied
 </Files>
 
-ErrorLog "logs/error_log"
+ErrorLog "|/bin/cat"
 
-LogLevel warn
+LogLevel info
 
 <IfModule log_config_module>
     LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
@@ -70,7 +70,7 @@ LogLevel warn
       LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
     </IfModule>
 
-    CustomLog "logs/access_log" common
+    CustomLog "|/bin/cat" common
 
 </IfModule>
 
