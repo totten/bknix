@@ -1,0 +1,91 @@
+#!/usr/bin/env php
+<?php
+/**
+ * @file
+ *
+ * This is a quick and dirty script to start Apache+PHPFPM+Redis(+MySQLd).
+ */
+
+declare(ticks = 1);
+
+$POLL_INTERVAL = 3;
+
+$procs = [
+  'httpd' => [
+    'cmd' => 'svc/httpd/run',
+  ],
+  'php-fpm' => [
+    'cmd' => 'svc/php-fpm/run',
+    'pidFile' => 'var/php-fpm/php-fpm.pid',
+  ],
+  'redis' => [
+    'cmd' => 'svc/redis/run',
+  ],
+];
+
+/* ********** Helpers ********** */
+
+function onshutdown() {
+    static $started = FALSE;
+    if ($started) return;
+    $started = 1;
+
+    echo "[main] Shutdown started\n";
+
+    global $procs;
+    $allPids = array();
+
+    foreach (array_keys($procs) as $name) {
+      if (isset($procs[$name]['pidFile']) && file_exists($procs[$name]['pidFile'])) {
+        $allPids[] = trim(file_get_contents($procs[$name]['pidFile']));
+      }
+      if (isset($procs[$name]['pid'])) {
+        $allPids[] = $procs[$name]['pid'];
+      }
+    }
+
+    foreach ($allPids as $pid) { posix_kill($pid, SIGTERM); }
+    sleep(2);
+    foreach ($allPids as $pid) { posix_kill($pid, SIGKILL); }
+
+    echo "[main] Shutdown finished";
+    exit(1);
+}
+
+/* ********** Main ********** */
+
+$installed = FALSE;
+while (TRUE) {
+  foreach (array_keys($procs) as $name) {
+    if (!isset($procs[$name]['pid'])) {
+      // Launch
+      $pid = pcntl_fork();
+      if ($pid == -1) {
+        die("($name) Failed to fork");
+      }
+      elseif ($pid) {
+        $procs[$name]['pid'] = $pid;
+      }
+      else {
+        echo "[$name] Starting\n";
+        passthru($procs[$name]['cmd'], $ret);
+        echo "[$name] Exited ($ret)\n";
+        exit($ret);
+      }
+    }
+    else {
+      // Check status
+      $res = pcntl_waitpid($procs[$name]['pid'], $pidStatus, WNOHANG);
+      if ($res == -1 || $res > 0) {
+        echo "[$name] Process gone (". $procs[$name]['pid'] .")\n";
+        unset($procs[$name]['pid']);
+      }
+    }
+  }
+
+  if (!$installed) {
+    pcntl_signal(SIGINT, 'onshutdown');
+  }
+
+  sleep($POLL_INTERVAL);
+}

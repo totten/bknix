@@ -1,0 +1,23 @@
+#!/bin/bash
+
+BKNIXDIR=/Users/totten/bknix
+PROG=svc-redis-run
+
+DATADIR="$BKNIXDIR/var"
+BKIT_BASE="$BKNIXDIR/civicrm-buildkit"
+MYSQL_BASE="$BKNIXDIR/var/mysql"
+HTTPD_BASE="$BKNIXDIR/var/httpd"
+PHPFPM_BASE="$BKNIXDIR/var/php-fpm"
+REDIS_BASE="$BKNIXDIR/var/redis"
+BKIT_PORT=8001
+
+
+  if [ ! -e "$REDIS_BASE" ]; then
+    echo "($PROG) Initialize redis config ($REDIS_BASE)"
+    mkdir -p "$REDIS_BASE"
+  fi
+  cat "$BKNIXDIR/config/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
+
+
+  echo "($PROG) Start redis"
+exec  redis-server "$REDIS_BASE/redis.conf"
