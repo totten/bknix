@@ -1,5 +1,5 @@
 #!/bin/bash
-BKNIXDIR=/Users/totten/bknix
+if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi
 HTTPD_BASE="$BKNIXDIR/var/httpd"
 PROG=svc-httpd-run
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BKNIXDIR=/Users/totten/bknix
+if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi
 PROG=svc-redis-run
 
 DATADIR="$BKNIXDIR/var"
