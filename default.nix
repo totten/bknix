@@ -1,5 +1,12 @@
 let
-    pkgs = import <nixpkgs> {};
+    pkgs = import <nixpkgs> {
+      config = {
+        php = {
+          mysqlnd = true;
+        };
+      };
+    };
+
     stdenv = pkgs.stdenv;
     phpIniSnippet = ./config/php.ini;
     phpIni = pkgs.runCommand "php.ini"
