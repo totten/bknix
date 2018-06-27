@@ -13,6 +13,8 @@ let
     { options = ''
             zend_extension=${pkgs.php56Packages.xdebug}/lib/php/extensions/xdebug.so
             extension=${pkgs.php56Packages.redis}/lib/php/extensions/redis.so
+            extension=${pkgs.php56Packages.memcache}/lib/php/extensions/memcache.so
+            extension=${pkgs.php56Packages.memcached}/lib/php/extensions/memcached.so
             extension=${pkgs.php56Packages.imagick}/lib/php/extensions/imagick.so
       '';
     }
@@ -26,7 +28,7 @@ let
     # add all extensions needed as buildInputs and don't forget to load them in the php.ini above
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php-override";
-        buildInputs = [pkgs.php56 pkgs.php56Packages.xdebug pkgs.php56Packages.redis pkgs.php56Packages.imagick pkgs.makeWrapper];
+        buildInputs = [pkgs.php56 pkgs.php56Packages.xdebug pkgs.php56Packages.redis pkgs.php56Packages.memcached pkgs.php56Packages.memcache pkgs.php56Packages.imagick pkgs.makeWrapper];
         buildCommand = ''
           makeWrapper ${pkgs.php56}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
           makeWrapper ${pkgs.php56}/bin/php-fpm $out/bin/php-fpm --add-flags -c --add-flags "${phpIni}"
@@ -41,6 +43,7 @@ in rec {
             pkgs.nodejs-6_x
             pkgs.curl
             pkgs.apacheHttpd
+            pkgs.memcached
             pkgs.mysql57
             pkgs.redis
         ];
