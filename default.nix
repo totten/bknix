@@ -49,7 +49,7 @@ in rec {
             pkgs.redis
         ];
         shellHook = ''
-          export BKNIXDIR="$PWD"
+          [ -z "$BKNIXDIR" ] && export BKNIXDIR="$PWD"
           export PATH="$BKNIXDIR/bin:$BKNIXDIR/civicrm-buildkit/bin:$PATH"
           export AMPHOME="$BKNIXDIR/var/amp"
           export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
