@@ -4,6 +4,24 @@
  * @file
  *
  * This is a quick and dirty script to start Apache+PHPFPM+Redis(+MySQLd).
+ *
+ * Usage:
+ *   bkrun [-p] [-a] [-r] [-c]
+ *
+ * Options:
+ *   -p    PHP-FPM
+ *   -a    Apache HTTPd
+ *   -r    Redis
+ *   -c    Memcache
+ *
+ * Example: Run with default services (PHP-FPM, Apache, Redis)
+ * $ bkrun
+ *
+ * Example: Run with PHP + Apache
+ * $ bkrun -pa
+ *
+ * Example: Run with PHP, Apache, Redis, Memcache
+ * $ bkrun -parc
  */
 
 declare(ticks = 1);
@@ -11,17 +29,21 @@ declare(ticks = 1);
 $POLL_INTERVAL = 3;
 
 $procs = [
-  'httpd' => [
+  'apache' => [
+    'option' => 'a',
     'cmd' => 'svc/httpd/run',
   ],
   'php-fpm' => [
+    'option' => 'p',
     'cmd' => 'svc/php-fpm/run',
     'pidFile' => 'var/php-fpm/php-fpm.pid',
   ],
   'redis' => [
+    'option' => 'r',
     'cmd' => 'svc/redis/run',
   ],
   'memcached' => [
+    'option' => 'c',
     'cmd' => 'svc/memcached/run',
   ],
 ];
@@ -55,11 +77,28 @@ function onshutdown() {
     exit(1);
 }
 
+function parse_active_procs($procs, $default) {
+  $optExpr = '';
+  foreach ($procs as $proc) {
+    $optExpr .= $proc['option'];
+  }
+  $options = getopt($optExpr);
+  $activeProcs = [];
+  foreach ($procs as $procName => $proc) {
+    if (isset($options[$proc['option']])) {
+      $activeProcs[] = $procName;
+    }
+  }
+  return empty($activeProcs) ? $default : $activeProcs;
+}
+
 /* ********** Main ********** */
+
+$activeProcs = parse_active_procs($procs, ['apache', 'php-fpm', 'redis']);
 
 $installed = FALSE;
 while (TRUE) {
-  foreach (array_keys($procs) as $name) {
+  foreach ($activeProcs as $name) {
     if (!isset($procs[$name]['pid'])) {
       // Launch
       $pid = pcntl_fork();
