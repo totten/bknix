@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi
+PROG=svc-memcached-run
+
+DATADIR="$BKNIXDIR/var"
+BKIT_BASE="$BKNIXDIR/civicrm-buildkit"
+MEMCACHED_BASE="$BKNIXDIR/var/memcached"
+MEMCACHED_ARGS=
+
+if [ ! -d "$MEMCACHED_BASE" ]; then
+  mkdir -p "$MEMCACHED_BASE"
+fi
+
+if [ -f "$BKNIXDIR/config/memcached.conf" ]; then
+  source "$BKNIXDIR/config/memcached.conf"
+fi
+
+echo "($PROG) Start memcached"
+
+#exec memcached --pidfile="$MEMCACHED_BASE/memcached.pid" $MEMCACHED_ARGS
+exec memcached $MEMCACHED_ARGS

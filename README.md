@@ -76,7 +76,8 @@ civibuild reinstall wpmaster
 * MySQL launches on-demand with all-ram-disk-based storage, and it listens on TCP port 3307. (Launching is triggered when calling `amp create`, `civibuild create`, `civibuild reinstall`, `civibuild restore`, or similar).
 * PHP enables `xdebug`, which connects to a debugger UI on port 9000. (Changeable)
 * PHP is serviced by `php-fpm`, which listens on TCP port 9009.
-* Redis runs on TCP port 6380
+* Redis runs on TCP port 6380.
+* Memcached (if enabled) runs on TCP port 12221.
 
 Some of these policies/opinions can be changed, as described below ("Extended installation")
 

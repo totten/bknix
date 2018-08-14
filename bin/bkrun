@@ -21,6 +21,9 @@ $procs = [
   'redis' => [
     'cmd' => 'svc/redis/run',
   ],
+  'memcached' => [
+    'cmd' => 'svc/memcached/run',
+  ],
 ];
 
 /* ********** Helpers ********** */
