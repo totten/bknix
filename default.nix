@@ -1,5 +1,5 @@
 let
-    pkgs = import <nixpkgs> {
+    pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz) {
       config = {
         php = {
           mysqlnd = true;
