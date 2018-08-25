@@ -47,6 +47,9 @@ in rec {
             pkgs.memcached
             pkgs.mysql57
             pkgs.redis
+            pkgs.zip
+            pkgs.unzip
+            pkgs.git
         ];
         shellHook = ''
           [ -z "$BKNIXDIR" ] && export BKNIXDIR="$PWD"
