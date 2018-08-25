@@ -53,7 +53,6 @@ in rec {
           export PATH="$BKNIXDIR/bin:$BKNIXDIR/civicrm-buildkit/bin:$PATH"
           export AMPHOME="$BKNIXDIR/var/amp"
           export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
-          bknix init
 
           if [ -f "$BKNIXDIR/config/bashrc.local" ]; then
             source "$BKNIXDIR/config/bashrc.local"

@@ -96,6 +96,12 @@ function parse_active_procs($procs, $default) {
 
 $activeProcs = parse_active_procs($procs, ['apache', 'php-fpm', 'redis']);
 
+passthru("bknix init", $ret);
+if ($ret !== 0) {
+  fwrite(STDERR, "Failed to init");
+  exit(1);
+}
+
 $installed = FALSE;
 while (TRUE) {
   foreach ($activeProcs as $name) {
