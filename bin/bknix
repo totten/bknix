@@ -92,23 +92,6 @@ function cmd_bkit_init() {
   fi
 }
 
-#function cmd_mysql_start() {
-#  echo "($PROG) Start mysqld -- Skipped: mysqld will auto-start when you create or restore a database"
-#  #mysqld_safe &
-#}
-
-#function cmd_mysql_stop() {
-#  # [ -f "$MYSQL_BASE/mysql.pid" ] && kill $(cat "$MYSQL_BASE/mysql.pid")
-#  if [ -f "$AMPHOME/ram_disk/mysqld.pid" ]; then
-#    echo "($PROG) Stop mysqld"
-#    kill $(cat "$AMPHOME/ram_disk/mysqld.pid" )
-#    rm -f "$AMPHOME/ram_disk/mysqld.pid"
-#    echo "($PROG) TIP: If mysqld was launched with ramdisk, you may want to destroy the ramdisk. Use \"Disk Utility\" (OSX) or \"sudo umount <path>\" (Linux)."
-#  else
-#    echo "($PROG) Already stopped mysqld"
-#  fi
-#}
-
 function cmd_phpfpm_init() {
   if [ ! -e "$PHPFPM_BASE" ]; then
     echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE)"
@@ -116,36 +99,6 @@ function cmd_phpfpm_init() {
   fi
   cat "$BKNIXDIR/config/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
 }
-
-#function cmd_phpfpm_start() {
-#  echo "($PROG) Start php-fpm"
-#  php-fpm -y "$PHPFPM_BASE/php-fpm.conf" -D
-#}
-
-#function cmd_phpfpm_stop() {
-#  if [ -f "$PHPFPM_BASE/php-fpm.pid" ]; then
-#    echo "($PROG) Stop php-fpm"
-#    kill $(cat "$PHPFPM_BASE/php-fpm.pid" )
-#    rm -f "$PHPFPM_BASE/php-fpm.pid"
-#  else
-#    echo "($PROG) Already stopped php-fpm"
-#  fi
-#}
-
-#function cmd_httpd_start() {
-#  echo "($PROG) Start httpd"
-#  apachectl -d "$HTTPD_BASE" -k start
-#}
-
-#function cmd_httpd_test() {
-#  echo "($PROG) Test httpd config"
-#  apachectl -d "$HTTPD_BASE" -t
-#}
-
-#function cmd_httpd_stop() {
-#  echo "($PROG) Stop httpd"
-#  apachectl -d "$HTTPD_BASE" -k stop
-#}
 
 function cmd_redis_init() {
   if [ ! -e "$REDIS_BASE" ]; then
@@ -155,21 +108,6 @@ function cmd_redis_init() {
   cat "$BKNIXDIR/config/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
 }
 
-#function cmd_redis_start() {
-#  echo "($PROG) Start redis"
-#  redis-server "$REDIS_BASE/redis.conf"
-#}
-#
-#function cmd_redis_stop() {
-#  if [ -f "$REDIS_BASE/redis.pid" ]; then
-#    echo "($PROG) Stop redis"
-#    kill $(cat "$REDIS_BASE/redis.pid" )
-#    rm -f "$REDIS_BASE/redis.pid"
-#  else
-#    echo "($PROG) Already stopped redis"
-#  fi
-#}
-
 function cmd_init() {
   cmd_mysql_init
   cmd_redis_init
@@ -177,20 +115,6 @@ function cmd_init() {
   cmd_httpd_init
   cmd_bkit_init
 }
-
-#function cmd_start() {
-#  cmd_mysql_start
-#  cmd_redis_start
-#  cmd_phpfpm_start
-#  cmd_httpd_start
-#}
-
-#function cmd_stop() {
-#  cmd_httpd_stop
-#  cmd_redis_stop
-#  cmd_phpfpm_stop
-#  cmd_mysql_stop
-#}
 
 function cmd_run() {
   bkrun "$@"
@@ -219,24 +143,12 @@ function cmd_bkit_update() {
   popd >> /dev/null
 }
 
-
 function cmd_help() {
     echo "usage:"
     echo "  $PROG help            Show help"
     echo "  $PROG init            Initialize config and data files"
-    #echo "  $PROG start           Start all daemons"
-    #echo "  $PROG restart         Restart all daemons"
-    #echo "  $PROG stop            Stop all daemons"
     echo "  $PROG run             Run all daemons in foreground"
     echo "  $PROG update          Update tools"
-    #echo ""
-    #echo "  $PROG bkit:init       Initialize config and data files"
-    #echo ""
-    #echo "  $PROG <service>:init      Initialize config and data files (Supported by: php-fpm, redis, http)"
-    #echo "  $PROG <service>:start     Start daemon (Supported by: php-fpm, redis, http)"
-    #echo "  $PROG <service>:restart   Restart daemon (Supported by: php-fpm, redis, http)"
-    #echo "  $PROG <service>:stop      Stop daemon (Supported by: php-fpm, redis, http, mysql)"
-    #echo "  $PROG <service>:test      Test daemon (Supported by: http)"
 }
 
 ###########################################################
@@ -248,34 +160,7 @@ if [ -n "$1" ]; then
   shift
 fi
 case "$CMD" in
-  #httpd:init)    bknix_validate; cmd_httpd_init  ;;
-  #httpd:restart) bknix_validate; cmd_httpd_init; cmd_httpd_stop; sleep 1; cmd_httpd_start ;;
-  #httpd:start)   bknix_validate; cmd_httpd_init; cmd_httpd_start ;;
-  #httpd:stop)    bknix_validate; cmd_httpd_stop ;;
-  #httpd:test)    bknix_validate; cmd_httpd_init ;cmd_httpd_test ;;
-
-  #mysql:init)    bknix_validate; cmd_mysql_init ;;
-  #mysql:restart) bknix_validate; cmd_mysql_init; cmd_mysql_stop; sleep 1; cmd_mysql_start ;;
-  #mysql:start)   bknix_validate; cmd_mysql_init; cmd_mysql_start ;;
-  #mysql:stop)    bknix_validate; cmd_mysql_stop ;;
-
-  #php-fpm:init)    bknix_validate; cmd_phpfpm_init ;;
-  #php-fpm:restart) bknix_validate; cmd_phpfpm_init; cmd_phpfpm_stop; sleep 1; cmd_phpfpm_start ;;
-  #php-fpm:start)   bknix_validate; cmd_phpfpm_init; cmd_phpfpm_start ;;
-  #php-fpm:stop)    bknix_validate; cmd_phpfpm_stop ;;
-
-  #redis:init)    bknix_validate; cmd_redis_init ;;
-  #redis:restart) bknix_validate; cmd_redis_init; cmd_redis_stop; sleep 1; cmd_redis_start ;;
-  #redis:start)   bknix_validate; cmd_redis_init; cmd_redis_start ;;
-  #redis:stop)    bknix_validate; cmd_redis_stop ;;
-
-  #bkit:init)     bknix_validate; cmd_bkit_init ;;
-  #bkit:update)   bknix_validate; cmd_bkit_init; cmd_bkit_update ;;
-
   init)          bknix_validate; cmd_init ;;
-  #restart)       bknix_validate; cmd_init; cmd_stop; sleep 1; cmd_start ;;
-  #start)         bknix_validate; cmd_init; cmd_start ;;
-  #stop)          bknix_validate; cmd_stop ;;
   run)           bknix_validate; cmd_init ; cmd_run ;;
 
   purge)         bknix_validate; cmd_purge ;;
