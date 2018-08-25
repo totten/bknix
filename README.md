@@ -43,14 +43,22 @@ nix-shell
 > dependencies.
 
 This puts you in a CLI development environment with access to various binaries (PHP, NodeJS, Apache, MySQL, etc).  You
-can start and stop the services using `bknix`, as in:
+can start the sevices in the foreground with `bknix`:
 
 ```
-bknix start
-bknix stop
+bknix run
 ```
 
-When you have the services running, you can create builds, e.g.
+If you need to shutdown the sevices, just press `Ctrl-C`. For now, let's keep them running so we can do more interesting things.
+
+Open another terminal and navigate again into the project again:
+
+```
+cd bknix
+nix-shell
+```
+
+Now, you can create a build, e.g.
 
 ```
 civibuild create empty
@@ -58,13 +66,13 @@ civibuild create dmaster
 civibuild create wpmaster
 ```
 
-If you shutdown MySQL or reboot the system, it may destroy any active databases. You can restore them
-to a clean baseline by running `civibuild restore` or `civibuild reinstall`, e.g.
-
-```
-civibuild restore dmaster
-civibuild reinstall wpmaster
-```
+> __Note__: If you shutdown MySQL or reboot the system, it may destroy any active databases. You can restore them
+> to a clean baseline by running `civibuild restore` or `civibuild reinstall`, e.g.
+>
+> ```
+> civibuild restore dmaster
+> civibuild reinstall wpmaster
+> ```
 
 ## Policies/Opinions
 
@@ -86,7 +94,6 @@ Some of these policies/opinions can be changed, as described below ("Extended in
 * Sort out php-imap
 * Make it easier to switch between php56, php70, php71. (Currently, you need to search/replace in `default.nix`.)
 * Instead of putting most code in `./civicrm-buildkit`, put it in `$out`. (Preferrably... without neutering git cache.)
-* PHPStorm doesn't like using the `phpunit4` PHAR unless the filename has the `.phar` extension.
 
 ## Tips
 
@@ -125,8 +132,8 @@ amp config
 less civicrm-buildkit/app/civibuild.conf.tmpl
 vi civicrm-buildkit/app/civibuild.conf
 
-## 4. Start servies
-bknix start
+## 4. Run services
+bknix run
 ```
 
 Note how we interject with steps 2 and 3. For example, I often do these around step #3:
@@ -149,7 +156,7 @@ to irregular (once every months).
 * (*Most frequent; perhaps every day*) *Update the CiviCRM source*: See [CiviCRM Developer Guide: civibuild](https://docs.civicrm.org/dev/en/latest/tools/civibuild/#upgrade-site)
 * (*Mid-level; perhaps every couple weeks*) *Update buildkit's CLI tools*: Run `bknix update`.
 * (*Least frequent; perhaps every couple months*) *Update the full `bknix` stack (mysqld/httpd/etc)*: This takes a few steps.
-    * If you haven't already, shutdown any active services (`bknix stop`).
+    * If you haven't already, shutdown any active services (`Ctrl-C` in the background terminal)
     * Exit any active `nix-shell` environments.
     * In the `bknix` directory, update the git repo (i.e. `git pull`).
     * Open a new `nix-shell` and run `bknix update`
