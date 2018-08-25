@@ -43,15 +43,13 @@ nix-shell
 > dependencies.
 
 This puts you in a CLI development environment with access to various binaries (PHP, NodeJS, Apache, MySQL, etc).  You
-can start the sevices in the foreground with `bknix`:
+can start the sevices in the foreground with `bknix`. This will show a combined console log:
 
 ```
 bknix run
 ```
 
-If you need to shutdown the sevices, just press `Ctrl-C`. For now, let's keep them running so we can do more interesting things.
-
-Open another terminal and navigate again into the project again:
+Open another terminal and navigate into the project again:
 
 ```
 cd bknix
@@ -66,8 +64,15 @@ civibuild create dmaster
 civibuild create wpmaster
 ```
 
-> __Note__: If you shutdown MySQL or reboot the system, it may destroy any active databases. You can restore them
-> to a clean baseline by running `civibuild restore` or `civibuild reinstall`, e.g.
+With one of these builds, you can browse the site, edit code, etc.
+
+Eventually, you may need to shutdown or restart the services.
+
+* *To shutdown Apache, PHP, and Redis*: Go back to the original tab where `bknix run` is running. Press `Ctrl-C` to stop it.
+* *To shutdown MySQL*: Run `killall mysqld`. If you want to destroy the data, then eject (OSX) or unmount (Linux) the ramdisk.
+
+> __Note__: If you shutdown MySQL / destroy the RAM disk / reboot the system, then it may destroy any active databases.
+> You can restore them to a clean baseline by running `civibuild restore` or `civibuild reinstall`, e.g.
 >
 > ```
 > civibuild restore dmaster
@@ -94,6 +99,8 @@ Some of these policies/opinions can be changed, as described below ("Extended in
 * Sort out php-imap
 * Make it easier to switch between php56, php70, php71. (Currently, you need to search/replace in `default.nix`.)
 * Instead of putting most code in `./civicrm-buildkit`, put it in `$out`. (Preferrably... without neutering git cache.)
+* `mysqld` is spawned in the background via `amp` (b/c that has the automated ramdisk handling). However, it'd be conceptually cleaner
+  to launch `mysqld` in the foreground via `bknix run`.
 
 ## Tips
 
