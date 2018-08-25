@@ -87,7 +87,8 @@ function cmd_bkit_init() {
 
   if [ ! -e "$BKIT_BASE/app/civibuild.conf" ]; then
     echo "($PROG) Initialize civibuild config ($BKIT_BASE/app/civibuild.conf)"
-    echo "BLDDIR=\"$BKNIXDIR/build\"" >> "$BKIT_BASE/app/civibuild.conf"
+    echo 'if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi' >> "$BKIT_BASE/app/civibuild.conf"
+    echo 'BLDDIR="$BKNIXDIR/build"' >> "$BKIT_BASE/app/civibuild.conf"
     echo "URL_TEMPLATE=\"http://%SITE_NAME%.bknix:$BKIT_PORT\"" >> "$BKIT_BASE/app/civibuild.conf"
   fi
 }
