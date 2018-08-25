@@ -35,11 +35,22 @@ let
           makeWrapper ${pkgs.php56}/bin/php-fpm $out/bin/php-fpm --add-flags -c --add-flags "${phpIni}"
         '';
     };
-in rec {
-    bknix = stdenv.mkDerivation rec {
+
+    bknixBin = stdenv.mkDerivation rec {
+        name = "bknix-bin";
+        src = ./bin;
+        installPhase = ''
+          mkdir -p $out/bin
+          cp $src/bkrun $out/bin/bkrun
+          cp $src/bknix $out/bin/bknix
+        '';
+    };
+
+in stdenv.mkDerivation rec {
         name = "bknix";
         buildInputs = [
             phpOverride
+            bknixBin
             pkgs.php56
             pkgs.nodejs-6_x
             pkgs.curl
@@ -53,7 +64,7 @@ in rec {
         ];
         shellHook = ''
           [ -z "$BKNIXDIR" ] && export BKNIXDIR="$PWD"
-          export PATH="$BKNIXDIR/bin:$BKNIXDIR/civicrm-buildkit/bin:$PATH"
+          export PATH="$BKNIXDIR/civicrm-buildkit/bin:$PATH"
           export AMPHOME="$BKNIXDIR/var/amp"
           export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
 
@@ -61,5 +72,4 @@ in rec {
             source "$BKNIXDIR/config/bashrc.local"
           fi
         '';
-    };
 }
