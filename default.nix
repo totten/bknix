@@ -36,16 +36,21 @@ let
         '';
     };
 
-in stdenv.mkDerivation rec {
-        name = "bknix";
-        src = ./bin;
+    bknixMgmt = stdenv.mkDerivation rec {
+        name = "bknix-mgmt";
+        src = ./src/mgmt;
         installPhase = ''
           mkdir -p $out/bin
           cp $src/bkrun $out/bin/bkrun
           cp $src/bknix $out/bin/bknix
         '';
+    };
+
+in stdenv.mkDerivation rec {
+        name = "bknix";
         buildInputs = [
             phpOverride
+            bknixMgmt
             pkgs.php56
             pkgs.nodejs-6_x
             pkgs.curl
@@ -57,6 +62,11 @@ in stdenv.mkDerivation rec {
             pkgs.unzip
             pkgs.git
         ];
+
+        buildCommand = ''
+           mkdir $out
+        '';
+
         shellHook = ''
           [ -z "$BKNIXDIR" ] && export BKNIXDIR="$PWD"
           export PATH="$BKNIXDIR/civicrm-buildkit/bin:$PATH"
