@@ -4,15 +4,16 @@ let
     stdenv = pkgs.stdenv;
 
 in stdenv.mkDerivation rec {
-        name = "launcher";
-        src = ./src;
-        installPhase = ''
-          mkdir -p $out/bin
-          cp $src/bkrun $out/bin/bkrun
-          cp $src/bknix $out/bin/bknix
-        '';
 
-        ## We don't delcare an official dependency on PHP because there are
-        ## multiple versions in this repo, and we want to be able to
-        ## mix/match.
-    }
+    name = "launcher";
+    src = ./src;
+    installPhase = ''
+        mkdir -p $out/bin
+        cp $src/bkrun $out/bin/bkrun
+        cp $src/bknix $out/bin/bknix
+    '';
+
+    ## We don't delcare an official dependency on PHP because there are
+    ## multiple versions in this repo, and we want to be able to
+    ## mix/match.
+}
