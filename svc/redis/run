@@ -16,7 +16,7 @@ BKIT_PORT=8001
     echo "($PROG) Initialize redis config ($REDIS_BASE)"
     mkdir -p "$REDIS_BASE"
   fi
-  cat "$BKNIXDIR/config/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
+  cat "$BKNIXDIR/etc/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
 
 
   echo "($PROG) Start redis"

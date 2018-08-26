@@ -12,8 +12,8 @@ if [ ! -d "$MEMCACHED_BASE" ]; then
   mkdir -p "$MEMCACHED_BASE"
 fi
 
-if [ -f "$BKNIXDIR/config/memcached.conf" ]; then
-  source "$BKNIXDIR/config/memcached.conf"
+if [ -f "$BKNIXDIR/etc/memcached.conf" ]; then
+  source "$BKNIXDIR/etc/memcached.conf"
 fi
 
 echo "($PROG) Start memcached"

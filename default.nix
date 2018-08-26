@@ -31,8 +31,8 @@ in stdenv.mkDerivation rec {
         export AMPHOME="$BKNIXDIR/var/amp"
         export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
 
-        if [ -f "$BKNIXDIR/config/bashrc.local" ]; then
-          source "$BKNIXDIR/config/bashrc.local"
+        if [ -f "$BKNIXDIR/etc/bashrc.local" ]; then
+          source "$BKNIXDIR/etc/bashrc.local"
         fi
     '';
 

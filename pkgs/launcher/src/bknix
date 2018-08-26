@@ -49,15 +49,15 @@ function cmd_httpd_init() {
       [ ! -e "$HTTPD_BASE/$SUBDIR" ] && ln -s "$REALHTTPDIR/$SUBDIR" "$HTTPD_BASE/$SUBDIR"
     done
   fi
-  rsync -a "$BKNIXDIR/config/httpd/./" "$HTTPD_BASE/conf/./"
-  cat "$BKNIXDIR/config/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
+  rsync -a "$BKNIXDIR/etc/httpd/./" "$HTTPD_BASE/conf/./"
+  cat "$BKNIXDIR/etc/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
 }
 
 function cmd_mysql_init() {
   if false; then echo; fi
   ## DB init
   #m mkdir -p "$MYSQL_BASE" "$MYSQL_BASE/tmp" "$MYSQL_BASE/conf"
-  #m sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" < "$BKNIXDIR/config/my.cnf.tmpl" > "$MYSQL_BASE/conf/my.cnf"
+  #m sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" < "$BKNIXDIR/etc/my.cnf.tmpl" > "$MYSQL_BASE/conf/my.cnf"
   #m rm -rf "$MYSQL_BASE/data" ## REVERT
   #m if [ ! -d "$MYSQL_BASE/data" ]; then
   #m  echo "($PROG) Initialize MySQL database"
@@ -98,7 +98,7 @@ function cmd_phpfpm_init() {
     echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE)"
     mkdir -p "$PHPFPM_BASE"
   fi
-  cat "$BKNIXDIR/config/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
+  cat "$BKNIXDIR/etc/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
 }
 
 function cmd_redis_init() {
@@ -106,7 +106,7 @@ function cmd_redis_init() {
     echo "($PROG) Initialize redis config ($REDIS_BASE)"
     mkdir -p "$REDIS_BASE"
   fi
-  cat "$BKNIXDIR/config/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
+  cat "$BKNIXDIR/etc/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
 }
 
 function cmd_init() {

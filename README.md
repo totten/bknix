@@ -165,7 +165,7 @@ Note how we interject with steps 2 and 3. For example, I often do these around s
   platform.) Then, configure `amp` to disable management of `/etc/hosts` (`amp config:set --hosts_type=none`).
   This saves you from running `sudo` or entering a password.
 * Set the PHP timezone in `config/php.ini`.
-* Create `config/bashrc.local` with some CLI customizations
+* Create `etc/bashrc.local` with some CLI customizations
 
 (*Aside*: You can update these settings after initial setup, but some settings may require destroying/rebuilding.)
 

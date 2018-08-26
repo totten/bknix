@@ -9,6 +9,6 @@ if [ ! -e "$PHPFPM_BASE" ]; then
   echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE)"
   mkdir -p "$PHPFPM_BASE"
 fi
-cat "$BKNIXDIR/config/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
+cat "$BKNIXDIR/etc/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
 
 exec php-fpm -y "$PHPFPM_BASE/php-fpm.conf" --nodaemonize

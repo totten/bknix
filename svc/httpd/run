@@ -14,8 +14,8 @@ PROG=svc-httpd-run
       [ ! -e "$HTTPD_BASE/$SUBDIR" ] && ln -s "$REALHTTPDIR/$SUBDIR" "$HTTPD_BASE/$SUBDIR"
     done
   fi
-  rsync -a "$BKNIXDIR/config/httpd/./" "$HTTPD_BASE/conf/./"
-  cat "$BKNIXDIR/config/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
+  rsync -a "$BKNIXDIR/etc/httpd/./" "$HTTPD_BASE/conf/./"
+  cat "$BKNIXDIR/etc/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
 
 
 exec apachectl -d "$HTTPD_BASE" -DFOREGROUND
