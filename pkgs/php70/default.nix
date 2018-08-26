@@ -11,33 +11,31 @@ let
     };
 
     stdenv = pkgs.stdenv;
-    phpVer = "php70";
-    phpXxx = builtins.getAttr phpVer pkgs;
-    phpXxxPkgs = builtins.getAttr "${phpVer}Packages" pkgs;
+
+    phpRuntime = pkgs.php70;
+    phpPkgs = pkgs.php70Packages;
 
     phpIniSnippet = ./etc/php.ini;
     phpIni = pkgs.runCommand "php.ini"
     { options = ''
-            zend_extension=${phpXxxPkgs.xdebug}/lib/php/extensions/xdebug.so
-            extension=${phpXxxPkgs.redis}/lib/php/extensions/redis.so
-            extension=${phpXxxPkgs.memcached}/lib/php/extensions/memcached.so
-            extension=${phpXxxPkgs.imagick}/lib/php/extensions/imagick.so
+            zend_extension=${phpPkgs.xdebug}/lib/php/extensions/xdebug.so
+            extension=${phpPkgs.redis}/lib/php/extensions/redis.so
+            extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
+            extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
       '';
-#            extension=${phpXxxPkgs.apcu}/lib/php/extensions/apcu.so
     }
     ''
-      cat "${phpXxx}/etc/php.ini" > $out
+      cat "${phpRuntime}/etc/php.ini" > $out
       echo "$options" >> $out
       cat "${phpIniSnippet}" >> $out
     '';
 
     phpOverride = stdenv.mkDerivation rec {
-        name = "bknix-php-override";
-        buildInputs = [phpXxx phpXxxPkgs.xdebug phpXxxPkgs.redis phpXxxPkgs.memcached phpXxxPkgs.imagick pkgs.makeWrapper];
-        #phpXxxPkgs.apcu
+        name = "bknix-php70";
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.memcached phpPkgs.imagick pkgs.makeWrapper];
         buildCommand = ''
-          makeWrapper ${phpXxx}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
-          makeWrapper ${phpXxx}/bin/php-fpm $out/bin/php-fpm --add-flags -c --add-flags "${phpIni}"
+          makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
+          makeWrapper ${phpRuntime}/bin/php-fpm $out/bin/php-fpm --add-flags -c --add-flags "${phpIni}"
         '';
     };
 
