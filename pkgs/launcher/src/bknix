@@ -43,7 +43,7 @@ function cmd_httpd_init() {
     REALHTTPDIR=$(dirname $(dirname $(which httpd)))
     mkdir -p "$HTTPD_BASE" "$HTTPD_BASE/logs" "$HTTPD_BASE/conf" "$HTTPD_BASE/htdocs"
     if [ ! -f "$HTTPD_BASE/htdocs/index.html" ]; then
-      echo "<html><body>mynix laceholder</body></html>" > "$HTTPD_BASE/htdocs/index.html"
+      echo "<html><body>Placeholder</body></html>" > "$HTTPD_BASE/htdocs/index.html"
     fi
     for SUBDIR in bin cgi-bin error icons modules ;do
       [ ! -e "$HTTPD_BASE/$SUBDIR" ] && ln -s "$REALHTTPDIR/$SUBDIR" "$HTTPD_BASE/$SUBDIR"
