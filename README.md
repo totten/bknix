@@ -1,11 +1,20 @@
-`bknix` is a highly opinionated environment for developing in PHP/JS (esp developing patches/add-ons for CiviCRM and related CMS's):
+`bknix` is a highly opinionated environment for developing in PHP/JS -- esp for developing patches/add-ons for CiviCRM.
 
+__Comparison with other development environments__: `bknix` serves a function similar to MAMP or XAMPP -- it facilitates local development by
+bundling Apache/PHP/etc with a small launcher to run the servers.  However, it is built with the open-source [nix package
+manager](https://nixos.org/nix) (compatible with OS X and Linux).  Like Docker, `nix` lets you create a small project with a manifest-file, and it
+won't interfere with your normal system settings.  However, unlike Docker, it is not coupled to the Linux kernel.  This significantly improves
+performance on OS X workstations -- especially if the PHP/JS codebase is large.
+
+__Highly opinionated__:
+
+ * It is primarily intended for developing patches and extensions for CiviCRM -- this influences the set of tools included.
  * It combines service binaries (`mysqld`, `httpd`, etc) from [nix](https://nixos.org/nix) and a toolchain from [buildkit](https://github.com/civicrm/civicrm-buildkit) and an unsophisticated process-management script (`bknix`).
  * To facilitate quick development with any IDE/editor, all file-storage and development-tasks run in the current users' local Linux/macOS (*without* any virtualization, containerization, invisible filesystems, or magic permissions).
  * To optimize DB performance, `mysqld` stores all its data in a ramdisk.
  * To avoid conflicts with other tools on your system, all binaries are stored in their own folders, and services run on their own ports.
 
-This project is a work-in-progress. Some tasks/issues are described further down.
+__This project is a work-in-progress.__ Some tasks/issues are described further down.
 
 ## Requirements
 
@@ -22,7 +31,7 @@ Additionally, you should have some basic understanding of the tools/systems invo
 * Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
 * Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
 
-## Quick Start: Download
+## Tutorial: Download
 
 After installing [nix package manager](https://nixos.org/nix/), simply clone this repo:
 
@@ -30,54 +39,59 @@ After installing [nix package manager](https://nixos.org/nix/), simply clone thi
 git clone https://github.com/totten/bknix
 ```
 
-## Quick Start: Usage
+## Tutorial: Service startup
 
-Navigate into the project folder and run `nix-shell`:
-
-```
-cd bknix
-nix-shell
-```
-
-> __Note__: When you first run `nix-shell`, it downloads a large number of
-> dependencies.
-
-This puts you in a CLI development environment with access to various binaries (PHP, NodeJS, Apache, MySQL, etc).  You
-can start the sevices in the foreground with `bknix`. This will show a combined console log:
+We need to start various servers (Apache, PHP-FPM, etc). This command will run the services in the foreground and display a combined console log.
 
 ```
-bknix run
+
+me@localhost:~$ cd bknix
+me@localhost:~/bknix$ nix-shell --command 'bknix run'
+...
+[apache] Starting
+[php-fpm] Starting
+[redis] Starting
+...
 ```
 
-Open another terminal and navigate into the project again:
+__Note__: If this is the first time that you run `nix-shell` command, then the local computer needs to download or compile some software. This is
+handled automatically. It may take a while the first time -- but, eventually, it ends at the same point.
+
+## Tutorial: Command line access
+
+We'd like to have a shell where we can run developer commands like `civibuild`, `composer`, `drush`, or `civix`.  Open a new terminal and run `nix-shell` without any arguments:
 
 ```
-cd bknix
-nix-shell
+me@localhost:~$ cd bknix
+me@localhost:~/bknix$ nix-shell
+[nix-shell:~/bknix]$
 ```
 
-Now, you can create a build, e.g.
+Within the `nix-shell`, you have access to all commands.  For example, you can use one of these commands to create a dev site:
 
 ```
-civibuild create empty
-civibuild create dmaster
-civibuild create wpmaster
+[nix-shell:~/bknix]$ civibuild create dmaster
+[nix-shell:~/bknix]$ civibuild create wpmaster
 ```
 
-With one of these builds, you can browse the site, edit code, etc.
+In the dev site, you can browse the site, edit code, etc.
 
-Eventually, you may need to shutdown or restart the services.
+## Tutorial: Shutdown and restart services
 
-* *To shutdown Apache, PHP, and Redis*: Go back to the original tab where `bknix run` is running. Press `Ctrl-C` to stop it.
-* *To shutdown MySQL*: Run `killall mysqld`. If you want to destroy the data, then eject (OSX) or unmount (Linux) the ramdisk.
+Eventually, you may need to shutdown or restart the services. Here's how:
 
-> __Note__: If you shutdown MySQL / destroy the RAM disk / reboot the system, then it may destroy any active databases.
-> You can restore them to a clean baseline by running `civibuild restore` or `civibuild reinstall`, e.g.
->
-> ```
-> civibuild restore dmaster
-> civibuild reinstall wpmaster
-> ```
+* *To shutdown Apache, PHP, and Redis*: Go back to the original terminal where `bknix run` is running. Press `Ctrl-C` to stop it.
+* *To shutdown MySQL*: Run `killall mysqld`. Then, use `umount` (Linux) or `Disk Utility` (OS X) to eject the ramdisk.
+
+You can start Apache/PHP/Redis again by simply invoking the `bknix run` command again.
+
+Restarting MySQL is a bit more tricky -- all the databases were lost when the ramdisk was destroyed. You can restore
+the databases to a pristine snapshot with `civibuild restore` or `civibuild reinstall` -- either:
+
+```
+[nix-shell:~/bknix]$ civibuild restore dmaster
+[nix-shell:~/bknix]$ civibuild reinstall dmaster
+```
 
 ## Policies/Opinions
 
