@@ -31,20 +31,20 @@ $POLL_INTERVAL = 3;
 $procs = [
   'apache' => [
     'option' => 'a',
-    'cmd' => 'svc/httpd/run',
+    'cmd' => 'apachectl -d "$BKNIXDIR/var/httpd" -DFOREGROUND',
   ],
   'php-fpm' => [
     'option' => 'p',
-    'cmd' => 'svc/php-fpm/run',
+    'cmd' => 'php-fpm -y "$BKNIXDIR/var/php-fpm/php-fpm.conf" --nodaemonize',
     'pidFile' => 'var/php-fpm/php-fpm.pid',
   ],
   'redis' => [
     'option' => 'r',
-    'cmd' => 'svc/redis/run',
+    'cmd' => 'redis-server "$BKNIXDIR/var/redis/redis.conf"',
   ],
   'memcached' => [
     'option' => 'c',
-    'cmd' => 'svc/memcached/run',
+    'cmd' => 'MEMCACHED_ARGS= ; if [ -f "$BKNIXDIR/etc/memcached.conf" ]; then source "$BKNIXDIR/etc/memcached.conf"; fi; exec memcached $MEMCACHED_ARGS',
   ],
 ];
 
@@ -94,7 +94,11 @@ function parse_active_procs($procs, $default) {
 
 /* ********** Main ********** */
 
-$activeProcs = parse_active_procs($procs, ['apache', 'php-fpm', 'redis']);
+$activeProcs = parse_active_procs($procs, ['apache', 'php-fpm', 'redis', 'memcached']);
+if (!getenv('BKNIXDIR')) {
+  fwrite(STDERR, "Mandatory variable BKNIXDIR has not been set.");
+  exit(1);
+}
 
 $installed = FALSE;
 while (TRUE) {
