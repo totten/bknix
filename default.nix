@@ -36,21 +36,16 @@ let
         '';
     };
 
-    bknixBin = stdenv.mkDerivation rec {
-        name = "bknix-bin";
+in stdenv.mkDerivation rec {
+        name = "bknix";
         src = ./bin;
         installPhase = ''
           mkdir -p $out/bin
           cp $src/bkrun $out/bin/bkrun
           cp $src/bknix $out/bin/bknix
         '';
-    };
-
-in stdenv.mkDerivation rec {
-        name = "bknix";
         buildInputs = [
             phpOverride
-            bknixBin
             pkgs.php56
             pkgs.nodejs-6_x
             pkgs.curl
