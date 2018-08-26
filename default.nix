@@ -4,7 +4,9 @@ let
     stdenv = pkgs.stdenv;
     bkpkgs = import ./pkgs;
 
-in stdenv.mkDerivation rec {
+in rec {
+
+  bknix =stdenv.mkDerivation rec {
 
     name = "bknix";
     buildInputs = [
@@ -35,5 +37,6 @@ in stdenv.mkDerivation rec {
           source "$BKNIXDIR/etc/bashrc.local"
         fi
     '';
+  };
 
 }
