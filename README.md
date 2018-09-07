@@ -35,13 +35,25 @@ Additionally, you should have some basic understanding of the tools/systems invo
 * Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
 * Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
 
-## Getting Started
+## Quick Start
 
-`bknix` provides a bunch of new commands.  But these commands may also be provided by other systems.  Some details of using `bknix` depend on whether
-you would rather:
+```bash
+## Download all the binaries for the default (dfl) profile
+sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl'
 
-* Enable CLI access to all these commands by default. See: [Using bknix in your main shell](doc/with-nix-env.md)
-* Keep the commands isolated in a special environment. See: [Using bknix in a subshell](doc/with-nix-shell.md)
+## Setup your environment.
+## (You should probably run this manually *and* add this to ~/.profile or ~/.bashrc.)
+export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
+export BKNIXDIR=$HOME/bknix
+eval $(bknix env)
+
+## Start the daemons
+## (On the first run, this will put a lot of code and config files in $BKNIXDIR.)
+bknix run
+
+## Open a new console. Setup the environment again. Then... we can make some builds:
+civibuild create dmaster
+```
 
 ## Policies/Opinions
 

@@ -31,13 +31,13 @@ handled automatically. It may take a while the first time -- but, eventually, it
 Next, we need to enable some environment variables. You can do this manually for the current shell:
 
 ```
-me@localhost:~/bknix$ eval $(bknix shell)
+me@localhost:~/bknix$ eval $(bknix env)
 ```
 
 To ensure that it applies to future shells, update your `~/.profile` or `~/.bashrc`  to include a similar statement:
 
 ```
-eval $(bknix shell)
+eval $(bknix env)
 ```
 
 ## Service startup

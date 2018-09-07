@@ -167,10 +167,16 @@ function cmd_help() {
 }
 
 function cmd_env() {
-  echo 'export BKNIXDIR="$HOME/bknix"'
-  echo 'export PATH="$HOME/bknix/civicrm-buildkit/bin:$PATH"'
-  echo 'export AMPHOME="$HOME/bknix/var/amp"'
-  echo 'export MYSQL_HOME="$HOME/bknix/var/mysql/conf"'
+  if [ -z "$BKNIXDIR" ]; then
+    echo 'export BKNIXDIR="$HOME/bknix"'
+    echo 'export PATH="$HOME/bknix/civicrm-buildkit/bin:$PATH"'
+    echo 'export AMPHOME="$HOME/bknix/var/amp"'
+    echo 'export MYSQL_HOME="$HOME/bknix/var/mysql/conf"'
+  else
+    echo 'export PATH="$BKNIXDIR/civicrm-buildkit/bin:$PATH"'
+    echo 'export AMPHOME="$BKNIXDIR/var/amp"'
+    echo 'export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"'
+  fi
 }
 
 ###########################################################

@@ -15,12 +15,9 @@ let
         mkdir "$out" "$out/bin"
         makeWrapper "${bkpkgs.launcher}/bin/bknix" $out/bin/bknix --prefix BKNIX_DEPS : "${bknixDepsStr}"
       '';
-      /* TODO Add to PATH: ${bknixDepsStr} */
       shellHook = ''
         [ -z "$BKNIXDIR" ] && export BKNIXDIR="$PWD"
-        export PATH="$BKNIXDIR/civicrm-buildkit/bin:$PATH"
-        export AMPHOME="$BKNIXDIR/var/amp"
-        export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
+        eval $(bknix env)
 
         if [ -f "$BKNIXDIR/etc/bashrc.local" ]; then
           source "$BKNIXDIR/etc/bashrc.local"
