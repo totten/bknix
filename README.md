@@ -13,6 +13,10 @@ __Highly opinionated__:
  * To facilitate quick development with any IDE/editor, all file-storage and development-tasks run in the current users' local Linux/macOS (*without* any virtualization, containerization, invisible filesystems, or magic permissions).
  * To optimize DB performance, `mysqld` stores all its data in a ramdisk.
  * To avoid conflicts with other tools on your system, all binaries are stored in their own folders, and services run on their own ports.
+ * There are a few different configurations. Each configuration has its own mix of packages (e.g. PHP 5.6 + MySQL 5.5; PHP 7.0 + MySQL 5.7). These are named:
+   * `min`: An older set of binaries based on current system requirements.
+   * `max`: A newer set of binaries based on highest that we aim to support.
+   * `dfl`: An in-between set of binaries.
 
 __This project is a work-in-progress.__ Some tasks/issues are described further down.
 
@@ -46,7 +50,7 @@ We need to start various servers (Apache, PHP-FPM, etc). This command will run t
 ```
 
 me@localhost:~$ cd bknix
-me@localhost:~/bknix$ nix-shell --command 'bknix run'
+me@localhost:~/bknix$ nix-shell -A dfl --command 'bknix run'
 ...
 [apache] Starting
 [php-fpm] Starting
@@ -63,7 +67,7 @@ We'd like to have a shell where we can run developer commands like `civibuild`, 
 
 ```
 me@localhost:~$ cd bknix
-me@localhost:~/bknix$ nix-shell
+me@localhost:~/bknix$ nix-shell -A dfl
 [nix-shell:~/bknix]$
 ```
 
