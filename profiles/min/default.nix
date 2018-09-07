@@ -5,7 +5,6 @@ let
     pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz) {};
     stdenv = pkgs.stdenv;
     bkpkgs = import ../../pkgs;
-
 in [
     bkpkgs.launcher
     bkpkgs.php56
