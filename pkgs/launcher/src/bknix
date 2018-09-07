@@ -6,10 +6,7 @@ set -e
 ##
 ## I'd like to see something more like http://supervisord.org/ (which is a non-root process manager)...
 
-if [ -z "$BKNIXDIR" -o ! -d "$BKNIXDIR" ]; then
-  echo "Aborting. This command should only run within nix-shell."
-  exit 2
-fi
+
 
 ###########################################################
 ## Variables
@@ -27,13 +24,22 @@ BKIT_PORT=8001
 ## Library
 
 function bknix_validate() {
+  if [ -z "$BKNIXDIR" -o ! -d "$BKNIXDIR" ]; then
+    echo "ERROR: Missing expected variable: BKNIXDIR"
+  fi
   if [ -z "$AMPHOME" ]; then
-    echo "Missing expected variable: AMPHOME"
-    exit 10
+    echo "ERROR: Missing expected variable: AMPHOME"
   fi
   if [ -z "$MYSQL_HOME" ]; then
-    echo "Missing expected variable: MYSQL_HOME"
-    exit 10
+    echo "ERROR: Missing expected variable: MYSQL_HOME"
+  fi
+
+  if [ -z "$BKNIXDIR" -o ! -d "$BKNIXDIR" -o  -z "$AMPHOME" -o -z "$MYSQL_HOME" ]; then
+    echo
+    echo "You may wish to set the environment variables. Try one of these:"
+    echo "1. Run commands through bknix's \"nix-shell\", which will automatically initialize the variables."
+    echo "2. In your .profile or .bashrc, use \"eval \`bknix shell\`\" to initialize the variables."
+    exit 2
   fi
 }
 
@@ -147,9 +153,17 @@ function cmd_bkit_update() {
 function cmd_help() {
     echo "usage:"
     echo "  $PROG help            Show help"
+    echo "  $PROG shell           Generate bash configuration commands"
     echo "  $PROG init            Initialize config and data files"
     echo "  $PROG run             Run all daemons in foreground"
     echo "  $PROG update          Update tools"
+}
+
+function cmd_shell() {
+  echo 'export BKNIXDIR="$HOME/bknix"'
+  echo 'export PATH="$BKNIXDIR/civicrm-buildkit/bin:$PATH"'
+  echo 'export AMPHOME="$BKNIXDIR/var/amp"'
+  echo 'export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"'
 }
 
 ###########################################################
@@ -161,6 +175,7 @@ if [ -n "$1" ]; then
   shift
 fi
 case "$CMD" in
+  shell)         cmd_shell; ;;
   init)          bknix_validate; cmd_init ;;
   run)           bknix_validate; cmd_init ; cmd_run ;;
 

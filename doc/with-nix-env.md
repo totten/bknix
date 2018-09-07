@@ -10,15 +10,13 @@ bknix supports a few different configurations (which track `civicrm.org` policy)
 
 For the rest of this tutorial, we'll assume you want the default `dfl` configuration.  However, you can change `dfl` to `min` or` max`.
 
-## Download
+## Download and install
 
 After installing [nix package manager](https://nixos.org/nix/), simply clone this repo:
 
 ```
 me@localhost:~$ git clone https://github.com/totten/bknix
 ```
-
-## Install
 
 There are several programs that we would like to install.  The `nix-env` command allows us to add these to your default environment.
 
@@ -30,9 +28,22 @@ me@localhost:~/bknix$ nix-env -f . -i -E 'f: f.profiles.dfl'
 __Note__: If this is the first time that you run `nix-env` or `nix-shell` command, then the local computer needs to download or compile some software. This is
 handled automatically. It may take a while the first time -- but, eventually, it ends at the same point.
 
+Next, we need to enable some environment variables. You can do this manually for the current shell:
+
+```
+me@localhost:~/bknix$ eval $(bknix shell)
+```
+
+To ensure that it applies to future shells, update your `~/.profile` or `~/.bashrc`  to include a similar statement:
+
+```
+eval $(bknix shell)
+```
+
 ## Service startup
 
-We need to start various servers (Apache, PHP-FPM, etc). This command will run the services in the foreground and display a combined console log.
+Now, all the commands and environment variables are setup.  We need to start various servers (Apache, PHP-FPM, etc).
+This command will run the services in the foreground and display a combined console log.
 
 ```
 me@localhost:~$ cd bknix
