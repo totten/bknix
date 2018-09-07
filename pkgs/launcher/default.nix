@@ -7,10 +7,11 @@ in stdenv.mkDerivation rec {
 
     name = "launcher";
     src = ./src;
+    buildInputs = [ pkgs.makeWrapper ];
+
     installPhase = ''
         mkdir -p $out/bin
-        cp $src/bkrun $out/bin/bkrun
-        cp $src/bknix $out/bin/bknix
+        makeWrapper ${src}/bknix $out/bin/bknix --set BKNIXSRC ${src}
     '';
 
     ## We don't delcare an official dependency on PHP because there are

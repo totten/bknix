@@ -24,7 +24,10 @@ BKIT_PORT=8001
 ## Library
 
 function bknix_validate() {
-  if [ -z "$BKNIXDIR" -o ! -d "$BKNIXDIR" ]; then
+  if [ -z "$BKNIXSRC" -o ! -d "$BKNIXSRC" ]; then
+    echo "ERROR: Missing expected variable: BKNIXSRC"
+  fi
+  if [ -z "$BKNIXDIR" ]; then
     echo "ERROR: Missing expected variable: BKNIXDIR"
   fi
   if [ -z "$AMPHOME" ]; then
@@ -34,7 +37,7 @@ function bknix_validate() {
     echo "ERROR: Missing expected variable: MYSQL_HOME"
   fi
 
-  if [ -z "$BKNIXDIR" -o ! -d "$BKNIXDIR" -o  -z "$AMPHOME" -o -z "$MYSQL_HOME" ]; then
+  if [ -z "$BKNIXSRC" -o ! -d "$BKNIXSRC" -o -z "$BKNIXDIR" -o  -z "$AMPHOME" -o -z "$MYSQL_HOME" ]; then
     echo
     echo "You may wish to set the environment variables. Try one of these:"
     echo "1. Run commands through bknix's \"nix-shell\", which will automatically initialize the variables."
@@ -55,15 +58,15 @@ function cmd_httpd_init() {
       [ ! -e "$HTTPD_BASE/$SUBDIR" ] && ln -s "$REALHTTPDIR/$SUBDIR" "$HTTPD_BASE/$SUBDIR"
     done
   fi
-  rsync -a "$BKNIXDIR/etc/httpd/./" "$HTTPD_BASE/conf/./"
-  cat "$BKNIXDIR/etc/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
+  cp -r "$BKNIXSRC/templates/httpd"/* "$HTTPD_BASE/conf/"
+  cat "$BKNIXSRC/templates/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
 }
 
 function cmd_mysql_init() {
   if false; then echo; fi
   ## DB init
   #m mkdir -p "$MYSQL_BASE" "$MYSQL_BASE/tmp" "$MYSQL_BASE/conf"
-  #m sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" < "$BKNIXDIR/etc/my.cnf.tmpl" > "$MYSQL_BASE/conf/my.cnf"
+  #m sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" < "$BKNIXSRC/templates/my.cnf.tmpl" > "$MYSQL_BASE/conf/my.cnf"
   #m rm -rf "$MYSQL_BASE/data" ## REVERT
   #m if [ ! -d "$MYSQL_BASE/data" ]; then
   #m  echo "($PROG) Initialize MySQL database"
@@ -104,7 +107,7 @@ function cmd_phpfpm_init() {
     echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE)"
     mkdir -p "$PHPFPM_BASE"
   fi
-  cat "$BKNIXDIR/etc/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
+  cat "$BKNIXSRC/templates/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
 }
 
 function cmd_redis_init() {
@@ -112,7 +115,7 @@ function cmd_redis_init() {
     echo "($PROG) Initialize redis config ($REDIS_BASE)"
     mkdir -p "$REDIS_BASE"
   fi
-  cat "$BKNIXDIR/etc/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
+  cat "$BKNIXSRC/templates/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
 }
 
 function cmd_init() {
@@ -124,7 +127,7 @@ function cmd_init() {
 }
 
 function cmd_run() {
-  bkrun "$@"
+  "$BKNIXSRC"/bkrun "$@"
 }
 
 function cmd_purge() {
@@ -153,13 +156,13 @@ function cmd_bkit_update() {
 function cmd_help() {
     echo "usage:"
     echo "  $PROG help            Show help"
-    echo "  $PROG shell           Generate bash configuration commands"
+    echo "  $PROG env             Generate bash configuration commands"
     echo "  $PROG init            Initialize config and data files"
     echo "  $PROG run             Run all daemons in foreground"
     echo "  $PROG update          Update tools"
 }
 
-function cmd_shell() {
+function cmd_env() {
   echo 'export BKNIXDIR="$HOME/bknix"'
   echo 'export PATH="$HOME/bknix/civicrm-buildkit/bin:$PATH"'
   echo 'export AMPHOME="$HOME/bknix/var/amp"'
@@ -175,7 +178,7 @@ if [ -n "$1" ]; then
   shift
 fi
 case "$CMD" in
-  shell)         cmd_shell; ;;
+  env)           cmd_env; ;;
   init)          bknix_validate; cmd_init ;;
   run)           bknix_validate; cmd_init ; cmd_run ;;
 
