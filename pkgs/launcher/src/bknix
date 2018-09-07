@@ -19,6 +19,7 @@ HTTPD_BASE="$BKNIXDIR/var/httpd"
 PHPFPM_BASE="$BKNIXDIR/var/php-fpm"
 REDIS_BASE="$BKNIXDIR/var/redis"
 BKIT_PORT=8001
+FORCE_INIT=
 
 ###########################################################
 ## Library
@@ -47,7 +48,7 @@ function bknix_validate() {
 }
 
 function cmd_httpd_init() {
-  if [ ! -e "$HTTPD_BASE" ]; then
+  if [ -n "$FORCE_INIT" -o ! -e "$HTTPD_BASE" ]; then
     echo "($PROG) Initialize httpd config ($HTTPD_BASE)"
     REALHTTPDIR=$(dirname $(dirname $(which httpd)))
     mkdir -p "$HTTPD_BASE" "$HTTPD_BASE/logs" "$HTTPD_BASE/conf" "$HTTPD_BASE/htdocs"
@@ -57,9 +58,11 @@ function cmd_httpd_init() {
     for SUBDIR in bin cgi-bin error icons modules ;do
       [ ! -e "$HTTPD_BASE/$SUBDIR" ] && ln -s "$REALHTTPDIR/$SUBDIR" "$HTTPD_BASE/$SUBDIR"
     done
+
+    cp -r "$BKNIXSRC/templates/httpd"/* "$HTTPD_BASE/conf/"
+    chmod -R u+rw "$HTTPD_BASE/conf/"
+    cat "$BKNIXSRC/templates/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
   fi
-  cp -r "$BKNIXSRC/templates/httpd"/* "$HTTPD_BASE/conf/"
-  cat "$BKNIXSRC/templates/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
 }
 
 function cmd_mysql_init() {
@@ -81,7 +84,7 @@ function cmd_bkit_init() {
     civi-download-tools
   fi
 
-  if [ ! -e "$AMPHOME/services.yml" ]; then
+  if [ -n "$FORCE_INIT" -o ! -e "$AMPHOME/services.yml" ]; then
     echo "($PROG) Initialize amp config ($AMPHOME)"
     mkdir -p "$AMPHOME"
     amp config:set \
@@ -94,7 +97,7 @@ function cmd_bkit_init() {
       --perm_type=none
   fi
 
-  if [ ! -e "$BKIT_BASE/app/civibuild.conf" ]; then
+  if [ -n "$FORCE_INIT" -o ! -e "$BKIT_BASE/app/civibuild.conf" ]; then
     echo "($PROG) Initialize civibuild config ($BKIT_BASE/app/civibuild.conf)"
     echo 'if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi' >> "$BKIT_BASE/app/civibuild.conf"
     echo 'BLDDIR="$BKNIXDIR/build"' >> "$BKIT_BASE/app/civibuild.conf"
@@ -103,19 +106,20 @@ function cmd_bkit_init() {
 }
 
 function cmd_phpfpm_init() {
-  if [ ! -e "$PHPFPM_BASE" ]; then
+  if [ -n "$FORCE_INIT" -o ! -e "$PHPFPM_BASE" ]; then
     echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE)"
     mkdir -p "$PHPFPM_BASE"
+
+    cat "$BKNIXSRC/templates/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
   fi
-  cat "$BKNIXSRC/templates/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
 }
 
 function cmd_redis_init() {
-  if [ ! -e "$REDIS_BASE" ]; then
+  if [ -n "$FORCE_INIT" -o ! -e "$REDIS_BASE" ]; then
     echo "($PROG) Initialize redis config ($REDIS_BASE)"
     mkdir -p "$REDIS_BASE"
+    cat "$BKNIXSRC/templates/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
   fi
-  cat "$BKNIXSRC/templates/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
 }
 
 function cmd_init() {
@@ -179,7 +183,7 @@ if [ -n "$1" ]; then
 fi
 case "$CMD" in
   env)           cmd_env; ;;
-  init)          bknix_validate; cmd_init ;;
+  init)          bknix_validate; FORCE_INIT=1 ; cmd_init ;;
   run)           bknix_validate; cmd_init ; cmd_run ;;
 
   purge)         bknix_validate; cmd_purge ;;
