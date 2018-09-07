@@ -3,6 +3,7 @@
  */
 let
     pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz) {};
+    pkgs_1809 = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz) {};
     stdenv = pkgs.stdenv;
     bkpkgs = import ../../pkgs;
 
@@ -12,7 +13,7 @@ in [
     pkgs.nodejs-6_x
     pkgs.apacheHttpd
     pkgs.memcached
-    pkgs.mysql57
+    pkgs_1809.mysql57
     pkgs.redis
     pkgs.curl
     pkgs.zip
