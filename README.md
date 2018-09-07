@@ -35,67 +35,13 @@ Additionally, you should have some basic understanding of the tools/systems invo
 * Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
 * Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
 
-## Tutorial: Download
+## Getting Started
 
-After installing [nix package manager](https://nixos.org/nix/), simply clone this repo:
+`bknix` provides a bunch of new commands.  But these commands may also be provided by other systems.  Some details of using `bknix` depend on whether
+you would rather:
 
-```
-git clone https://github.com/totten/bknix
-```
-
-## Tutorial: Service startup
-
-We need to start various servers (Apache, PHP-FPM, etc). This command will run the services in the foreground and display a combined console log.
-
-```
-
-me@localhost:~$ cd bknix
-me@localhost:~/bknix$ nix-shell -A dfl --command 'bknix run'
-...
-[apache] Starting
-[php-fpm] Starting
-[redis] Starting
-...
-```
-
-__Note__: If this is the first time that you run `nix-shell` command, then the local computer needs to download or compile some software. This is
-handled automatically. It may take a while the first time -- but, eventually, it ends at the same point.
-
-## Tutorial: Command line access
-
-We'd like to have a shell where we can run developer commands like `civibuild`, `composer`, `drush`, or `civix`.  Open a new terminal and run `nix-shell` without any arguments:
-
-```
-me@localhost:~$ cd bknix
-me@localhost:~/bknix$ nix-shell -A dfl
-[nix-shell:~/bknix]$
-```
-
-Within the `nix-shell`, you have access to all commands.  For example, you can use one of these commands to create a dev site:
-
-```
-[nix-shell:~/bknix]$ civibuild create dmaster
-[nix-shell:~/bknix]$ civibuild create wpmaster
-```
-
-In the dev site, you can browse the site, edit code, etc.
-
-## Tutorial: Shutdown and restart services
-
-Eventually, you may need to shutdown or restart the services. Here's how:
-
-* *To shutdown Apache, PHP, and Redis*: Go back to the original terminal where `bknix run` is running. Press `Ctrl-C` to stop it.
-* *To shutdown MySQL*: Run `killall mysqld`. Then, use `umount` (Linux) or `Disk Utility` (OS X) to eject the ramdisk.
-
-You can start Apache/PHP/Redis again by simply invoking the `bknix run` command again.
-
-Restarting MySQL is a bit more tricky -- all the databases were lost when the ramdisk was destroyed. You can restore
-the databases to a pristine snapshot with `civibuild restore` or `civibuild reinstall` -- either:
-
-```
-[nix-shell:~/bknix]$ civibuild restore dmaster
-[nix-shell:~/bknix]$ civibuild reinstall dmaster
-```
+* Enable CLI access to all these commands by default. See: [Using bknix in your main shell](doc/with-nix-env.md)
+* Keep the commands isolated in a special environment. See: [Using bknix in a subshell](doc/with-nix-shell.md)
 
 ## Policies/Opinions
 
