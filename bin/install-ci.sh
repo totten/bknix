@@ -15,9 +15,6 @@
 # Example: Install (or upgrade) all the profiles based on their master revision
 #   ./bin/install-ci.sh
 #
-# Example: Install (or upgrade) one specific profile (based on the master revision)
-#   env PROFILES="dfl" ./bin/install-ci.sh
-#
 # Example: Install (or upgrade) all the profiles defined in some other branch
 #   env VERSION=someBranch ./bin/install-ci.sh
 #
@@ -27,21 +24,12 @@
 #    eval $(use-ci-bknix dfl)
 
 VERSION=${VERSION:-master}
-PROFILES=${PROFILES:-min max dfl}
 OWNER=${OWNER:-bknix}
 
-if [ -z `which nix` ]; then
-  echo "Please install \"nix\" before running this. See: https://nixos.org/nix/manual/"
-  exit 2
-fi
-
-if id "$OWNER" 2>/dev/null 1>/dev/null ; then
-  echo "User $OWNER already exists"
-else
-  adduser --disabled-password "$OWNER"
-fi
-
-for PROFILE in $PROFILES ; do
+## Pre-condition:
+##   Set variable PROFILE to a name like "min" or "max"
+##   Optionally, set variables HTTPD_PORT, MEMCACHE_PORT, PHPFPM_PORT, REDIS_PORT
+function install_profile() {
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
   BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
 
@@ -56,19 +44,33 @@ for PROFILE in $PROFILES ; do
     | sed "s/%%OWNER%%/$OWNER/" \
     | sed "s/%%PROFILE%%/$PROFILE/" \
     > "/etc/systemd/system/bknix-$PROFILE.service"
+  systemctl daemon-reload
 
-done
+  # FIXME: By default, the configurations have conflicted port allocations.
+  # systemctl start "bknix-$PROFILE"
+  # systemctl enable "bknix-$PROFILE"
+}
+
+if [ -z `which nix` ]; then
+  echo "Please install \"nix\" before running this. See: https://nixos.org/nix/manual/"
+  exit 2
+fi
+
+if id "$OWNER" 2>/dev/null 1>/dev/null ; then
+  echo "User $OWNER already exists"
+else
+  adduser --disabled-password "$OWNER"
+fi
+
+## Install each profile
+PROFILE=dfl HTTPD_PORT=8001 MEMCACHE_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 install_profile
+PROFILE=min HTTPD_PORT=8002 MEMCACHE_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 install_profile
+PROFILE=max HTTPD_PORT=8003 MEMCACHE_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 install_profile
 
 echo "Installing global helper \"use-ci-bknix\""
 cp -f bin/use-ci-bknix /usr/local/bin/use-ci-bknix
 
-# FIXME: By default, the configurations have conflicted port allocations.
-#echo "Activating systemd services"
-systemctl daemon-reload
-#for PROFILE in $PROFILES ; do
-#  systemctl start "bknix-$PROFILE"
-#  systemctl enable "bknix-$PROFILE"
-#done
+## FIXME: Shouldn't be necessary once we call "systemctl start" (etc)
 echo "Please start and enable one of the systemd services, e.g."
 echo "  systemctl start bknix-dfl"
 echo "  systemctl enable bknix-dfl"
