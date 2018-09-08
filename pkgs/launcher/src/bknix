@@ -25,6 +25,8 @@ MEMCACHE_PORT=${MEMCACHE_PORT:-12221}
 PHPFPM_PORT=${PHPFPM_PORT:-9009}
 REDIS_PORT=${REDIS_PORT:-6380}
 
+LOCALHOST=${LOCALHOST:-127.0.0.1}
+
 FORCE_INIT=
 
 ###########################################################
@@ -57,6 +59,7 @@ function bknix_validate() {
 function template_render() {
     cat "$1" \
       | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" \
+      | sed "s;%%LOCALHOST%%;$LOCALHOST;g" \
       | sed "s;%%PHPFPM_PORT%%;$PHPFPM_PORT;g" \
       | sed "s;%%REDIS_PORT%%;$REDIS_PORT;g" \
       | sed "s;%%MEMCACHE_PORT%%;$MEMCACHE_PORT;g" \
