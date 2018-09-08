@@ -54,6 +54,23 @@ bknix run
 civibuild create dmaster
 ```
 
+Eventually, you may need to shutdown or restart the services. Here's how:
+
+* *To shutdown Apache, PHP, and Redis*: Go back to the original terminal where `bknix run` is running. Press `Ctrl-C` to stop it.
+* *To shutdown MySQL*: Run `killall mysqld`. Then, use `umount` (Linux) or `Disk Utility` (OS X) to eject the ramdisk.
+
+You can start Apache/PHP/Redis again by simply invoking the `bknix run` command again.
+
+Restarting MySQL is a bit more tricky -- all the databases were lost when the ramdisk was destroyed. You can restore
+the databases to a pristine snapshot with `civibuild restore` or `civibuild reinstall` -- like one of these:
+
+```
+civibuild restore dmaster
+civibuild reinstall dmaster
+```
+
+> TIP: For other installation examples, see [doc/install-other.md](doc/install-other.md).
+
 ## Policies/Opinions
 
 * A "build" is a collection of PHP/JS/CSS/etc source-code projects, with a database and an HTTP virtual host. You can edit/commit directly in the source-tree.
