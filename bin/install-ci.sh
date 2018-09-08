@@ -43,13 +43,13 @@ fi
 
 for PROFILE in $PROFILES ; do
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
-  DATADIR="/home/$OWNER/bknix-$PROFILE"
+  BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
 
   echo "Creating profile \"$PRFDIR\" (version \"$VERSION\")"
   nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
 
-  echo "Initializing data \"$DATADIR\" for profile \"$PRFDIR\""
-  sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$DATADIR\" \"$PRFDIR/bin/bknix\" init"
+  echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
+  sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" \"$PRFDIR/bin/bknix\" init"
 
   echo "Installing systemd service \"bknix-$PROFILE\""
   cat examples/systemd.service \
