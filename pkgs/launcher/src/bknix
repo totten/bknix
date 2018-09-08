@@ -26,6 +26,7 @@ PHPFPM_PORT=${PHPFPM_PORT:-9009}
 REDIS_PORT=${REDIS_PORT:-6380}
 
 LOCALHOST=${LOCALHOST:-127.0.0.1}
+HTTPD_DOMAIN=${HTTPD_DOMAIN:-bknix}
 
 FORCE_INIT=
 
@@ -136,7 +137,7 @@ function cmd_bkit_init() {
     echo "#!/usr/bin/env bash" > "$BKIT_BASE/app/civibuild.conf"
     echo 'if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi' >> "$BKIT_BASE/app/civibuild.conf"
     echo 'BLDDIR="$BKNIXDIR/build"' >> "$BKIT_BASE/app/civibuild.conf"
-    echo "URL_TEMPLATE=\"http://%SITE_NAME%.bknix:$HTTPD_PORT\"" >> "$BKIT_BASE/app/civibuild.conf"
+    echo "URL_TEMPLATE=\"http://%SITE_NAME%.$HTTPD_DOMAIN:$HTTPD_PORT\"" >> "$BKIT_BASE/app/civibuild.conf"
   else
     echo "($PROG) Found existing civibuild config ($BKIT_BASE/app/civibuild.conf)"
   fi
@@ -227,6 +228,7 @@ function cmd_help() {
     echo "  -f | --force         Force-init, overwriting existing config files"
     echo
     echo "init template variables:"
+    echo "  HTTPD_DOMAIN         (Default: bknix)"
     echo "  HTTPD_PORT           (Default: 8001)"
     echo "  LOCALHOST            (Default: 127.0.0.1)"
     echo "  MEMCACHED_PORT       (Default: 12221)"
