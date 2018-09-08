@@ -96,6 +96,8 @@ Some of these policies/opinions can be changed, as described below ("Extended in
 
 ## Tips
 
+(**Stale**: These tips should be rewritten to match the new "Quick Start" approach)
+
 * To run Civi unit tests with xdebug in PHPStorm...
     * Lookup and register the PHP interpreter.
         * In CLI, run `nix-shell` and `which php`.
@@ -112,6 +114,8 @@ Some of these policies/opinions can be changed, as described below ("Extended in
 * When you shutdown, the mysql ramdisk remains in memory. To remove or reset it, unmount it with `umount` (in Linux) or *Disk Utility* (in OS X).
 
 ## Updates
+
+(**Stale**: These update steps should be rewritten to match the new "Quick Start" approach)
 
 There are a few levels of updates. They run a spectrum from regular (daily)
 to irregular (once every months).
