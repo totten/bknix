@@ -12,13 +12,17 @@ set -e
 ## Variables
 
 PROG=$(basename "$0")
-DATADIR="$BKNIXDIR/var"
+
 BKIT_BASE="$BKNIXDIR/civicrm-buildkit"
 MYSQL_BASE="$BKNIXDIR/var/mysql"
 HTTPD_BASE="$BKNIXDIR/var/httpd"
+MEMCACHED_BASE="$BKNIXDIR/var/memcached"
 PHPFPM_BASE="$BKNIXDIR/var/php-fpm"
 REDIS_BASE="$BKNIXDIR/var/redis"
 HTTPD_PORT=8001
+MEMCACHE_PORT=12221
+REDIS_PORT=6380
+
 FORCE_INIT=
 
 ###########################################################
@@ -51,6 +55,8 @@ function bknix_validate() {
 function template_render() {
     cat "$1" \
       | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" \
+      | sed "s;%%REDIS_PORT%%;$REDIS_PORT;g" \
+      | sed "s;%%MEMCACHE_PORT%%;$MEMCACHE_PORT;g" \
       | sed "s;%%HTTPD_PORT%%;$HTTPD_PORT;g"
 }
 
@@ -142,9 +148,20 @@ function cmd_redis_init() {
   fi
 }
 
+function cmd_memcached_init() {
+  if [ -n "$FORCE_INIT" -o ! -e "$MEMCACHED_BASE" ]; then
+    echo "($PROG) Initialize memcached config ($MEMCACHED_BASE)"
+    mkdir -p "$MEMCACHED_BASE"
+    template_render "$BKNIXSRC/templates/memcached.conf.tmpl" > "$MEMCACHED_BASE/memcached.conf"
+  else
+    echo "($PROG) Found existing memcached config ($MEMCACHED_BASE)"
+  fi
+}
+
 function cmd_init() {
   cmd_mysql_init
   cmd_redis_init
+  cmd_memcached_init
   cmd_phpfpm_init
   cmd_httpd_init
   cmd_bkit_init
