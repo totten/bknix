@@ -26,9 +26,11 @@
 VERSION=${VERSION:-master}
 OWNER=${OWNER:-bknix}
 
+## Setup the binaries, data folder, and service for a given profile.
+##
 ## Pre-condition:
-##   Set variable PROFILE to a name like "min" or "max"
-##   Optionally, set variables HTTPD_PORT, MEMCACHE_PORT, PHPFPM_PORT, REDIS_PORT
+##   PROFILE is a name like "min" or "max"
+##   Optionally, HTTPD_PORT, MEMCACHE_PORT, PHPFPM_PORT, REDIS_PORT are set
 function install_profile() {
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
   BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
