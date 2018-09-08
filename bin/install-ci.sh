@@ -12,18 +12,17 @@
 #   Only tested with multiuser mode.
 #   Login as proper root (e.g. `sudo -i bash`)
 #
-# Example: Install (or upgrade) all the profiles based on their master revision
+# Example: Install (or upgrade) all the profiles
 #   ./bin/install-ci.sh
 #
-# Example: Install (or upgrade) all the profiles defined in some other branch
-#   env VERSION=someBranch ./bin/install-ci.sh
+# Example: Install (or upgrade) all the profiles, overwriting any local config files
+#   FORCE_INIT=-f ./bin/install-ci.sh
 #
 # After installation, an automated script can use a statement like:
 #    eval $(use-ci-bknix min)
 #    eval $(use-ci-bknix max)
 #    eval $(use-ci-bknix dfl)
 
-VERSION=${VERSION:-master}
 OWNER=${OWNER:-bknix}
 
 ## Setup the binaries, data folder, and service for a given profile.
@@ -35,11 +34,11 @@ function install_profile() {
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
   BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
 
-  echo "Creating profile \"$PRFDIR\" (version \"$VERSION\")"
+  echo "Creating profile \"$PRFDIR\""
   nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
 
   echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
-  sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\" HTTPD_PORT=\"$HTTPD_PORT\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init -f"
+  sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\" HTTPD_PORT=\"$HTTPD_PORT\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init $FORCE_INIT"
 
   echo "Installing systemd service \"bknix-$PROFILE\""
   cat examples/systemd.service \
