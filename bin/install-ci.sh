@@ -30,7 +30,7 @@ OWNER=${OWNER:-bknix}
 ##
 ## Pre-condition:
 ##   PROFILE is a name like "min" or "max"
-##   Optionally, HTTPD_PORT, MEMCACHE_PORT, PHPFPM_PORT, REDIS_PORT are set
+##   Optionally, HTTPD_PORT, MEMCACHED_PORT, PHPFPM_PORT, REDIS_PORT are set
 function install_profile() {
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
   BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
@@ -39,7 +39,7 @@ function install_profile() {
   nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
 
   echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
-  sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_PORT=\"$HTTPD_PORT\" MEMCACHE_PORT=\"$MEMCACHE_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init -f"
+  sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_PORT=\"$HTTPD_PORT\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init"
 
   echo "Installing systemd service \"bknix-$PROFILE\""
   cat examples/systemd.service \
@@ -47,10 +47,8 @@ function install_profile() {
     | sed "s/%%PROFILE%%/$PROFILE/" \
     > "/etc/systemd/system/bknix-$PROFILE.service"
   systemctl daemon-reload
-
-  # FIXME: By default, the configurations have conflicted port allocations.
-  # systemctl start "bknix-$PROFILE"
-  # systemctl enable "bknix-$PROFILE"
+  systemctl start "bknix-$PROFILE"
+  systemctl enable "bknix-$PROFILE"
 }
 
 if [ -z `which nix` ]; then
@@ -65,14 +63,9 @@ else
 fi
 
 ## Install each profile
-PROFILE=dfl HTTPD_PORT=8001 MEMCACHE_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 install_profile
-PROFILE=min HTTPD_PORT=8002 MEMCACHE_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 install_profile
-PROFILE=max HTTPD_PORT=8003 MEMCACHE_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 install_profile
+PROFILE=dfl HTTPD_PORT=8001 MEMCACHED_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 install_profile
+PROFILE=min HTTPD_PORT=8002 MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 install_profile
+PROFILE=max HTTPD_PORT=8003 MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 install_profile
 
 echo "Installing global helper \"use-ci-bknix\""
 cp -f bin/use-ci-bknix /usr/local/bin/use-ci-bknix
-
-## FIXME: Shouldn't be necessary once we call "systemctl start" (etc)
-echo "Please start and enable one of the systemd services, e.g."
-echo "  systemctl start bknix-dfl"
-echo "  systemctl enable bknix-dfl"

@@ -44,7 +44,7 @@ $procs = [
   ],
   'memcached' => [
     'option' => 'c',
-    'cmd' => 'MEMCACHED_ARGS= ; source "$BKNIXDIR/var/memcached/memcached.conf"; exec memcached $MEMCACHED_ARGS',
+    'cmd' => 'MEMCACHED_ARGS= ; . "$BKNIXDIR/var/memcached/memcached.conf"; exec memcached $MEMCACHED_ARGS',
   ],
 ];
 
