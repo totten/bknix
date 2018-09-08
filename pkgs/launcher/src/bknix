@@ -208,9 +208,17 @@ function cmd_help() {
     echo "  run                  Run all daemons in foreground"
     echo "  update               Update tools"
     echo ""
-    echo "options:"
-    echo "  -f | --force         Force-init, overwriting existing config files"
+    echo "common options:"
     echo "  --data-dir <dir>     Store configuration and data in a different location (Default: \$BKNIXDIR or \$HOME/bknix)"
+    echo
+    echo "init options:"
+    echo "  -f | --force         Force-init, overwriting existing config files"
+    echo
+    echo "init template variables:"
+    echo "  HTTPD_PORT           (Default: 8001)"
+    echo "  MEMCACHE_PORT        (Default: 12221)"
+    echo "  PHPFPM_PORT          (Default: 9009)"
+    echo "  REDIS_PORT           (Default: 6380)"
 }
 
 function cmd_env() {
