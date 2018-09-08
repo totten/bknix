@@ -123,6 +123,14 @@ function cmd_bkit_init() {
     echo "($PROG) Found existing amp config ($AMPHOME)"
   fi
 
+  if [ -n "$FORCE_INIT" -o ! -e "$BKNIXDIR/.amp/apache24-vhost.php" ]; then
+    echo "($PROG) Initialize amp vhost template ($BKNIXDIR/.amp/apache24-vhost.php)"
+    mkdir -p "$BKNIXDIR/.amp/"
+    template_render "$BKNIXSRC/templates/apache24-vhost.php.tmpl" > "$BKNIXDIR/.amp/apache24-vhost.php"
+  else
+    echo "($PROG) Found existing amp vhost template ($BKNIXDIR/.amp/apache24-vhost.php)"
+  fi
+
   if [ -n "$FORCE_INIT" -o ! -e "$BKIT_BASE/app/civibuild.conf" ]; then
     echo "($PROG) Initialize civibuild config ($BKIT_BASE/app/civibuild.conf)"
     echo 'if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi' >> "$BKIT_BASE/app/civibuild.conf"

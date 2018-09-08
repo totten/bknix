@@ -14,7 +14,7 @@
 <?php if ($visibility === 'all'): ?>
 Listen <?php echo $port ?>
 <?php else: ?>
-Listen 127.0.0.1:<?php echo $port ?>
+Listen %%LOCALHOST%%:<?php echo $port ?>
 <?php endif; ?>
 <?php } ?>
 
@@ -41,7 +41,7 @@ Listen 127.0.0.1:<?php echo $port ?>
     <?php } ?>
     
     ## Added for php-fpm
-    ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9009/<?php echo $root ?>/$1
+    ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://%%LOCALHOST%%:%%PHPFPM_PORT%%/<?php echo $root ?>/$1
     DirectoryIndex index.html index.php
 
 </VirtualHost>
