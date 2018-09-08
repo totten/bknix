@@ -14,8 +14,12 @@ in [
     pkgs.memcached
     pkgs_1809.mysql57
     pkgs.redis
+
+    pkgs.bzip2
     pkgs.curl
-    pkgs.zip
-    pkgs.unzip
     pkgs.git
+    pkgs.gnutar
+    pkgs.rsync
+    pkgs.unzip
+    pkgs.zip
 ]
