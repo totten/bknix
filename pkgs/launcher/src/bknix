@@ -42,7 +42,7 @@ function bknix_validate() {
     echo
     echo "You may wish to set the environment variables. Try one of these:"
     echo "1. Run commands through bknix's \"nix-shell\", which will automatically initialize the variables."
-    echo "2. In your .profile or .bashrc, use \"eval \`bknix shell\`\" to initialize the variables."
+    echo "2. In your .profile or .bashrc, use \"eval \`bknix env\`\" to initialize the variables."
     exit 2
   fi
 }
@@ -62,6 +62,8 @@ function cmd_httpd_init() {
     cp -r "$BKNIXSRC/templates/httpd"/* "$HTTPD_BASE/conf/"
     chmod -R u+rw "$HTTPD_BASE/conf/"
     cat "$BKNIXSRC/templates/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
+  else
+    echo "($PROG) Found existing httpd config ($HTTPD_BASE)"
   fi
 }
 
@@ -79,9 +81,12 @@ function cmd_mysql_init() {
 
 function cmd_bkit_init() {
   if [ ! -e "$BKIT_BASE" ]; then
+    ## Note: This can be massive. Only download if needed -- even if you FORCE_INIT.
     echo "($PROG) Download buildkit ($BKIT_BASE)"
     git clone https://github.com/civicrm/civicrm-buildkit "$BKIT_BASE"
     civi-download-tools
+  else
+    echo "($PROG) Found existing buildkit ($BKIT_BASE)"
   fi
 
   if [ -n "$FORCE_INIT" -o ! -e "$AMPHOME/services.yml" ]; then
@@ -95,6 +100,8 @@ function cmd_bkit_init() {
       --hosts_type="file" \
       --db_type="mysql_ram_disk" \
       --perm_type=none
+  else
+    echo "($PROG) Found existing amp config ($AMPHOME)"
   fi
 
   if [ -n "$FORCE_INIT" -o ! -e "$BKIT_BASE/app/civibuild.conf" ]; then
@@ -102,6 +109,8 @@ function cmd_bkit_init() {
     echo 'if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi' >> "$BKIT_BASE/app/civibuild.conf"
     echo 'BLDDIR="$BKNIXDIR/build"' >> "$BKIT_BASE/app/civibuild.conf"
     echo "URL_TEMPLATE=\"http://%SITE_NAME%.bknix:$BKIT_PORT\"" >> "$BKIT_BASE/app/civibuild.conf"
+  else
+    echo "($PROG) Found existing civibuild config ($BKIT_BASE/app/civibuild.conf)"
   fi
 }
 
@@ -111,6 +120,8 @@ function cmd_phpfpm_init() {
     mkdir -p "$PHPFPM_BASE"
 
     cat "$BKNIXSRC/templates/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
+  else
+    echo "($PROG) Found existing php-fpm config ($PHPFPM_BASE)"
   fi
 }
 
@@ -119,6 +130,8 @@ function cmd_redis_init() {
     echo "($PROG) Initialize redis config ($REDIS_BASE)"
     mkdir -p "$REDIS_BASE"
     cat "$BKNIXSRC/templates/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
+  else
+    echo "($PROG) Found existing redis config ($REDIS_BASE)"
   fi
 }
 
@@ -158,25 +171,36 @@ function cmd_bkit_update() {
 }
 
 function cmd_help() {
-    echo "usage:"
-    echo "  $PROG help            Show help"
-    echo "  $PROG env             Generate bash configuration commands"
-    echo "  $PROG init            Initialize config and data files"
-    echo "  $PROG run             Run all daemons in foreground"
-    echo "  $PROG update          Update tools"
+    echo "usage: $PROG <action> [options]"
+    echo ""
+    echo "actions:"
+    echo "  help                 Show help"
+    echo "  env                  Generate shell (bash) configuration commands"
+    # echo "  shell                Open a subshell (bash) with configuration applied"
+    echo "  init                 Initialize config and data files"
+    echo "  run                  Run all daemons in foreground"
+    echo "  update               Update tools"
+    echo ""
+    echo "options:"
+    echo "  -f | --force         Force-init, overwriting existing config files"
+    echo "  --data-dir <dir>     Store configuration and data in a different location (Default: \$BKNIXDIR or \$HOME/bknix)"
 }
 
 function cmd_env() {
+  echo "export BKNIXDIR='$BKNIXDIR'"
+  echo "export PATH='$BKNIXDIR/civicrm-buildkit/bin':\$PATH"
+  echo "export AMPHOME='$AMPHOME'"
+  echo "export MYSQL_HOME='$MYSQL_HOME'"
+}
+
+function env_init() {
   if [ -z "$BKNIXDIR" ]; then
-    echo 'export BKNIXDIR="$HOME/bknix"'
-    echo 'export PATH="$HOME/bknix/civicrm-buildkit/bin:$PATH"'
-    echo 'export AMPHOME="$HOME/bknix/var/amp"'
-    echo 'export MYSQL_HOME="$HOME/bknix/var/mysql/conf"'
-  else
-    echo 'export PATH="$BKNIXDIR/civicrm-buildkit/bin:$PATH"'
-    echo 'export AMPHOME="$BKNIXDIR/var/amp"'
-    echo 'export MYSQL_HOME="$BKNIXDIR/var/mysql/conf"'
+    BKNIXDIR="$HOME/bknix"
   fi
+  PATH="$BKNIXDIR/civicrm-buildkit/bin:$PATH"
+  AMPHOME="$BKNIXDIR/var/amp"
+  MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
+  export BKNIXDIR AMPHOME MYSQL_HOME PATH
 }
 
 ###########################################################
@@ -187,13 +211,23 @@ if [ -n "$1" ]; then
   CMD="$1"
   shift
 fi
+while [ -n "$1" ]; do
+  OPTION="$1"
+  shift
+  case "$OPTION" in
+    -f|--force)         FORCE_INIT=1 ;;
+    --data-dir)         BKNIXDIR="$1" ; shift; ;;
+    *)                  echo "Unrecognized option: $OPTION"; echo; cmd_help; exit 2; ;;
+  esac
+done
 case "$CMD" in
-  env)           cmd_env; ;;
-  init)          bknix_validate; FORCE_INIT=1 ; cmd_init ;;
-  run)           bknix_validate; cmd_init ; cmd_run ;;
+  env)           env_init; cmd_env; ;;
+  # shell)         env_init; bash -i; ;;
+  init)          env_init; bknix_validate; cmd_init ;;
+  run)           env_init; bknix_validate; cmd_init ; cmd_run ;;
 
-  purge)         bknix_validate; cmd_purge ;;
-  update)        bknix_validate; cmd_bkit_init; cmd_bkit_update ;;
+  purge)         env_init; bknix_validate; cmd_purge ;;
+  update)        env_init; bknix_validate; cmd_bkit_init; cmd_bkit_update ;;
 
   help)          cmd_help ;;
   *)             cmd_help ; exit 1 ;;

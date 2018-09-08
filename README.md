@@ -44,8 +44,7 @@ sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/tot
 ## Setup your environment.
 ## (You should probably run this manually *and* add this to ~/.profile or ~/.bashrc.)
 export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
-export BKNIXDIR=$HOME/bknix
-eval $(bknix env)
+eval $(bknix env --data-dir "$HOME/bknix")
 
 ## Start the daemons
 ## (On the first run, this will put a lot of code and config files in $BKNIXDIR.)
@@ -105,7 +104,7 @@ generally like this;
 ## 1. Setup a clean environment
 git clone https://github.com/totten/bknix
 cd bknix
-nix-shell
+nix-shell -A dfl
 
 ## 2. Initialize default configuration
 bknix init
