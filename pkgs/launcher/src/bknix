@@ -14,9 +14,9 @@ set -e
 PROG=$(basename "$0")
 
 BKIT_BASE="$BKNIXDIR/civicrm-buildkit"
-MYSQL_BASE="$BKNIXDIR/var/mysql"
 HTTPD_BASE="$BKNIXDIR/var/httpd"
 MEMCACHED_BASE="$BKNIXDIR/var/memcached"
+MYSQL_BASE="$BKNIXDIR/var/mysql"
 PHPFPM_BASE="$BKNIXDIR/var/php-fpm"
 REDIS_BASE="$BKNIXDIR/var/redis"
 
@@ -59,11 +59,11 @@ function bknix_validate() {
 function template_render() {
     cat "$1" \
       | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" \
+      | sed "s;%%HTTPD_PORT%%;$HTTPD_PORT;g" \
       | sed "s;%%LOCALHOST%%;$LOCALHOST;g" \
-      | sed "s;%%PHPFPM_PORT%%;$PHPFPM_PORT;g" \
-      | sed "s;%%REDIS_PORT%%;$REDIS_PORT;g" \
       | sed "s;%%MEMCACHE_PORT%%;$MEMCACHE_PORT;g" \
-      | sed "s;%%HTTPD_PORT%%;$HTTPD_PORT;g"
+      | sed "s;%%PHPFPM_PORT%%;$PHPFPM_PORT;g" \
+      | sed "s;%%REDIS_PORT%%;$REDIS_PORT;g"
 }
 
 function cmd_httpd_init() {
@@ -219,6 +219,7 @@ function cmd_help() {
     echo
     echo "init template variables:"
     echo "  HTTPD_PORT           (Default: 8001)"
+    echo "  LOCALHOST            (Default: 127.0.0.1)"
     echo "  MEMCACHE_PORT        (Default: 12221)"
     echo "  PHPFPM_PORT          (Default: 9009)"
     echo "  REDIS_PORT           (Default: 6380)"
