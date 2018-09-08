@@ -48,7 +48,7 @@ for PROFILE in $PROFILES ; do
   echo "Creating profile \"$PRFDIR\" (version \"$VERSION\")"
   nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
 
-  echo "Initializing data \"$DATADIR\" for  profile \"$PRFDIR\""
+  echo "Initializing data \"$DATADIR\" for profile \"$PRFDIR\""
   sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$DATADIR\" \"$PRFDIR/bin/bknix\" init"
 
   echo "Installing systemd service \"bknix-$PROFILE\""
