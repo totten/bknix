@@ -32,6 +32,67 @@ sudo cp ~totten/.ssh/authorized_keys ~bknix/.ssh/authorized_keys
 sudo chown root.root ~bknix/.ssh/authorized_keys
 ```
 
+## For custom configuration files
+
+It is possible to customize the configuration files. For example, you might
+start with the same basic download steps from the "Quick Start":
+
+```bash
+## Download all the binaries for the default (dfl) profile
+sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl'
+
+## Setup your environment.
+## (You should probably run this manually *and* add this to ~/.profile or ~/.bashrc.)
+export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
+eval $(bknix env --data-dir "$HOME/bknix")
+```
+
+However, instead of going directly `bknix run`, you can explicitly
+initialize the configuration files.
+
+```
+bknix init
+```
+
+This command accepts a number of environment variables -- which will be
+passed to the configuration templates.
+
+```bash
+env HTTPD_PORT=8001 \
+  MEMCACHED_PORT=12221 \
+  PHPFPM_PORT=9009 \
+  REDIS_PORT=6380 \
+  bknix init
+```
+
+Once the configuration files are generated, you can edit them to taste, e.g.
+
+```bash
+amp config
+less civicrm-buildkit/app/civibuild.conf.tmpl
+vi civicrm-buildkit/app/civibuild.conf
+vi var/php-fpm/php-fpm.conf
+# ... and so on ...
+```
+
+Some interesting revisions:
+
+* Set a default `ADMIN_PASS` for new websites by editing `civicrm-buildkit/app/civibuild.conf`. This way you don't
+  need to lookup random passwords for each build.
+* Setup wildcard DNS for `*.bknix` using `dnsmasq`.  (Search for instructions for installing `dnsmasq` on your
+  platform.) Then, configure `amp` to disable management of `/etc/hosts` (`amp config:set --hosts_type=none`).
+  This saves you from running `sudo` or entering a password.
+<!-- * Set the PHP timezone in `config/php.ini`. -->
+<!-- * Create `etc/bashrc.local` with some CLI customizations -->
+
+(*Aside*: You can update these settings after initial setup, but some settings may require destroying/rebuilding.)
+
+Finally, after updating your configuration files, launch the daemons:
+
+```
+bknix run
+```
+
 ## For development/patching
 
 If you're developing a revision to the `bknix.git` project, then you'll need to clone the git repo and work with the
