@@ -54,8 +54,8 @@ To add/remove/modify the programs in each configuration, you can edit the config
 `./profiles/*`, `./pkgs/*`, etc.).  To apply the changes, simply exit `nix-shell` and run it again.  Whenever you run
 `nix-shell`, it uses the current config files.
 
-NOTE: Working with `nix-shell` is the easiest way to work with a patched configuration; however, if you're specifically
-working on the installation process or profile-arrangement, then you *can* install a profile.  Let's recall the step
+NOTE: `nix-shell` is the easiest way to work on a configuration patch.  However, if you're specifically revising the
+installation-process or profile-arrangement, then you *can* install a profile.  Let's recall the installation step
 provided to new users in [README.md](../README.md):
 
 ```bash
@@ -64,10 +64,11 @@ sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/tot
 
 Which breaks down as a few parts:
 
-* `-i` means *install some packages*
-* `-p /nix/var/nix/profiles/bknix-dfl` means *put them in the shared profile `bknix-dfl`*
+* `sudo -i` means *run the command as `root`*
+* `nix-env -i` means *install packages to a live environment*
+* `-p /nix/var/nix/profiles/bknix-dfl` means *put the packages in the shared profile `bknix-dfl`*
 * `-f 'https://github.com/totten/bknix/archive/master.tar.gz'` means *download the latest configuration file from Github*
-* `-E 'f: f.profiles.dfl'` means *within the main configuration file (`default.nix`), read the value of `profiles` and its property `dfl`*
+* `-E 'f: f.profiles.dfl'` means *get a list of packages by evaluating the configuration file (aliased as `f`) and returning property `f.profiles.dfl`*
 
 For local development, we can change the `-f` option to get the config files from a local source (like `$HOME/bknix`):
 
