@@ -1,5 +1,5 @@
 ServerRoot "%%BKNIXDIR%%/var/httpd"
-Listen 8001
+Listen %%HTTPD_PORT%%
 LoadModule mpm_event_module modules/mod_mpm_event.so
 LoadModule authn_file_module modules/mod_authn_file.so
 LoadModule authn_core_module modules/mod_authn_core.so
@@ -37,7 +37,7 @@ LoadModule proxy_module modules/mod_proxy.so
 LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so
 
 ServerAdmin you@example.com
-ServerName localhost:8001
+ServerName localhost:%%HTTPD_PORT%%
 <Directory />
     AllowOverride none
     Require all denied

@@ -18,7 +18,7 @@ MYSQL_BASE="$BKNIXDIR/var/mysql"
 HTTPD_BASE="$BKNIXDIR/var/httpd"
 PHPFPM_BASE="$BKNIXDIR/var/php-fpm"
 REDIS_BASE="$BKNIXDIR/var/redis"
-BKIT_PORT=8001
+HTTPD_PORT=8001
 FORCE_INIT=
 
 ###########################################################
@@ -47,6 +47,13 @@ function bknix_validate() {
   fi
 }
 
+## usage: template_render <input-file>
+function template_render() {
+    cat "$1" \
+      | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" \
+      | sed "s;%%HTTPD_PORT%%;$HTTPD_PORT;g"
+}
+
 function cmd_httpd_init() {
   if [ -n "$FORCE_INIT" -o ! -e "$HTTPD_BASE" ]; then
     echo "($PROG) Initialize httpd config ($HTTPD_BASE)"
@@ -61,7 +68,7 @@ function cmd_httpd_init() {
 
     cp -r "$BKNIXSRC/templates/httpd"/* "$HTTPD_BASE/conf/"
     chmod -R u+rw "$HTTPD_BASE/conf/"
-    cat "$BKNIXSRC/templates/httpd/httpd.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" >  "$HTTPD_BASE/conf/httpd.conf"
+    template_render "$BKNIXSRC/templates/httpd/httpd.conf.tmpl" > "$HTTPD_BASE/conf/httpd.conf"
   else
     echo "($PROG) Found existing httpd config ($HTTPD_BASE)"
   fi
@@ -96,7 +103,7 @@ function cmd_bkit_init() {
       --httpd_type=apache24 \
       --httpd_restart_command="apachectl -d $HTTPD_BASE -k graceful" \
       --httpd_visibility="local" \
-      --httpd_shared_ports="80,$BKIT_PORT" \
+      --httpd_shared_ports="80,$HTTPD_PORT" \
       --hosts_type="file" \
       --db_type="mysql_ram_disk" \
       --perm_type=none
@@ -108,7 +115,7 @@ function cmd_bkit_init() {
     echo "($PROG) Initialize civibuild config ($BKIT_BASE/app/civibuild.conf)"
     echo 'if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi' >> "$BKIT_BASE/app/civibuild.conf"
     echo 'BLDDIR="$BKNIXDIR/build"' >> "$BKIT_BASE/app/civibuild.conf"
-    echo "URL_TEMPLATE=\"http://%SITE_NAME%.bknix:$BKIT_PORT\"" >> "$BKIT_BASE/app/civibuild.conf"
+    echo "URL_TEMPLATE=\"http://%SITE_NAME%.bknix:$HTTPD_PORT\"" >> "$BKIT_BASE/app/civibuild.conf"
   else
     echo "($PROG) Found existing civibuild config ($BKIT_BASE/app/civibuild.conf)"
   fi
@@ -119,7 +126,7 @@ function cmd_phpfpm_init() {
     echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE)"
     mkdir -p "$PHPFPM_BASE"
 
-    cat "$BKNIXSRC/templates/php-fpm.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$PHPFPM_BASE/php-fpm.conf"
+    template_render "$BKNIXSRC/templates/php-fpm.conf.tmpl" > "$PHPFPM_BASE/php-fpm.conf"
   else
     echo "($PROG) Found existing php-fpm config ($PHPFPM_BASE)"
   fi
@@ -129,7 +136,7 @@ function cmd_redis_init() {
   if [ -n "$FORCE_INIT" -o ! -e "$REDIS_BASE" ]; then
     echo "($PROG) Initialize redis config ($REDIS_BASE)"
     mkdir -p "$REDIS_BASE"
-    cat "$BKNIXSRC/templates/redis.conf.tmpl" | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" > "$REDIS_BASE/redis.conf"
+    template_render "$BKNIXSRC/templates/redis.conf.tmpl" > "$REDIS_BASE/redis.conf"
   else
     echo "($PROG) Found existing redis config ($REDIS_BASE)"
   fi
