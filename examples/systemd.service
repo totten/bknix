@@ -16,7 +16,7 @@ After=network.target
 [Service]
 Type=simple
 PermissionsStartOnly=true
-ExecStart=/bin/bash -c 'eval $(/usr/local/bin/use-ci-bknix %%PROFILE%%); bknix run'
+ExecStart=/bin/bash -c 'eval $(/usr/local/bin/use-bknix %%PROFILE%%); bknix run'
 TimeoutSec=300
 PrivateTmp=true
 User=%%OWNER%%

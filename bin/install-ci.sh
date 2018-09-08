@@ -19,9 +19,9 @@
 #   FORCE_INIT=-f ./bin/install-ci.sh
 #
 # After installation, an automated script can use a statement like:
-#    eval $(use-ci-bknix min)
-#    eval $(use-ci-bknix max)
-#    eval $(use-ci-bknix dfl)
+#    eval $(use-bknix min)
+#    eval $(use-bknix max)
+#    eval $(use-bknix dfl)
 
 OWNER=${OWNER:-bknix}
 
@@ -66,5 +66,5 @@ PROFILE=dfl HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8001 MEMCACHED_PORT=12221 PHP
 PROFILE=min HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8002 MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 install_profile
 PROFILE=max HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8003 MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 install_profile
 
-echo "Installing global helper \"use-ci-bknix\""
-cp -f bin/use-ci-bknix /usr/local/bin/use-ci-bknix
+echo "Installing global helper \"use-bknix\""
+cp -f bin/use-bknix /usr/local/bin/use-bknix

@@ -20,7 +20,7 @@ cd /root/bknix
 
 ## Do a trial run
 su - totten
-eval $(use-ci-bknix dfl)
+eval $(use-bknix dfl)
 which php
 php --version
 # (...and exit...)
