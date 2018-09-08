@@ -68,7 +68,7 @@ function template_render() {
 
 function cmd_httpd_init() {
   if [ -n "$FORCE_INIT" -o ! -e "$HTTPD_BASE" ]; then
-    echo "($PROG) Initialize httpd config ($HTTPD_BASE)"
+    echo "($PROG) Initialize httpd config ($HTTPD_BASE; port $HTTPD_PORT)"
     REALHTTPDIR=$(dirname $(dirname $(which httpd)))
     mkdir -p "$HTTPD_BASE" "$HTTPD_BASE/logs" "$HTTPD_BASE/conf" "$HTTPD_BASE/htdocs"
     if [ ! -f "$HTTPD_BASE/htdocs/index.html" ]; then
@@ -143,7 +143,7 @@ function cmd_bkit_init() {
 
 function cmd_phpfpm_init() {
   if [ -n "$FORCE_INIT" -o ! -e "$PHPFPM_BASE" ]; then
-    echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE)"
+    echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE; port $PHPFPM_PORT)"
     mkdir -p "$PHPFPM_BASE"
 
     template_render "$BKNIXSRC/templates/php-fpm.conf.tmpl" > "$PHPFPM_BASE/php-fpm.conf"
@@ -154,7 +154,7 @@ function cmd_phpfpm_init() {
 
 function cmd_redis_init() {
   if [ -n "$FORCE_INIT" -o ! -e "$REDIS_BASE" ]; then
-    echo "($PROG) Initialize redis config ($REDIS_BASE)"
+    echo "($PROG) Initialize redis config ($REDIS_BASE; port $REDIS_PORT)"
     mkdir -p "$REDIS_BASE"
     template_render "$BKNIXSRC/templates/redis.conf.tmpl" > "$REDIS_BASE/redis.conf"
   else
@@ -164,7 +164,7 @@ function cmd_redis_init() {
 
 function cmd_memcached_init() {
   if [ -n "$FORCE_INIT" -o ! -e "$MEMCACHED_BASE" ]; then
-    echo "($PROG) Initialize memcached config ($MEMCACHED_BASE)"
+    echo "($PROG) Initialize memcached config ($MEMCACHED_BASE; port $MEMCACHED_PORT)"
     mkdir -p "$MEMCACHED_BASE"
     template_render "$BKNIXSRC/templates/memcached.conf.tmpl" > "$MEMCACHED_BASE/memcached.conf"
   else
