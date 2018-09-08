@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+## For systems which use `bin/install-ci.sh` to setup multiple services, this
+## helper script allows you to configure your shell to use one of those services.
+##
+## Examples:
+##   eval $(use-ci-bknix min)
+##   eval $(use-ci-bknix max)
+##   eval $(use-ci-bknix dfl)
+
+OWNER=${OWNER:-bknix}
+PROFILE="$1"
+PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
+
+if [ -z "$PROFILE" -o ! -d "$PRFDIR" ]; then
+  echo "The specified profile does not correspond to an actual profile"
+  echo
+  echo "usage: $0 <profile>"
+  echo "example: $0 dfl"
+  exit 1
+fi
+
+export PATH="$PRFDIR/bin:$PATH"
+export BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
+
+bknix env --data-dir "$BKNIXDIR"
+echo "export PATH='$PRFDIR/bin:$BKNIXDIR/civicrm-buildkit/bin':\"\$PATH\""

@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# Install NixOS profile(s) for CiviCRM development. Setup a user with data folders.
+# This installs each of the bknix profiles in a way that's useful for the CI servers.
+# Specifically, for each profile:
+#   - Install the binaries in /nix/var/nix/profiles/bknix-$PROFILE
+#   - Initialize a data folder in /home/$OWNER/bknix-$PROFILE
+#   - Add a background service for `bknix run` (systemd)
 #
 # Pre-requisites:
 #   Use a Debian-like main OS
 #   Install the "nix" package manager.
 #   Only tested with multiuser mode.
+#   Login as proper root (e.g. `sudo -i bash`)
 #
 # Example: Install (or upgrade) all the profiles based on their master revision
 #   ./bin/install-ci.sh
@@ -15,6 +20,11 @@
 #
 # Example: Install (or upgrade) all the profiles defined in some other branch
 #   env VERSION=someBranch ./bin/install-ci.sh
+#
+# After installation, an automated script can use a statement like:
+#    eval $(use-ci-bknix min)
+#    eval $(use-ci-bknix max)
+#    eval $(use-ci-bknix dfl)
 
 VERSION=${VERSION:-master}
 PROFILES=${PROFILES:-min max dfl}
@@ -36,17 +46,29 @@ for PROFILE in $PROFILES ; do
   DATADIR="/home/$OWNER/bknix-$PROFILE"
 
   echo "Creating profile \"$PRFDIR\" (version \"$VERSION\")"
-  sudo -i nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
+  nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
 
   echo "Initializing data \"$DATADIR\" for  profile \"$PRFDIR\""
   sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$DATADIR\" \"$PRFDIR/bin/bknix\" init"
-  mkdir -p "$DATADIR/build"
-  chmod 1777 "$DATADIR/build"
 
-  echo "Installing systemd service"
+  echo "Installing systemd service \"bknix-$PROFILE\""
   cat examples/systemd.service \
     | sed "s/%%OWNER%%/$OWNER/" \
     | sed "s/%%PROFILE%%/$PROFILE/" \
     > "/etc/systemd/system/bknix-$PROFILE.service"
 
 done
+
+echo "Installing global helper \"use-ci-bknix\""
+cp -f bin/use-ci-bknix /usr/local/bin/use-ci-bknix
+
+# FIXME: By default, the configurations have conflicted port allocations.
+#echo "Activating systemd services"
+systemctl daemon-reload
+#for PROFILE in $PROFILES ; do
+#  systemctl start "bknix-$PROFILE"
+#  systemctl enable "bknix-$PROFILE"
+#done
+echo "Please start and enable one of the systemd services, e.g."
+echo "  systemctl start bknix-dfl"
+echo "  systemctl enable bknix-dfl"
