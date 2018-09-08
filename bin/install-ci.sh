@@ -39,7 +39,7 @@ function install_profile() {
   nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
 
   echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
-  sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" \"$PRFDIR/bin/bknix\" init"
+  sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_PORT=\"$HTTPD_PORT\" MEMCACHE_PORT=\"$MEMCACHE_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init -f"
 
   echo "Installing systemd service \"bknix-$PROFILE\""
   cat examples/systemd.service \
