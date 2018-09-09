@@ -8,7 +8,6 @@
 ##   eval $(use-bknix max)
 ##   eval $(use-bknix dfl)
 
-OWNER=${OWNER:-bknix}
 PROFILE="$1"
 PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
 
@@ -21,7 +20,14 @@ if [ -z "$PROFILE" -o ! -d "$PRFDIR" ]; then
 fi
 
 export PATH="$PRFDIR/bin:$PATH"
+
+if [ -z "$OWNER" ]; then
+  OWNER=$USER
+fi
 export BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
+if [ ! -d "$BKNIXDIR" ]; then
+  echo "WARNING: The BKNIXDIR ($BKNIXDIR) does not exist. If it was initialized by another user, try setting OWNER first." >&2
+fi
 
 bknix env --data-dir "$BKNIXDIR"
 echo "export PATH='$PRFDIR/bin:$BKNIXDIR/civicrm-buildkit/bin':\"\$PATH\""
