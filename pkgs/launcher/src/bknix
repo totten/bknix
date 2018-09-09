@@ -241,6 +241,8 @@ function cmd_env() {
   echo "export PATH='$BKNIXDIR/civicrm-buildkit/bin':\$PATH"
   echo "export AMPHOME='$AMPHOME'"
   echo "export MYSQL_HOME='$MYSQL_HOME'"
+  echo "export BKIT='$BKIT'"
+  echo "export BKITBLD='$BKITBLD'"
 }
 
 function env_init() {
@@ -250,7 +252,9 @@ function env_init() {
   PATH="$BKNIXDIR/civicrm-buildkit/bin:$PATH"
   AMPHOME="$BKNIXDIR/var/amp"
   MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
-  export BKNIXDIR AMPHOME MYSQL_HOME PATH
+  BKIT="$BKNIXDIR/civicrm-buildkit"
+  BKITBLD="$BKNIXDIR/build"
+  export BKNIXDIR AMPHOME MYSQL_HOME PATH BKIT BKITBLD
 }
 
 ###########################################################

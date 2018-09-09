@@ -30,4 +30,5 @@ if [ ! -d "$BKNIXDIR" ]; then
 fi
 
 bknix env --data-dir "$BKNIXDIR"
+## "bknix env" doesn't add itself to PATH - so we add everything
 echo "export PATH='$PRFDIR/bin:$BKNIXDIR/civicrm-buildkit/bin':\"\$PATH\""
