@@ -9,7 +9,7 @@ RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
 ## Utilities
 
 function uninstall_ramdisk() {
-  echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
+  echo "Removing systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
   systemctl daemon-reload
   systemctl stop "$RAMDISKSVC.mount"
   systemctl disable "$RAMDISKSVC.mount"
@@ -20,7 +20,7 @@ function uninstall_profile() {
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
   BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
   for SYSTEMSVC in "bknix-$PROFILE" "bknix-$PROFILE-mysqld" ; do
-    if [ -f "/etc/systemd/system/${SYSTEMSVC}.service"]; then
+    if [ -f "/etc/systemd/system/${SYSTEMSVC}.service" ]; then
       echo "Removing systemd service \"$SYSTEMSVC\""
       systemctl stop "$SYSTEMSVC"
       systemctl disable "$SYSTEMSVC"
