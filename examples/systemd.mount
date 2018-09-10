@@ -1,11 +1,11 @@
 [Unit]
-Description=Buildkit Ramdisk (%%PROFILE%%)
+Description=Buildkit Ramdisk
 
 [Mount]
 What=tmpfs
 Where=%%RAMDISK%%
 Type=tmpfs
-Options=nosuid,size=3G
+Options=nosuid,size=8G
 
 [Install]
 WantedBy=multi-user.target

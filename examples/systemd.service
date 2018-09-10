@@ -12,12 +12,13 @@
 Description=Buildkit LAMP (%%PROFILE%%)
 After=syslog.target
 After=network.target
-Requires=home-jenkins-bknix\x2d%%PROFILE%%-var-amp-ram_disk.mount
+Requires=%%RAMDISKSVC%%.mount
 
 [Service]
 Type=simple
 PermissionsStartOnly=true
-ExecStart=/bin/bash -c 'eval $(/usr/local/bin/use-bknix %%PROFILE%%); amp config:set --hosts_type=none --ram_disk_type=manual --ram_disk_dir="%%RAMDISK%%" && bknix run'
+ExecStartPre=/bin/bash -c 'mkdir -p "%%RAMDISK%%/%%PROFILE%%" && chown "%%OWNER%%" "%%RAMDISK%%/%%PROFILE%%"'
+ExecStart=/bin/bash -c 'eval $(/usr/local/bin/use-bknix %%PROFILE%%); amp config:set --hosts_type=none --ram_disk_type=manual --ram_disk_dir="%%RAMDISK%%/%%PROFILE%%" && bknix run'
 TimeoutSec=300
 PrivateTmp=true
 User=%%OWNER%%

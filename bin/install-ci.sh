@@ -24,6 +24,16 @@
 #    eval $(use-bknix dfl)
 
 OWNER=${OWNER:-bknix}
+RAMDISK="/mnt/mysql/$OWNER"
+RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
+
+function install_ramdisk() {
+  echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
+  template_render examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
+  systemctl daemon-reload
+  systemctl start "$RAMDISKSVC.mount"
+  systemctl enable "$RAMDISKSVC.mount"
+}
 
 ## Setup the binaries, data folder, and service for a given profile.
 ##
@@ -33,8 +43,6 @@ OWNER=${OWNER:-bknix}
 function install_profile() {
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
   BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
-  RAMDISK="/home/$OWNER/bknix-$PROFILE/var/amp/ram_disk"
-  RAMDISKSVC=$(systemd-escape "home/$OWNER/bknix-$PROFILE/var/amp/ram_disk")
   SYSTEMSVC="bknix-$PROFILE"
 
   echo "Creating profile \"$PRFDIR\""
@@ -42,9 +50,6 @@ function install_profile() {
 
   echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
   sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\" HTTPD_PORT=\"$HTTPD_PORT\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init $FORCE_INIT"
-
-  echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
-  template_render examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
 
   echo "Creating systemd service \"bknix-$PROFILE\""
   template_render examples/systemd.service > "/etc/systemd/system/${SYSTEMSVC}.service"
@@ -57,11 +62,14 @@ function install_profile() {
 
 function template_render() {
   cat "$1" \
-    | sed "s;%%RAMDISK%%;$RAMDISK;" \
-    | sed "s;%%RAMDISKSVC%%;$RAMDISKSVC;" \
-    | sed "s/%%OWNER%%/$OWNER/" \
-    | sed "s/%%PROFILE%%/$PROFILE/"
+    | sed "s;%%RAMDISK%%;$RAMDISK;g" \
+    | sed "s;%%RAMDISKSVC%%;$RAMDISKSVC;g" \
+    | sed "s/%%OWNER%%/$OWNER/g" \
+    | sed "s/%%PROFILE%%/$PROFILE/g"
 }
+
+########################################
+## Main
 
 if [ -z `which nix` ]; then
   echo "Please install \"nix\" before running this. See: https://nixos.org/nix/manual/"
@@ -77,7 +85,8 @@ fi
 echo "Installing global helper \"use-bknix\""
 cp -f bin/use-bknix /usr/local/bin/use-bknix
 
-## Install each profile
+install_ramdisk
+
 PROFILE=dfl HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8001 MEMCACHED_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 install_profile
 PROFILE=min HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8002 MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 install_profile
 PROFILE=max HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8003 MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 install_profile
