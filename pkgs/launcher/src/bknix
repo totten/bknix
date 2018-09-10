@@ -22,6 +22,7 @@ REDIS_BASE="$BKNIXDIR/var/redis"
 
 HTTPD_PORT=${HTTPD_PORT:-8001}
 MEMCACHED_PORT=${MEMCACHED_PORT:-12221}
+MYSQLD_PORT=${MYSQLD_PORT:-3307}
 PHPFPM_PORT=${PHPFPM_PORT:-9009}
 REDIS_PORT=${REDIS_PORT:-6380}
 
@@ -63,6 +64,7 @@ function template_render() {
       | sed "s;%%HTTPD_PORT%%;$HTTPD_PORT;g" \
       | sed "s;%%LOCALHOST%%;$LOCALHOST;g" \
       | sed "s;%%MEMCACHED_PORT%%;$MEMCACHED_PORT;g" \
+      | sed "s;%%MYSQLD_PORT%%;$MYSQLD_PORT;g" \
       | sed "s;%%PHPFPM_PORT%%;$PHPFPM_PORT;g" \
       | sed "s;%%REDIS_PORT%%;$REDIS_PORT;g"
 }
@@ -119,6 +121,7 @@ function cmd_bkit_init() {
       --httpd_shared_ports="80,$HTTPD_PORT" \
       --hosts_type="file" \
       --db_type="mysql_ram_disk" \
+      --mysqld_port="$MYSQLD_PORT"
       --perm_type=none
   else
     echo "($PROG) Found existing amp config ($AMPHOME)"
@@ -232,6 +235,7 @@ function cmd_help() {
     echo "  HTTPD_PORT           (Default: 8001)"
     echo "  LOCALHOST            (Default: 127.0.0.1)"
     echo "  MEMCACHED_PORT       (Default: 12221)"
+    echo "  MYSQLD_PORT          (Default: 3307)"
     echo "  PHPFPM_PORT          (Default: 9009)"
     echo "  REDIS_PORT           (Default: 6380)"
 }
