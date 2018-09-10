@@ -51,13 +51,14 @@ function install_profile() {
   echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
   sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\" HTTPD_PORT=\"$HTTPD_PORT\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init $FORCE_INIT"
 
-  echo "Creating systemd service \"bknix-$PROFILE\""
+  echo "Creating systemd services \"$SYSTEMSVC\" and \"$SYSTEMSVC-mysqld\""
   template_render examples/systemd.service > "/etc/systemd/system/${SYSTEMSVC}.service"
+  template_render examples/systemd-mysqld.service > "/etc/systemd/system/${SYSTEMSVC}-mysqld.service"
 
-  echo "Activating systemd service \"$SYSTEMSVC\""
+  echo "Activating systemd services \"$SYSTEMSVC\" and \"bknix-$PROFILE-mysqld\""
   systemctl daemon-reload
-  systemctl start "$SYSTEMSVC"
-  systemctl enable "$SYSTEMSVC"
+  systemctl start "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
+  systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
 }
 
 function template_render() {
