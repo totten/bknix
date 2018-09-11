@@ -1,5 +1,7 @@
 /**
  * The `max` list identifies the highest recommended versions of the system requirements.
+ *
+ * We rely on a mix of packages from Nix upstream v18.09 (`pkgs`) and custom forks (`bkpkgs`).
  */
 let
     pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz) {};

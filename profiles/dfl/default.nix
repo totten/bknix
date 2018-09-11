@@ -1,5 +1,8 @@
 /**
  * The `dfl` list identifies the lowest recommended versions of the system requirements.
+ *
+ * We rely on a mix of packages from Nix upstream v18.03 (`pkgs`), v18.09 (`pkgs_1809`), and
+ * custom forks (`bkpkgs`).
  */
 let
     pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz) {};
