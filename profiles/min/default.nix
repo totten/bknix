@@ -11,7 +11,7 @@ in [
     pkgs.nodejs-6_x
     pkgs.apacheHttpd
     pkgs.memcached
-    pkgs.mysql55
+    bkpkgs.mysql55
     pkgs.redis
 
     pkgs.bzip2
