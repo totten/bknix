@@ -3,10 +3,12 @@
  */
 let
     pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz) {};
-    stdenv = pkgs.stdenv;
     bkpkgs = import ../../pkgs;
 in [
+    /* Custom programs */
     bkpkgs.launcher
+
+    /* Major services */
     bkpkgs.php70
     pkgs.nodejs-6_x
     pkgs.apacheHttpd
@@ -14,6 +16,7 @@ in [
     pkgs.mysql57
     pkgs.redis
 
+    /* CLI utilities */
     pkgs.bzip2
     pkgs.curl
     pkgs.git
