@@ -41,23 +41,32 @@ Additionally, you should have some basic understanding of the tools/systems invo
 ## Download all the binaries for the default (dfl) profile
 sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl'
 
-## Setup your environment.
-## (You should probably run this manually *and* add this to ~/.profile or ~/.bashrc.)
+## Setup the environment
+## - Call the following two commands manually.
+## - ALSO, add these two commands to your login script (~/.profile or ~/.bashrc)
 export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
 eval $(bknix env --data-dir "$HOME/bknix")
 
-## Start the daemons
-## (On the first run, this will put a lot of code and config files in $BKNIXDIR.)
-bknix run
+## Initialize the data directory. This provides `php.ini`, `httpd.conf`, etc as well as civicrm-buildkit.
+## (It may take a while to download civicrm-buildkit.)
+bknix init
 
-## Open a new console. Setup the environment again. Then... we can make some builds:
+## Start the daemons
+bknix run
+```
+
+At this point, you can open a new terminal and do more interesting things, e.g.
+
+```bash
 civibuild create dmaster
 ```
+
+## Shutdown and Startup
 
 Eventually, you may need to shutdown or restart the services. Here's how:
 
 * *To shutdown Apache, PHP, and Redis*: Go back to the original terminal where `bknix run` is running. Press `Ctrl-C` to stop it.
-* *To shutdown MySQL*: Run `killall mysqld`. Then, use `umount` (Linux) or `Disk Utility` (OS X) to eject the ramdisk.
+* *To shutdown MySQL*: Run `amp mysql:stop` (or `killall mysqld`). Then, use `umount` (Linux) or `Disk Utility` (OS X) to eject the ramdisk.
 
 You can start Apache/PHP/Redis again by simply invoking the `bknix run` command again.
 
