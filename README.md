@@ -73,16 +73,22 @@ civibuild reinstall dmaster
 
 ## Policies/Opinions
 
+| Service     | Typical Port | (CI) dfl Port| (CI) min Port| (CI) max Port|
+|-------------|--------------|--------------|--------------|--------------|
+| Apache HTTP | 8001         | 8001         | 8002         | 8003         |
+| Memcached   | 12221        | 12221        | 12222        | 12223        |
+| MySQL       | 3307         | 3307         | 3308         | 3309         |
+| PHP FPM     | 9009         | 9009         | 9010         | 9011         |
+| PHP Xdebug  | 9000         | 9000         | 9000         | 9000         |
+| Redis       | 6380         | 6380         | 6381         | 6382         |
+
 * A "build" is a collection of PHP/JS/CSS/etc source-code projects, with a database and an HTTP virtual host. You can edit/commit directly in the source-tree.
 * All builds are stored in the `build` folder.
 * All builds are given the URL `http://<name>.bknix:8001`. (Changeable)
 * All hostnames are registered in `/etc/hosts` using `sudo`. (Changeable)
 * All services run as the current, logged-in user. This means that files require no special permissions.
-* MySQL launches on-demand with all-ram-disk-based storage, and it listens on TCP port 3307. (Launching is triggered when calling `amp create`, `civibuild create`, `civibuild reinstall`, `civibuild restore`, or similar).
+* MySQL launches on-demand with all-ram-disk-based storage. Launching is triggered on-demand (`civibuild create ...`) or by calling `amp mysql:start`
 * PHP enables `xdebug`, which connects to a debugger UI on port 9000. (Changeable)
-* PHP is serviced by `php-fpm`, which listens on TCP port 9009.
-* Redis runs on TCP port 6380.
-* Memcached (if enabled) runs on TCP port 12221.
 
 Some of these policies/opinions can be changed, as described below ("Extended installation")
 
