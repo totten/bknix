@@ -17,7 +17,7 @@ Requires=%%RAMDISKSVC%%.mount
 [Service]
 Type=simple
 PermissionsStartOnly=true
-ExecStart=/bin/bash -c 'eval $(/usr/local/bin/use-bknix %%PROFILE%%); bknix run'
+ExecStart=/bin/bash -c 'eval $(/usr/local/bin/use-bknix %%PROFILE%%); amp config:set --httpd_visibility=all; bknix run'
 TimeoutSec=300
 PrivateTmp=true
 User=%%OWNER%%
