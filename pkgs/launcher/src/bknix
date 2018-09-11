@@ -247,6 +247,7 @@ function cmd_env() {
   echo "export MYSQL_HOME='$MYSQL_HOME'"
   echo "export BKIT='$BKIT'"
   echo "export BKITBLD='$BKITBLD'"
+  echo "export NODE_PATH='$BKIT/node_modules':\$NODE_PATH"
 }
 
 function env_init() {
@@ -258,7 +259,8 @@ function env_init() {
   MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
   BKIT="$BKNIXDIR/civicrm-buildkit"
   BKITBLD="$BKNIXDIR/build"
-  export BKNIXDIR AMPHOME MYSQL_HOME PATH BKIT BKITBLD
+  NODE_PATH="$BKIT/node_modules:$NODE_PATH"
+  export BKNIXDIR AMPHOME MYSQL_HOME PATH BKIT BKITBLD NODE_PATH
 }
 
 ###########################################################
