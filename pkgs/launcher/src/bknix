@@ -61,6 +61,8 @@ function bknix_validate() {
 function template_render() {
     cat "$1" \
       | sed "s;%%BKNIXDIR%%;$BKNIXDIR;g" \
+      | sed "s;%%BKITBLD%%;$BKITBLD;g" \
+      | sed "s;%%HTTPD_DOMAIN%%;$HTTPD_DOMAIN;g" \
       | sed "s;%%HTTPD_PORT%%;$HTTPD_PORT;g" \
       | sed "s;%%LOCALHOST%%;$LOCALHOST;g" \
       | sed "s;%%MEMCACHED_PORT%%;$MEMCACHED_PORT;g" \
@@ -116,7 +118,7 @@ function cmd_bkit_init() {
     mkdir -p "$AMPHOME"
     amp config:set \
       --httpd_type=apache24 \
-      --httpd_restart_command="apachectl -d $HTTPD_BASE -k graceful" \
+      --httpd_restart_command="NONE" \
       --httpd_visibility="local" \
       --httpd_shared_ports="80,$HTTPD_PORT" \
       --hosts_type="file" \
@@ -141,6 +143,7 @@ function cmd_bkit_init() {
     echo 'if [ -z "$BKNIXDIR" ]; then echo "Undefined: BKNIXDIR" >&2 ; exit 1; fi' >> "$BKIT_BASE/app/civibuild.conf"
     echo 'BLDDIR="$BKNIXDIR/build"' >> "$BKIT_BASE/app/civibuild.conf"
     echo "URL_TEMPLATE=\"http://%SITE_NAME%.$HTTPD_DOMAIN:$HTTPD_PORT\"" >> "$BKIT_BASE/app/civibuild.conf"
+    echo "APACHE_VHOST_ALIAS=1" >> "$BKIT_BASE/app/civibuild.conf"
   else
     echo "($PROG) Found existing civibuild config ($BKIT_BASE/app/civibuild.conf)"
   fi
