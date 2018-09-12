@@ -141,5 +141,5 @@ or equivalently
 
 ```bash
 cd $HOME/bknix
-sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f . -E 'f: f.profiles.dfl'
+sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f $PWD -E 'f: f.profiles.dfl'
 ```
