@@ -23,7 +23,7 @@
 #    eval $(use-bknix max)
 #    eval $(use-bknix dfl)
 
-OWNER=${OWNER:-bknix}
+OWNER=${OWNER:-jenkins}
 RAMDISK="/mnt/mysql/$OWNER"
 RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
 

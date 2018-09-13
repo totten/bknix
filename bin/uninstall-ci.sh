@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-OWNER=${OWNER:-bknix}
+OWNER=${OWNER:-jenkins}
 RAMDISK="/mnt/mysql/$OWNER"
 RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
 
