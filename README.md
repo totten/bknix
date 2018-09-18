@@ -37,8 +37,11 @@ Additionally, you should have some basic understanding of the tools/systems invo
 
 ## Quick Start
 
+Let's install the PHP, MySQL, et al to `/nix/var/nix/profiles/bknix-dfl` -- and run them all on the command-line.
+
 ```bash
 ## Download all the binaries for the default (dfl) profile
+## (It may take a while to get the binaries.)
 sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl'
 
 ## Setup the environment
@@ -47,7 +50,7 @@ sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/tot
 export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
 eval $(bknix env --data-dir "$HOME/bknix")
 
-## Initialize the data directory. This provides `php.ini`, `httpd.conf`, etc as well as civicrm-buildkit.
+## Initialize the data directory. This provides `civibuild.conf`, `httpd.conf`, `redis.conf`, etc as well as civicrm-buildkit.
 ## (It may take a while to download civicrm-buildkit.)
 bknix init
 
@@ -60,6 +63,8 @@ At this point, you can open a new terminal and do more interesting things, e.g.
 ```bash
 civibuild create dmaster
 ```
+
+> TIP: If the `civibuild` is missing, go back to "Setup the environment". Ensure that these commands are part of `~/.profile` or `~/.bashrc`.
 
 ## Shutdown and Startup
 
