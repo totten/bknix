@@ -87,7 +87,7 @@ function cmd_httpd_init() {
     chmod -R u+rw "$HTTPD_BASE/conf/"
     template_render "$BKNIXSRC/templates/httpd/httpd.conf.tmpl" > "$HTTPD_BASE/conf/httpd.conf"
   else
-    echo "($PROG) Found existing httpd config ($HTTPD_BASE)"
+    echo "($PROG) Found existing httpd config ($HTTPD_BASE). Files not changed."
   fi
 }
 
@@ -106,12 +106,12 @@ function cmd_mysql_init() {
 function cmd_bkit_init() {
   if [ ! -e "$BKIT_BASE" ]; then
     ## Note: This can be massive. Only download if needed -- even if you FORCE_INIT.
-    echo "($PROG) Download buildkit ($BKIT_BASE)"
+    echo "($PROG) Download buildkit toolchain ($BKIT_BASE)"
     git clone https://github.com/civicrm/civicrm-buildkit "$BKIT_BASE"
-    civi-download-tools
   else
-    echo "($PROG) Found existing buildkit ($BKIT_BASE)"
+    echo "($PROG) Found existing buildkit toolchain ($BKIT_BASE)."
   fi
+  civi-download-tools -q
 
   if [ -n "$FORCE_INIT" -o ! -e "$AMPHOME/services.yml" ]; then
     echo "($PROG) Initialize amp config ($AMPHOME)"
@@ -126,16 +126,17 @@ function cmd_bkit_init() {
       --mysqld_port="$MYSQLD_PORT" \
       --perm_type=none
   else
-    echo "($PROG) Found existing amp config ($AMPHOME)"
+    echo "($PROG) Found existing amp config ($AMPHOME). Files not changed."
   fi
 
-  if [ -n "$FORCE_INIT" -o ! -e "$BKNIXDIR/.amp/apache24-vhost.php" ]; then
-    echo "($PROG) Initialize amp vhost template ($BKNIXDIR/.amp/apache24-vhost.php)"
-    mkdir -p "$BKNIXDIR/.amp/"
-    template_render "$BKNIXSRC/templates/apache24-vhost.php.tmpl" > "$BKNIXDIR/.amp/apache24-vhost.php"
-  else
-    echo "($PROG) Found existing amp vhost template ($BKNIXDIR/.amp/apache24-vhost.php)"
-  fi
+  ## We don't need this since we're use mod_vhost_alias:
+  #if [ -n "$FORCE_INIT" -o ! -e "$BKNIXDIR/.amp/apache24-vhost.php" ]; then
+  #  echo "($PROG) Initialize amp vhost template ($BKNIXDIR/.amp/apache24-vhost.php)"
+  #  mkdir -p "$BKNIXDIR/.amp/"
+  #  template_render "$BKNIXSRC/templates/apache24-vhost.php.tmpl" > "$BKNIXDIR/.amp/apache24-vhost.php"
+  #else
+  #  echo "($PROG) Found existing amp vhost template ($BKNIXDIR/.amp/apache24-vhost.php). Files not changed."
+  #fi
 
   if [ -n "$FORCE_INIT" -o ! -e "$BKIT_BASE/app/civibuild.conf" ]; then
     echo "($PROG) Initialize civibuild config ($BKIT_BASE/app/civibuild.conf)"
@@ -145,7 +146,7 @@ function cmd_bkit_init() {
     echo "URL_TEMPLATE=\"http://%SITE_NAME%.$HTTPD_DOMAIN:$HTTPD_PORT\"" >> "$BKIT_BASE/app/civibuild.conf"
     echo "APACHE_VHOST_ALIAS=1" >> "$BKIT_BASE/app/civibuild.conf"
   else
-    echo "($PROG) Found existing civibuild config ($BKIT_BASE/app/civibuild.conf)"
+    echo "($PROG) Found existing civibuild config ($BKIT_BASE/app/civibuild.conf). Files not changed."
   fi
 }
 
@@ -156,7 +157,7 @@ function cmd_phpfpm_init() {
 
     template_render "$BKNIXSRC/templates/php-fpm.conf.tmpl" > "$PHPFPM_BASE/php-fpm.conf"
   else
-    echo "($PROG) Found existing php-fpm config ($PHPFPM_BASE)"
+    echo "($PROG) Found existing php-fpm config ($PHPFPM_BASE). Files not changed."
   fi
 }
 
@@ -166,7 +167,7 @@ function cmd_redis_init() {
     mkdir -p "$REDIS_BASE"
     template_render "$BKNIXSRC/templates/redis.conf.tmpl" > "$REDIS_BASE/redis.conf"
   else
-    echo "($PROG) Found existing redis config ($REDIS_BASE)"
+    echo "($PROG) Found existing redis config ($REDIS_BASE). Files not changed."
   fi
 }
 
@@ -176,8 +177,18 @@ function cmd_memcached_init() {
     mkdir -p "$MEMCACHED_BASE"
     template_render "$BKNIXSRC/templates/memcached.conf.tmpl" > "$MEMCACHED_BASE/memcached.conf"
   else
-    echo "($PROG) Found existing memcached config ($MEMCACHED_BASE)"
+    echo "($PROG) Found existing memcached config ($MEMCACHED_BASE). Files not changed."
   fi
+}
+
+function cmd_initvars() {
+  echo "($PROG) The current initialization variables:"
+
+  for var in BKNIXDIR HTTPD_DOMAIN HTTPD_PORT LOCALHOST MEMCACHED_PORT MYSQLD_PORT PHPFPM_PORT REDIS_PORT ; do
+    local val
+    eval "val=\$$var"
+    echo " - $var: $val"
+  done
 }
 
 function cmd_init() {
@@ -286,7 +297,7 @@ done
 case "$CMD" in
   env)           env_init; cmd_env; ;;
   # shell)         env_init; bash -i; ;;
-  init)          env_init; bknix_validate; cmd_init ;;
+  init)          env_init; bknix_validate; cmd_initvars; cmd_init ;;
   run)           env_init; bknix_validate; cmd_init ; cmd_run ;;
 
   purge)         env_init; bknix_validate; cmd_purge ;;
