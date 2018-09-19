@@ -12,7 +12,7 @@ running daemon for each profile.
 sudo apt-get install rsync
 sh <(curl https://nixos.org/nix/install) --daemon
 
-## Initialize the min, max, and dfl profiles for user bknix
+## Initialize the min, max, and dfl profiles for the test user "jenkins"
 sudo -i bash
 git clone https://github.com/totten/bknix /root/bknix
 cd /root/bknix
@@ -24,12 +24,6 @@ eval $(use-bknix dfl)
 which php
 php --version
 # (...and exit...)
-
-## Allow the SSH access for the user. Add SSH keys (and prevent self-modification).
-sudo addgroup ssh-user
-sudo adduser bknix ssh-user
-sudo cp ~totten/.ssh/authorized_keys ~bknix/.ssh/authorized_keys
-sudo chown root.root ~bknix/.ssh/authorized_keys
 ```
 
 ## For custom configuration files
