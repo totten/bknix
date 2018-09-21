@@ -20,6 +20,7 @@ PermissionsStartOnly=true
 ExecStart=/bin/bash -c 'eval $(/usr/local/bin/use-bknix %%PROFILE%%); amp config:set --hosts_type=none --httpd_visibility=all; bknix run'
 TimeoutSec=300
 PrivateTmp=true
+LimitNOFILE=500000
 User=%%OWNER%%
 Group=%%OWNER%%
 WorkingDirectory=/home/%%OWNER%%

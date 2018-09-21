@@ -22,6 +22,7 @@ ExecStart=/bin/bash -c 'eval $(/usr/local/bin/use-bknix %%PROFILE%%); amp config
 PIDFile=%%RAMDISK%%/%%PROFILE%%/mysqld.pid
 TimeoutSec=300
 PrivateTmp=true
+LimitNOFILE=100000
 User=%%OWNER%%
 Group=%%OWNER%%
 WorkingDirectory=/home/%%OWNER%%
