@@ -5,7 +5,7 @@ Description=Buildkit Ramdisk
 What=tmpfs
 Where=%%RAMDISK%%
 Type=tmpfs
-Options=nosuid,size=8G
+Options=nosuid,size=%%RAMDISKSIZE%%
 
 [Install]
 WantedBy=multi-user.target

@@ -26,6 +26,7 @@
 OWNER=${OWNER:-jenkins}
 RAMDISK="/mnt/mysql/$OWNER"
 RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
+RAMDISKSIZE=8G
 
 function install_ramdisk() {
   echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
@@ -65,6 +66,7 @@ function template_render() {
   cat "$1" \
     | sed "s;%%RAMDISK%%;$RAMDISK;g" \
     | sed "s;%%RAMDISKSVC%%;$RAMDISKSVC;g" \
+    | sed "s;%%RAMDISKSIZE%%;$RAMDISKSIZE;g" \
     | sed "s/%%OWNER%%/$OWNER/g" \
     | sed "s/%%PROFILE%%/$PROFILE/g"
 }
