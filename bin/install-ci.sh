@@ -86,6 +86,7 @@ function install_profile() {
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
   BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
   SYSTEMSVC="bknix-$PROFILE"
+  if [ "$OWNER" != "jenkins" ]; then SYSTEMSVC="bknix-$OWNER-$PROFILE"; fi
 
   echo "Creating profile \"$PRFDIR\""
   nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
