@@ -118,6 +118,13 @@ function install_use_bknix() {
   cp -f bin/use-bknix /usr/local/bin/use-bknix
 }
 
+function install_warmup() {
+  echo "Warming up binary cache"
+  nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . dfl -c true
+  nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . min -c true
+  nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . max -c true
+}
+
 ###########################################################
 ## Main
 
@@ -126,6 +133,7 @@ if [ -z `which nix` ]; then
   exit 2
 fi
 
+install_warmup
 install_use_bknix
 install_all_jenkins
 install_all_publisher
