@@ -17,6 +17,7 @@ BKIT_BASE="$BKNIXDIR/civicrm-buildkit"
 HTTPD_BASE="$BKNIXDIR/var/httpd"
 MEMCACHED_BASE="$BKNIXDIR/var/memcached"
 MYSQL_BASE="$BKNIXDIR/var/mysql"
+PHP_BASE="$BKNIXDIR/var/php"
 PHPFPM_BASE="$BKNIXDIR/var/php-fpm"
 REDIS_BASE="$BKNIXDIR/var/redis"
 
@@ -44,11 +45,14 @@ function bknix_validate() {
   if [ -z "$AMPHOME" ]; then
     echo "ERROR: Missing expected variable: AMPHOME"
   fi
+  if [ -z "$PHP_INI_SCAN_DIR" ]; then
+    echo "ERROR: Missing expected variable: PHP_INI_SCAN_DIR"
+  fi
   if [ -z "$MYSQL_HOME" ]; then
     echo "ERROR: Missing expected variable: MYSQL_HOME"
   fi
 
-  if [ -z "$BKNIXSRC" -o ! -d "$BKNIXSRC" -o -z "$BKNIXDIR" -o  -z "$AMPHOME" -o -z "$MYSQL_HOME" ]; then
+  if [ -z "$BKNIXSRC" -o ! -d "$BKNIXSRC" -o -z "$BKNIXDIR" -o  -z "$AMPHOME" -o -z "$MYSQL_HOME" -o -z "$PHP_INI_SCAN_DIR" ]; then
     echo
     echo "You may wish to set the environment variables. Try one of these:"
     echo "1. Run commands through bknix's \"nix-shell\", which will automatically initialize the variables."
@@ -150,6 +154,17 @@ function cmd_bkit_init() {
   fi
 }
 
+function cmd_php_init() {
+  if [ -n "$FORCE_INIT" -o ! -e "$PHP_BASE" ]; then
+    echo "($PROG) Initialize php config ($PHP_BASE)"
+    mkdir -p "$PHP_BASE"
+
+    template_render "$BKNIXSRC/templates/php.ini.tmpl" > "$PHP_BASE/php.ini"
+  else
+    echo "($PROG) Found existing php config ($PHP_BASE). Files not changed."
+  fi
+}
+
 function cmd_phpfpm_init() {
   if [ -n "$FORCE_INIT" -o ! -e "$PHPFPM_BASE" ]; then
     echo "($PROG) Initialize php-fpm config ($PHPFPM_BASE; port $PHPFPM_PORT)"
@@ -192,6 +207,7 @@ function cmd_initvars() {
 }
 
 function cmd_init() {
+  cmd_php_init
   cmd_mysql_init
   cmd_redis_init
   cmd_memcached_init
@@ -213,6 +229,7 @@ function cmd_purge() {
     echo "Purging..."
     [ -d "$HTTPD_BASE" ] && rm -rf "$HTTPD_BASE"
     [ -d "$AMPHOME" ] && rm -rf "$AMPHOME"
+    [ -d "$PHP_BASE" ] && rm -rf "$PHP_BASE"
     [ -d "$MYSQL_HOME" ] && rm -rf "$MYSQL_HOME"
     [ -f "$BKIT_BASE/app/civibuild.conf" ] && rm -f "$BKIT_BASE/app/civibuild.conf"
   else
@@ -258,6 +275,7 @@ function cmd_env() {
   echo "export BKNIXDIR='$BKNIXDIR'"
   echo "export PATH='$BKNIXDIR/civicrm-buildkit/bin':\$PATH"
   echo "export AMPHOME='$AMPHOME'"
+  echo "export PHP_INI_SCAN_DIR='$PHP_INI_SCAN_DIR':/etc/php.d"
   echo "export MYSQL_HOME='$MYSQL_HOME'"
   echo "export BKIT='$BKIT'"
   echo "export BKITBLD='$BKITBLD'"
@@ -270,11 +288,12 @@ function env_init() {
   fi
   PATH="$BKNIXDIR/civicrm-buildkit/bin:$PATH"
   AMPHOME="$BKNIXDIR/var/amp"
+  PHP_INI_SCAN_DIR="$BKNIXDIR/var/php:/etc/php.d"
   MYSQL_HOME="$BKNIXDIR/var/mysql/conf"
   BKIT="$BKNIXDIR/civicrm-buildkit"
   BKITBLD="$BKNIXDIR/build"
   NODE_PATH="$BKIT/node_modules:$NODE_PATH"
-  export BKNIXDIR AMPHOME MYSQL_HOME PATH BKIT BKITBLD NODE_PATH
+  export BKNIXDIR AMPHOME PHP_INI_SCAN_DIR MYSQL_HOME PATH BKIT BKITBLD NODE_PATH
 }
 
 ###########################################################
