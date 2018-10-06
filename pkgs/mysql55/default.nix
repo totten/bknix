@@ -4,7 +4,7 @@
  * be awesome.
  */
 let
-  nixpkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz) {};
+  nixpkgs = import (import ../../pins/18.03.nix) {};
   allPkgs = nixpkgs // pkgs;
   callPackage = path: overrides:
     let f = import path;

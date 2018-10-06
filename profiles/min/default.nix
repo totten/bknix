@@ -4,7 +4,7 @@
  * We rely on a mix of packages from Nix upstream v18.03 (`pkgs`) and custom forks (`bkpkgs`).
  */
 let
-    pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz) {};
+    pkgs = import (import ../../pins/18.03.nix) {};
     bkpkgs = import ../../pkgs;
 in [
     /* Custom programs */

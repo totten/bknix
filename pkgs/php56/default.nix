@@ -2,7 +2,7 @@
 # add all extensions needed as buildInputs and don't forget to load them in the php.ini above
 
 let
-    pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz) {
+    pkgs = import (import ../../pins/18.03.nix) {
       config = {
         php = {
           mysqlnd = true;

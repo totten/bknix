@@ -5,8 +5,8 @@
  * custom forks (`bkpkgs`).
  */
 let
-    pkgs = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz) {};
-    pkgs_1809 = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz) {};
+    pkgs = import (import ../../pins/18.03.nix) {};
+    pkgs_1809 = import (import ../../pins/18.09.nix) {};
     bkpkgs = import ../../pkgs;
 in [
     /* Custom programs */
