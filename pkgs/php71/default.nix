@@ -14,6 +14,10 @@ let
 
     phpRuntime = pkgs.php71;
     phpPkgs = pkgs.php71Packages;
+    phpExtras = import ../phpExtras/default.nix {
+      pkgs = pkgs;
+      php = pkgs.php71; ## Hmm, a little bit loopy, but this effectively how other extensions resolve the loopines..
+    };
 
     phpIniSnippet = ./etc/php.ini;
     phpIni = pkgs.runCommand "php.ini"
@@ -22,6 +26,7 @@ let
             extension=${phpPkgs.redis}/lib/php/extensions/redis.so
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
             extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
+            extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
       '';
     }
     ''
@@ -32,7 +37,7 @@ let
 
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php71";
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.memcached phpPkgs.imagick pkgs.makeWrapper];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.memcached phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
           makeWrapper ${phpRuntime}/bin/php-fpm $out/bin/php-fpm --add-flags -c --add-flags "${phpIni}"
