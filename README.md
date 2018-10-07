@@ -42,9 +42,12 @@ Additionally, you should have some basic understanding of the tools/systems invo
 Let's install the PHP, MySQL, et al to `/nix/var/nix/profiles/bknix-dfl` -- and run them all on the command-line.
 
 ```bash
-## Download all the binaries for the default (dfl) profile
-## (It may take a while to get the binaries.)
-sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-dfl -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl'
+## Download the binaries for the default (dfl) profile
+## (Most binaries are pre-built; but some may be compiled on-the-fly.)
+sudo -i nix-env -i \
+  --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false \
+  -p /nix/var/nix/profiles/bknix-dfl \
+  -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl'
 
 ## Setup the environment
 ## - Call the following two commands manually.
