@@ -19,7 +19,7 @@ let
       php = pkgs.php56; ## Hmm, a little bit loopy, but this effectively how other extensions resolve the loopines..
     };
 
-    phpIniSnippet = ./etc/php.ini;
+    phpIniSnippet = ../phpCommon/php.ini;
     phpIni = pkgs.runCommand "php.ini"
     { options = ''
             zend_extension=${phpPkgs.xdebug}/lib/php/extensions/xdebug.so
