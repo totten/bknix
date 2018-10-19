@@ -2,4 +2,5 @@
 /civicrm-buildkit/
 /build/
 /config/bashrc.local
+/etc/bashrc.local
 *~
