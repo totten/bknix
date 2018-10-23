@@ -83,9 +83,11 @@ function install_user() {
 function install_ramdisk() {
   echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
   template_render examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
-  systemctl daemon-reload
-  [ -z "$NO_AUTOSTART" ] && systemctl start "$RAMDISKSVC.mount"
-  [ -z "$NO_AUTOSTART" ] && systemctl enable "$RAMDISKSVC.mount"
+  if [ -z "$NO_AUTOSTART" ]; then
+    systemctl daemon-reload
+    systemctl start "$RAMDISKSVC.mount"
+    systemctl enable "$RAMDISKSVC.mount"
+  fi
 }
 
 ## Setup the binaries, data folder, and service for a given profile.
@@ -109,10 +111,12 @@ function install_profile() {
   template_render examples/systemd.service > "/etc/systemd/system/${SYSTEMSVC}.service"
   template_render examples/systemd-mysqld.service > "/etc/systemd/system/${SYSTEMSVC}-mysqld.service"
 
-  echo "Activating systemd services \"$SYSTEMSVC\" and \"bknix-$PROFILE-mysqld\""
-  systemctl daemon-reload
-  [ -z "$NO_AUTOSTART" ] && systemctl start "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
-  [ -z "$NO_AUTOSTART" ] && systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
+  if [ -z "$NO_AUTOSTART" ]; then
+    echo "Activating systemd services \"$SYSTEMSVC\" and \"bknix-$PROFILE-mysqld\""
+    systemctl daemon-reload
+    systemctl start "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
+    systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
+  fi
 }
 
 function template_render() {
