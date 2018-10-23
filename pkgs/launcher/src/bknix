@@ -29,6 +29,8 @@ REDIS_PORT=${REDIS_PORT:-6380}
 
 LOCALHOST=${LOCALHOST:-127.0.0.1}
 HTTPD_DOMAIN=${HTTPD_DOMAIN:-bknix}
+HTTPD_VISIBILITY=${HTTPD_VISIBILITY:-local}
+HOSTS_TYPE=${HOSTS_TYPE:-file}
 
 FORCE_INIT=
 
@@ -68,6 +70,8 @@ function template_render() {
       | sed "s;%%BKITBLD%%;$BKITBLD;g" \
       | sed "s;%%HTTPD_DOMAIN%%;$HTTPD_DOMAIN;g" \
       | sed "s;%%HTTPD_PORT%%;$HTTPD_PORT;g" \
+      | sed "s;%%HTTPD_VISIBILITY%%;$HTTPD_VISIBILITY;g" \
+      | sed "s;%%HOSTS_TYPE%%;$HOSTS_TYPE;g" \
       | sed "s;%%LOCALHOST%%;$LOCALHOST;g" \
       | sed "s;%%MEMCACHED_PORT%%;$MEMCACHED_PORT;g" \
       | sed "s;%%MYSQLD_PORT%%;$MYSQLD_PORT;g" \
@@ -123,9 +127,9 @@ function cmd_bkit_init() {
     amp config:set \
       --httpd_type=apache24 \
       --httpd_restart_command="NONE" \
-      --httpd_visibility="local" \
+      --httpd_visibility="$HTTPD_VISIBILITY" \
       --httpd_shared_ports="80,$HTTPD_PORT" \
-      --hosts_type="file" \
+      --hosts_type="$HOSTS_TYPE" \
       --db_type="mysql_ram_disk" \
       --mysqld_port="$MYSQLD_PORT" \
       --perm_type=none
@@ -199,7 +203,7 @@ function cmd_memcached_init() {
 function cmd_initvars() {
   echo "($PROG) The current initialization variables:"
 
-  for var in BKNIXDIR HTTPD_DOMAIN HTTPD_PORT LOCALHOST MEMCACHED_PORT MYSQLD_PORT PHPFPM_PORT REDIS_PORT ; do
+  for var in BKNIXDIR HTTPD_DOMAIN HTTPD_PORT HTTPD_VISIBILITY HOSTS_TYPE LOCALHOST MEMCACHED_PORT MYSQLD_PORT PHPFPM_PORT REDIS_PORT ; do
     local val
     eval "val=\$$var"
     echo " - $var: $val"
