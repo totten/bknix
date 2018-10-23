@@ -26,7 +26,7 @@ function install_warmup_service() {
 
   echo "Activating systemd services \"$SYSTEMSVC\""
   systemctl daemon-reload
-  systemctl start "$SYSTEMSVC"
+  # systemctl start "$SYSTEMSVC"
   systemctl enable "$SYSTEMSVC"
 }
 

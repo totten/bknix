@@ -18,6 +18,9 @@
 # Example: Install (or upgrade) all the profiles, overwriting any local config files
 #   FORCE_INIT=-f ./bin/install-gcloud.sh
 #
+# Example:
+#   NO_AUTOSTART=1 ./bin/install-gcloud.sh
+#
 # After installation, an automated script can use a statement like:
 #    eval $(use-bknix min)
 #    eval $(use-bknix max)
@@ -75,8 +78,8 @@ function install_ramdisk() {
   echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
   template_render examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
   systemctl daemon-reload
-  systemctl start "$RAMDISKSVC.mount"
-  systemctl enable "$RAMDISKSVC.mount"
+  [ -z "$NO_AUTOSTART" ] && systemctl start "$RAMDISKSVC.mount"
+  [ -z "$NO_AUTOSTART" ] && systemctl enable "$RAMDISKSVC.mount"
 }
 
 ## Setup the binaries, data folder, and service for a given profile.
@@ -102,8 +105,8 @@ function install_profile() {
 
   echo "Activating systemd services \"$SYSTEMSVC\" and \"bknix-$PROFILE-mysqld\""
   systemctl daemon-reload
-  systemctl start "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
-  systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
+  [ -z "$NO_AUTOSTART" ] && systemctl start "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
+  [ -z "$NO_AUTOSTART" ] && systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
 }
 
 function template_render() {
