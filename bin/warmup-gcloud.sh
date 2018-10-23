@@ -14,7 +14,7 @@ echo "Updating configuration"
 git pull --ff-only
 
 echo "Reinstalling profiles"
-NO_AUTOSTART=1 FORCE_INIT=-f ./bin/install-gcloud.sh
+NO_SYSTEMD=1 FORCE_INIT=-f ./bin/install-gcloud.sh
 
 echo "Updating buildkit"
 ./bin/update-ci-buildkit.sh

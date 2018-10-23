@@ -19,7 +19,7 @@
 #   FORCE_INIT=-f ./bin/install-gcloud.sh
 #
 # Example:
-#   NO_AUTOSTART=1 ./bin/install-gcloud.sh
+#   NO_SYSTEMD=1 ./bin/install-gcloud.sh
 #
 # After installation, an automated script can use a statement like:
 #    eval $(use-bknix min)
@@ -81,12 +81,14 @@ function install_user() {
 }
 
 function install_ramdisk() {
-  echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
-  template_render examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
-  if [ -z "$NO_AUTOSTART" ]; then
+  if [ -z "$NO_SYSTEMD" ]; then
+    echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
+    template_render examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
     systemctl daemon-reload
     systemctl start "$RAMDISKSVC.mount"
     systemctl enable "$RAMDISKSVC.mount"
+  else
+    echo "Skip: Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
   fi
 }
 
@@ -107,15 +109,17 @@ function install_profile() {
   echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
   sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\" HTTPD_PORT=\"$HTTPD_PORT\" HTTPD_VISIBILITY=\"$HTTPD_VISIBILITY\" HOSTS_TYPE=\"$HOSTS_TYPE\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" MYSQLD_PORT=\"$MYSQLD_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init $FORCE_INIT"
 
-  echo "Creating systemd services \"$SYSTEMSVC\" and \"$SYSTEMSVC-mysqld\""
-  template_render examples/systemd.service > "/etc/systemd/system/${SYSTEMSVC}.service"
-  template_render examples/systemd-mysqld.service > "/etc/systemd/system/${SYSTEMSVC}-mysqld.service"
+  if [ -z "$NO_SYSTEMD" ]; then
+    echo "Creating systemd services \"$SYSTEMSVC\" and \"$SYSTEMSVC-mysqld\""
+    template_render examples/systemd.service > "/etc/systemd/system/${SYSTEMSVC}.service"
+    template_render examples/systemd-mysqld.service > "/etc/systemd/system/${SYSTEMSVC}-mysqld.service"
 
-  if [ -z "$NO_AUTOSTART" ]; then
     echo "Activating systemd services \"$SYSTEMSVC\" and \"bknix-$PROFILE-mysqld\""
     systemctl daemon-reload
     systemctl start "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
     systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
+  else
+    echo "Skip: Creating/activating systemd services \"$SYSTEMSVC\" and \"bknix-$PROFILE-mysqld\""
   fi
 }
 
