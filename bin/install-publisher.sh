@@ -13,10 +13,10 @@
 #   Login as proper root (e.g. `sudo -i bash`)
 #
 # Example: Install (or upgrade) all the profiles
-#   ./bin/install-ci.sh
+#   ./bin/install-publisher.sh
 #
 # Example: Install (or upgrade) all the profiles, overwriting any local config files
-#   FORCE_INIT=-f ./bin/install-ci.sh
+#   FORCE_INIT=-f ./bin/install-publisher.sh
 #
 # After installation, an automated script can use a statement like:
 #    eval $(use-bknix min)
@@ -33,5 +33,5 @@ source "$BINDIR/install-common.sh"
 check_reqs
 install_warmup
 install_use_bknix
-install_all_jenkins
-#install_all_publisher
+#install_all_jenkins
+install_all_publisher
