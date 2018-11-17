@@ -5,6 +5,7 @@
  */
 let
     pkgs = import (import ../../pins/18.03.nix) {};
+    pkgs_1809 = import (import ../../pins/18.09.nix) {};
     bkpkgs = import ../../pkgs;
 in [
     /* Custom programs */
@@ -23,9 +24,9 @@ in [
     pkgs.curl
     pkgs.git
     pkgs.gnutar
-    pkgs.hostname
     pkgs_1809.hostname
     pkgs.ncurses
+    pkgs.patch
     pkgs.rsync
     pkgs.unzip
     pkgs.which

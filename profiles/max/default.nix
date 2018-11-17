@@ -23,8 +23,9 @@ in [
     pkgs.curl
     pkgs.git
     pkgs.gnutar
-    pkgs_1809.hostname
+    pkgs.hostname
     pkgs.ncurses
+    pkgs.patch
     pkgs.rsync
     pkgs.unzip
     pkgs.which
