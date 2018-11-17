@@ -10,4 +10,4 @@ echo "Waiting"
 sleep 5
 
 echo "Starting all services"
-systemctl start bknix-{dfl,min,max}{,-mysqld} mnt-mysql-jenkins.mount
+systemctl start mnt-mysql-jenkins.mount bknix-{dfl,min,max}{,-mysqld}
