@@ -15,6 +15,11 @@ rec {
    max = import ./max/default.nix;
 
    /**
+    * The bleeding-edge build; we may test against this but don't currently need to pass.
+    */
+   edge = import ./edge/default.nix;
+
+   /**
     * A nice, in-between list of requirements
     */
    dfl = import ./dfl/default.nix;
