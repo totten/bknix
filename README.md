@@ -18,6 +18,7 @@ __Highly opinionated__:
  * There are a few different configurations. Each configuration has its own mix of packages (e.g. PHP 5.6 + MySQL 5.5; PHP 7.0 + MySQL 5.7). These are named:
    * `min`: An older set of binaries based on current system requirements.
    * `max`: A newer set of binaries based on highest that we aim to support.
+   * `edge`: A newer set of binaries that exceeds our current official support.
    * `dfl`: An in-between set of binaries.
 
 __This project is a work-in-progress.__ Some tasks/issues are described further down.
