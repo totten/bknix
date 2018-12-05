@@ -3,4 +3,6 @@
 /build/
 /config/bashrc.local
 /etc/bashrc.local
+/pkgs/result
+/pkgs/result-*
 *~
