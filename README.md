@@ -15,11 +15,11 @@ __Highly opinionated__:
  * To facilitate quick development with any IDE/editor, all file-storage and development-tasks run in the current users' local Linux/macOS (*without* any virtualization, containerization, invisible filesystems, or magic permissions).
  * To optimize DB performance, `mysqld` stores all its data in a ramdisk.
  * To avoid conflicts with other tools on your system, all binaries are stored in their own folders, and services run on their own ports.
- * There are a few different configurations. Each configuration has its own mix of packages (e.g. PHP 5.6 + MySQL 5.5; PHP 7.0 + MySQL 5.7). These are named:
+ * There are a few different *profiles*. Each profile has its own mix of packages (e.g. PHP 5.6 + MySQL 5.5; PHP 7.0 + MySQL 5.7). These are named:
+   * `dfl`: An in-between set of binaries. This is a good default for middle-of-the-road testing/development.
    * `min`: An older set of binaries based on current system requirements.
    * `max`: A newer set of binaries based on highest that we aim to support.
    * `edge`: A newer set of binaries that exceeds our current official support.
-   * `dfl`: An in-between set of binaries.
 
 __This project is a work-in-progress.__ Some tasks/issues are described further down.
 
@@ -38,69 +38,61 @@ Additionally, you should have some basic understanding of the tools/systems invo
 * Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
 * Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
 
-## Quick Start
+## Usage
 
-Let's install the PHP, MySQL, et al to `/nix/var/nix/profiles/bknix-dfl` -- and run them all on the command-line.
+`bknix` defines a list of `nix` packages which are useful for doing local
+Civi development. The `nix` package manager is pretty versatile, so packages
+can be used in many ways, but let's start with something representative.
 
-```bash
-## Download the binaries for the default (dfl) profile
-## (Most binaries are pre-built; but some may be compiled on-the-fly.)
-sudo -i nix-env -i \
-  --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false \
-  -p /nix/var/nix/profiles/bknix-dfl \
-  -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl'
-
-## Setup the environment
-## - Call the following two commands manually.
-## - ALSO, add these two commands to your login script (~/.profile or ~/.bashrc)
-export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
-eval $(bknix env --data-dir "$HOME/bknix")
-
-## Initialize the data directory. This provides `civibuild.conf`, `httpd.conf`, `redis.conf`, etc as well as civicrm-buildkit.
-## (It may take a while to download civicrm-buildkit.)
-bknix init
-
-## Start the daemons
-bknix run
-```
-
-At this point, you can open a new terminal and do more interesting things, e.g.
-
-```bash
-civibuild create dmaster
-```
-
-> TIP: If the `civibuild` is missing, go back to "Setup the environment". Ensure that these commands are part of `~/.profile` or `~/.bashrc`.
-
-## Shutdown and Startup
-
-Eventually, you may need to shutdown or restart the services. Here's how:
-
-* *To shutdown Apache, PHP, and Redis*: Go back to the original terminal where `bknix run` is running. Press `Ctrl-C` to stop it.
-* *To shutdown MySQL*: Run `amp mysql:stop` (or `killall mysqld`). Then, use `umount` (Linux) or `Disk Utility` (OS X) to eject the ramdisk.
-
-You can start Apache/PHP/Redis again by simply invoking the `bknix run` command again.
-
-Restarting MySQL is a bit more tricky -- all the databases were lost when the ramdisk was destroyed. You can restore
-the databases to a pristine snapshot with `civibuild restore` or `civibuild reinstall` -- like one of these:
+For my day-to-day usage, I usually start by launching the programs (`httpd`, `php-fpm`, etc):
 
 ```
-civibuild restore dmaster
-civibuild reinstall dmaster
+me@localhost:~/bknix$ nix-shell -A dfl
+[nix-shell:~/bknix]$ bknix run
+(bknix) Found existing php config (/Users/me/bknix/var/php). Files not changed.
+(bknix) Found existing redis config (/Users/me/bknix/var/redis). Files not changed.
+(bknix) Found existing memcached config (/Users/me/bknix/var/memcached). Files not changed.
+(bknix) Found existing php-fpm config (/Users/me/bknix/var/php-fpm). Files not changed.
+(bknix) Found existing httpd config (/Users/me/bknix/var/httpd). Files not changed.
+(bknix) Found existing buildkit toolchain (/Users/me/bknix/civicrm-buildkit).
+(bknix) Found existing amp config (/Users/me/bknix/var/amp). Files not changed.
+(bknix) Found existing civibuild config (/Users/me/bknix/civicrm-buildkit/app/civibuild.conf). Files not changed.
+[apache] Starting
+[php-fpm] Starting
+[redis] Starting
+[memcached] Starting
 ```
 
-> TIP: For other installation examples, see [doc/install-other.md](doc/install-other.md).
+The services are running in the foreground -- additional errors and log messages will be displayed here. 
+
+In another shell, I can do development tasks -- such as building a new test site:
+
+```
+me@localhost:~/bknix$ nix-shell -A dfl
+[nix-shell:~/bknix]$ civibuild create dmaster --civi-ver 5.8
+```
+
+However, the exact steps depend a bit on how you want to use it. (Recall that `nix` is versatile.)
+Here are a few scenarios to consider:
+
+| Goal | Suggestion |
+| ---- | ---- |
+| Try bknix to see what it does | <ul><li>[nix-shell: Run bknix in a temporary subshell](doc/nix-shell.md)</li><li>[bknix: General usage](doc/usage.md)</li></ul> |
+| Develop extensions or patches for Civi in a CLI environment | <ul><li>[nix-shell: Run bknix in a temporary subshell](doc/nix-shell.md)</li><li>[bknix: General usage](doc/usage.md)</li></ul> |
+| Develop extensions or patches for Civi in an IDE | <ul><li>[nix-env: Install bknix to a profile folder](doc/install-profile.md)</li><li>[bknix: General usage](doc/usage.md)</li></ul> |
+| Develop patches for bknix| <ul><li>[nix-shell: Run bknix in a temporary subshell](doc/nix-shell.md)</li><li>[bknix: General usage](doc/usage.md)</li></ul> |
+| Run frequent tests in a mix of environments (continuous-integration) | <ul><li>[install-ci.sh: Install all profiles and system services](doc/install-ci.md)</li></ul> |
 
 ## Policies/Opinions
 
-| Service     | Typical Port | (CI) dfl Port| (CI) min Port| (CI) max Port|
-|-------------|--------------|--------------|--------------|--------------|
-| Apache HTTP | 8001         | 8001         | 8002         | 8003         |
-| Memcached   | 12221        | 12221        | 12222        | 12223        |
-| MySQL       | 3307         | 3307         | 3308         | 3309         |
-| PHP FPM     | 9009         | 9009         | 9010         | 9011         |
-| PHP Xdebug  | 9000         | 9000         | 9000         | 9000         |
-| Redis       | 6380         | 6380         | 6381         | 6382         |
+| Service     | Typical Port |
+|-------------|--------------|
+| Apache HTTP | 8001         |
+| Memcached   | 12221        |
+| MySQL       | 3307         |
+| PHP FPM     | 9009         |
+| PHP Xdebug  | 9000         |
+| Redis       | 6380         |
 
 * A "build" is a collection of PHP/JS/CSS/etc source-code projects, with a database and an HTTP virtual host. You can edit/commit directly in the source-tree.
 * All builds are stored in the `build` folder.
