@@ -16,6 +16,7 @@ function install_all_jenkins() {
   PROFILE=dfl HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8001 MEMCACHED_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 MYSQLD_PORT=3307 install_profile
   PROFILE=min HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8002 MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 MYSQLD_PORT=3308 install_profile
   PROFILE=max HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8003 MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 MYSQLD_PORT=3309 install_profile
+  #EDGE# PROFILE=edge HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8004 MEMCACHED_PORT=12224 PHPFPM_PORT=9012 REDIS_PORT=6383 MYSQLD_PORT=3310 install_profile
 
   unset OWNER RAMDISK RAMDISKSVC RAMDISKSIZE
 }
@@ -107,5 +108,5 @@ function install_warmup() {
   nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . dfl -c true
   nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . min -c true
   nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . max -c true
+  #EDGE# nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . edge -c true
 }
-
