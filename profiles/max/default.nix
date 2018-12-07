@@ -30,4 +30,5 @@ in [
     pkgs.unzip
     pkgs.which
     pkgs.zip
+    bkpkgs.transifexClient
 ]
