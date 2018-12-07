@@ -10,16 +10,19 @@ performance on OS X workstations -- especially if the PHP/JS codebase is large.
 
 __Highly opinionated__:
 
- * It is primarily intended for developing patches and extensions for CiviCRM -- this influences the set of tools included.
- * It combines service binaries (`mysqld`, `httpd`, etc) from [nix](https://nixos.org/nix) and a toolchain from [buildkit](https://github.com/civicrm/civicrm-buildkit) and an unsophisticated process-management script (`bknix`).
- * To facilitate quick development with any IDE/editor, all file-storage and development-tasks run in the current users' local Linux/macOS (*without* any virtualization, containerization, invisible filesystems, or magic permissions).
- * To optimize DB performance, `mysqld` stores all its data in a ramdisk.
- * To avoid conflicts with other tools on your system, all binaries are stored in their own folders, and services run on their own ports.
- * There are a few different *profiles*. Each profile has its own mix of packages (e.g. PHP 5.6 + MySQL 5.5; PHP 7.0 + MySQL 5.7). These are named:
-   * `dfl`: An in-between set of binaries. This is a good default for middle-of-the-road testing/development.
-   * `min`: An older set of binaries based on current system requirements.
-   * `max`: A newer set of binaries based on highest that we aim to support.
-   * `edge`: A newer set of binaries that exceeds our current official support.
+* It is primarily intended for developing patches and extensions for CiviCRM -- this influences the set of tools included.
+* It combines service binaries (`mysqld`, `httpd`, etc) from [nix](https://nixos.org/nix) with an unsophisticated process-manager script (`bknix`) and all the tools from [buildkit](https://github.com/civicrm/civicrm-buildkit).
+* To facilitate quick development with any IDE/editor, all file-storage and development-tasks run in the current users' local Linux/macOS (*without* any virtualization, containerization, invisible filesystems, or magic permissions).
+* To optimize DB performance, `mysqld` stores all its data in a ramdisk.
+* To avoid conflicts with other tools on your system, all binaries are stored in their own folders, and services run on alternative ports.
+
+__Profiles__: A *profile* is list of packages (e.g. PHP 5.6 + MySQL 5.5; PHP 7.0 + MySQL 5.7).
+`bknix` includes a few profiles designed around the CiviCRM system-requirements:
+
+* `dfl`: An in-between set of packages. This is a good default for middle-of-the-road testing/development.
+* `min`: An older set of packages based on minimum system requirements.
+* `max`: A newer set of packages based on maximum system requirements.
+* `edge`: A newer set of packages that exceeds our current official support; a proposal for the next `max`.
 
 __This project is a work-in-progress.__ Some tasks/issues are described further down.
 
@@ -40,11 +43,9 @@ Additionally, you should have some basic understanding of the tools/systems invo
 
 ## Usage
 
-`bknix` defines a list of `nix` packages which are useful for doing local
-Civi development. The `nix` package manager is pretty versatile, so packages
-can be used in many ways, but let's start with something representative.
-
-For my day-to-day usage, I usually start by launching the programs (`httpd`, `php-fpm`, etc):
+For day-to-day usage, you start by choosing a profile (such as `dfl`).
+Open a suitable shell environment and start the process-manager (`bknix
+run`). For example:
 
 ```
 me@localhost:~/bknix$ nix-shell -A dfl
@@ -65,15 +66,17 @@ me@localhost:~/bknix$ nix-shell -A dfl
 
 The services are running in the foreground -- additional errors and log messages will be displayed here. 
 
-In another shell, I can do development tasks -- such as building a new test site:
+Next, open another shell environment.  In here, you can do more development tasks -- such as building a new test site:
 
 ```
 me@localhost:~/bknix$ nix-shell -A dfl
 [nix-shell:~/bknix]$ civibuild create dmaster --civi-ver 5.8
 ```
 
-However, the exact steps depend a bit on how you want to use it. (Recall that `nix` is versatile.)
-Here are a few scenarios to consider:
+These are the examples I use most often on my laptop -- but `nix` is quite versatile about how you setup profiles and
+shell environments. For a more complete tutorial, it will help to choose an approach based on how you'll be using it.
+For example:
+
 
 | Goal | Suggestion |
 | ---- | ---- |
