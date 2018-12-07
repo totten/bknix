@@ -48,14 +48,56 @@ These are the examples I use most often on my laptop -- but `nix` is quite versa
 shell environments. For a more complete tutorial, it will help to choose an approach based on how you'll be using it.
 For example:
 
-
-| Goal | Suggestion |
-| ---- | ---- |
-| Try bknix to see what it does | <ul><li>[nix-shell: Run bknix in a temporary subshell](doc/nix-shell.md)</li><li>[bknix: General usage](doc/usage.md)</li></ul> |
-| Develop extensions or patches for Civi in a CLI environment | <ul><li>[nix-shell: Run bknix in a temporary subshell](doc/nix-shell.md)</li><li>[bknix: General usage](doc/usage.md)</li></ul> |
-| Develop extensions or patches for Civi in an IDE | <ul><li>[nix-env: Install bknix to a profile folder](doc/install-profile.md)</li><li>[bknix: General usage](doc/usage.md)</li></ul> |
-| Develop patches for bknix| <ul><li>[nix-shell: Run bknix in a temporary subshell](doc/nix-shell.md)</li><li>[bknix: General usage](doc/usage.md)</li></ul> |
-| Run frequent tests in a mix of environments (continuous-integration) | <ul><li>[install-ci.sh: Install all profiles and system services](doc/install-ci.md)</li></ul> |
+<table border="0">
+  <thead>
+    <tr>
+      <th>Goal</th>
+      <th>Suggestion</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <ul>
+          <li>Try bknix to see what it does</li>
+          <li>Develop extensions or patches for Civi in a CLI environment</li>
+          <li>Develop patches for <code>bknix.git</code></li>
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li><a href="doc/nix-shell.md">nix-shell: Run bknix in a temporary subshell</a></li>
+          <li><a href="doc/usage.md">bknix: General usage</a></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>Develop extensions or patches for Civi in an IDE</li>
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li>[nix-env: Install bknix to a profile folder](doc/install-profile.md)</li>
+          <li><a href="doc/usage.md">bknix: General usage</a></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <ul>
+          <li>Run frequent tests in a mix of environments (continuous-integration)</li>
+        </ul>
+      </td>
+      <td>
+        <ul>
+          <li><a href="doc/install-ci.md">install-ci.sh: Install all profiles and system services</a></li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ## Policies/Opinions
 
