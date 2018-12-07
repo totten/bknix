@@ -1,11 +1,10 @@
 # nix-shell: Run bknix in a temporary subshell
 
-A *profile* is a list of packages (e.g.  PHP 7.0 plus MySQL 5.7 plus NodeJS 8.x).  For example, the `dfl` ("default") profile defines a
-middle-of-the-road set of packages which is generally representative of typical deployments of CiviCRM.  (Additional profiles are described
-in [README.md](../README.md).)
+In this tutorial, we'll start a new subshell with all of the packages for `dfl`.  The packages will only be visible within our
+shell.
 
-In this tutorial, we'll start a new subshell with all of the packages for `dfl`.  The packages will only be visible within our shell --
-they'll have no effect on the rest of the workstation.
+This approach minimizes the impact on other parts of the subsystem.  It is easier to juggle multiple profiles (and to
+change the profile definition) if you work within a subshell.
 
 ## Quick Version
 

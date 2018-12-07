@@ -1,10 +1,10 @@
 # nix-env: Install bknix to a profile folder
 
-A *profile* is a list of packages (e.g.  PHP 7.0 plus MySQL 5.7 plus NodeJS 8.x).  For example, the `dfl` ("default") profile defines a
-middle-of-the-road set of packages which is generally representative of typical deployments of CiviCRM.  (Additional profiles are described
-in [README.md](../README.md).)
-
 Let's use the `dfl` profile and install all its packages (PHP, MySQL, etc) to one folder (`/nix/var/nix/profiles/bknix-dfl`).
+
+If you need to integrate with tools, workflows, or initialization systems that are not specifically aware of `nix` (such as a graphical IDE
+or system-level process manager), this may be the most convenient arrangement. It feels a bit like installing an application suite under
+`/opt/<foo>` except that the actual path is `/nix/var/nix/profiles/<foo>`.
 
 ## Quick Version
 
