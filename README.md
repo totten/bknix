@@ -8,10 +8,10 @@
 A *profile* is list of packages (e.g.  PHP 7.0 + MySQL 5.7 + Redis 4.0).  `bknix` includes a few profiles designed around the CiviCRM
 system-requirements:
 
-* `dfl`: An in-between set of packages. This is a good default for middle-of-the-road testing/development.
-* `min`: An older set of packages based on minimum system requirements.
-* `max`: A newer set of packages based on maximum system requirements.
-* `edge`: A newer set of packages that exceeds our current official support; a proposal for the next `max`.
+* [dfl](profiles/dfl/default.nix): An in-between set of packages. This is a good default for middle-of-the-road testing/development.
+* [min](profiles/min/default.nix): An older set of packages based on minimum system requirements.
+* [max](profiles/max/default.nix): A newer set of packages based on maximum system requirements.
+* [edge](profiles/edge/default.nix): A newer set of packages that exceeds our current official support; a proposal for the next `max`.
 
 ## Usage
 
