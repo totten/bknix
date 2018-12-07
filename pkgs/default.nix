@@ -5,7 +5,6 @@
  */
 rec {
    mysql55 = (import ./mysql55/default.nix).mysql55;
-   /* NOT WORKING: php55 = import ./php55/default.nix; */
    php56 = import ./php56/default.nix;
    php70 = import ./php70/default.nix;
 #   php71 = import ./php71/default.nix;
