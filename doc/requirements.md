@@ -6,7 +6,7 @@ The system should meet two basic requirement:
 
 * Run Linux or OS X on the local workstation
 * Install the [nix package manager](https://nixos.org/nix/)
-* Install `git` for command-line usage
+* Install `git`
 
 ## TIP: Installing the nix package manager
 
@@ -33,8 +33,9 @@ The two commands differ by one option:
   It has (slightly) broader compatibility, and it's (slightly) easier to uninstall, but it's (slightly) less secure.
   The manual has more complete [install and uninstall instructions](https://nixos.org/nix/manual/#sect-single-user-installation).
 
-> NOTE: The "daemon" in "multi-user" mode is an internal service that manages download/installation (akin to
-> `dockerd`).  For our purposes, `nix` does not start, stop, or register any network services.
+> NOTE: The "daemon" in "multi-user" mode is an internal service that facilitates download/installation (akin to
+> `dockerd`).  For our purposes, `nix` does not start, stop, or register any network services; it's main job is to
+> download binaries into `/nix`.
 
 ## General knowledge requirements
 
