@@ -1,10 +1,6 @@
 ## Comparison with other development environments
 
-`bknix` serves a function similar to MAMP or XAMPP -- it facilitates local development by bundling Apache/PHP/etc with a small launcher to
-run the servers.  However, it is built with the open-source [nix package manager](https://nixos.org/nix) (compatible with OS X and Linux). 
-Like Docker, `nix` lets you create a small project with a manifest-file, and it won't interfere with your normal system settings.  However,
-unlike Docker, it is not coupled to the Linux kernel.  This significantly improves performance on OS X workstations -- especially if the
-PHP/JS codebase is large.
+`bknix` serves a function similar to MAMP or XAMPP -- it facilitates local development by bundling Apache/PHP/etc with a small launcher to run the servers.  However, it is built with the open-source [nix package manager](https://nixos.org/nix) (compatible with OS X and Linux). Like Docker, `nix` lets you create a small project with a manifest-file, and it won't interfere with your normal system settings.  However, unlike Docker, it is not coupled to the Linux kernel -- it can always run on a native (unvirtualized) filesystem.  This significantly improves performance on OS X workstations -- especially if the PHP/JS codebase is large.
 
 (*To be sure, MAMP and Docker both have other advantages -- e.g. MAMP/XAMPP provide a GUI launcher/configuration screen, and Docker's ecosystem touches on process-orchestration, volume-management, virtualized networking, etc. I just don't need those things as much as I need fast/transparent filesystem and portability.*)
 
