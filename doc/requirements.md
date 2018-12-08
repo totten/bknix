@@ -1,18 +1,12 @@
 # Requirements
 
+## General system requirements
+
 The system should meet two basic requirement:
 
 * Run Linux or OS X on the local workstation
 * Install the [nix package manager](https://nixos.org/nix/)
-* (Recommended) Install `git` for command-line usage
-
-Additionally, you should have some basic understanding of the tools/systems involved:
-
-* Git
-* PHP/JS development (e.g. `composer`, `npm`)
-* Unix CLI (e.g. `bash`)
-* Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
-* Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
+* Install `git` for command-line usage
 
 ## TIP: Installing the nix package manager
 
@@ -41,3 +35,13 @@ The two commands differ by one option:
 
 > NOTE: The "daemon" in "multi-user" mode is an internal service that manages download/installation (akin to
 > `dockerd`).  For our purposes, `nix` does not start, stop, or register any network services.
+
+## General knowledge requirements
+
+Additionally, you should have some basic understanding of the tools/systems involved:
+
+* Git
+* PHP/JS development (e.g. `composer`, `npm`)
+* Unix CLI (e.g. `bash`)
+* Process management (e.g. `ps`, `kill`), esp for `httpd` and `mysqld`
+* Filesystem management (e.g. "Disk Utility" on OSX; `umount` on Linux)
