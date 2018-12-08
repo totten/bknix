@@ -1,5 +1,7 @@
 # nix-shell: Run bknix in a temporary subshell
 
+(*This assumes that you have already [met the basic requirements](requirements.md).*)
+
 In this tutorial, we'll start a new subshell with all of the packages for `dfl`.  The packages will only be visible within our
 shell.
 
@@ -8,7 +10,7 @@ change the profile definition) if you work within a subshell.
 
 ## Quick Version
 
-This document can be summarized as three steps (four commands):
+This document can be summarized as a few small commands:
 
 ```
 me@localhost:~$ git clone https://github.com/totten/bknix

@@ -1,5 +1,7 @@
 # nix-env: Install bknix to a profile folder
 
+(*This assumes that you have already [met the basic requirements](requirements.md).*)
+
 Let's use the `dfl` profile and install all its packages (PHP, MySQL, etc) to one folder (`/nix/var/nix/profiles/bknix-dfl`).
 
 If you need to integrate with tools, workflows, or initialization systems that are not specifically aware of `nix` (such as a graphical IDE

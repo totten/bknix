@@ -1,5 +1,7 @@
 `bknix` is a highly opinionated environment for developing in PHP/JS -- esp for developing patches/add-ons for CiviCRM.
 
+## Background
+
 * [Critical comparison](doc/comparison.md)
 * [Requirements](doc/requirements.md)
 
