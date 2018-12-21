@@ -36,6 +36,9 @@ function install_all_jenkins() {
   RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
   RAMDISKSIZE=4G
   HTTPD_DOMAIN=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip' -H "Metadata-Flavor: Google").nip.io
+  ## TODO: move customizations for RAMDISKSIZE and HTTPD_DOMAIN? then we can start using the normal copy of install_all_jenkins()?
+
+  [ -f /etc/bknix-ci/install_all_jenkins.sh ] && source /etc/bknix-ci/install_all_jenkins.sh
 
   install_user
   install_ramdisk
@@ -54,6 +57,9 @@ function install_all_publisher() {
   RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
   RAMDISKSIZE=500M
   HTTPD_DOMAIN=$(curl 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip' -H "Metadata-Flavor: Google").nip.io
+  ## TODO: move customizations for RAMDISKSIZE and HTTPD_DOMAIN? then we can start using the normal copy of install_all_jenkins()?
+
+  [ -f /etc/bknix-ci/install_all_publisher.sh ] && source /etc/bknix-ci/install_all_publisher.sh
 
   install_user
   install_ramdisk

@@ -10,6 +10,8 @@ function install_all_jenkins() {
   RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
   RAMDISKSIZE=8G
 
+  [ -f /etc/bknix-ci/install_all_jenkins.sh ] && source /etc/bknix-ci/install_all_jenkins.sh
+
   install_user
   install_ramdisk
 
@@ -27,6 +29,8 @@ function install_all_publisher() {
   RAMDISK="/mnt/mysql/$OWNER"
   RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
   RAMDISKSIZE=500M
+
+  [ -f /etc/bknix-ci/install_all_publisher.sh ] && source /etc/bknix-ci/install_all_publisher.sh
 
   install_user
   install_ramdisk
