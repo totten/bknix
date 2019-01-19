@@ -1,0 +1,86 @@
+format: 'loco-0.1'
+default_environment:
+ - HTTPD_DOMAIN=localhost
+ - HTTPD_PORT=8000
+ - HTTPD_VDROOT=$LOCO_PRJ/web
+ - LOCALHOST=127.0.0.1
+ - MEMCACHED_PORT=11211
+ - MYSQL_PORT=$MYSQL1_PORT
+ - MYSQL1_PORT=3306
+ - MYSQL2_PORT=3307
+ - PHPFPM_PORT=9000
+ - REDIS_PORT=6379
+ - XDEBUG_PORT=9000
+
+environment:
+ # CLI applications should use our stuff
+ - AMP_HOME=$LOCO_VAR/amp
+ - MYSQL_HOME=$LOCO_VAR/mysql-1/conf
+ 
+ # Overrides for bknix peculiarities
+ - HTTPD_DOMAIN=bknix
+ - HTTPD_PORT=8001
+ - HTTPD_VDROOT=$LOCO_PRJ/build
+ - MEMCACHED_PORT=12221
+ - MYSQL1_PORT=3307
+ - MYSQL2_PORT=3308
+ - PHPFPM_PORT=9009
+ - REDIS_PORT=6380
+
+services:
+
+  redis:
+    run: 'redis-server --port "$REDIS_PORT" --bind "$LOCALHOST" --pidfile "$LOCO_SVC_VAR/redis.pid" --dir "$LOCO_SVC_VAR"'
+    pid_file: '$LOCO_SVC_VAR/redis.pid'
+
+  memcached:
+    run: 'memcached --port=$MEMCACHED_PORT --pidfile="$LOCO_SVC_VAR/memcached.pid"'
+    pid_file: '$LOCO_SVC_VAR/memcached.pid'
+
+  php-fpm:
+    run: 'php-fpm -y "$LOCO_SVC_VAR/php-fpm.conf" --nodaemonize'
+    pid_file: '$LOCO_SVC_VAR/php-fpm.pid'
+
+  apache-vdr:
+    init:
+      - cp "$LOCO_SVC_CFG"/conf/{magic,mime.types} "$LOCO_SVC_VAR/conf"
+      - mk-apache-links
+    run: 'apachectl -d "$LOCO_SVC_VAR" -DFOREGROUND'
+    pid_file: '$LOCO_SVC_VAR/httpd.pid'
+
+  mysql-1:
+    environment:
+      - MYSQL_HOME=$LOCO_SVC_VAR/conf
+    init:
+      - 'loco-mysql-init'
+    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+
+  mysql-2:
+    environment:
+      - MYSQL_HOME=$LOCO_SVC_VAR/conf
+    init:
+      - 'loco-mysql-init'
+    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+
+  mysql-repl:
+    ## We probably need to figure a better way for this... does work with 'loco run', but doesn't work with 'loco init'
+    depends: ['mysql-1', 'mysql-2']
+    init:
+      ## FIXME: We currently don't have a good signal for when processes have started. Maybe letting the daemons handle forking will help?
+      ## Otherwise I guess we need a richer ping/heartbeat mechanism?
+      - sleep 3
+      - 'loco-mysql-repl'
+    run: 'sleep 10000'
+
+  amp:
+    depends: ['mysql-repl']
+    init:
+      ## FIXME: We currently don't have a good signal for when processes have started. Maybe letting the daemons handle forking will help?
+      ## Otherwise I guess we need a richer ping/heartbeat mechanism?
+      - sleep 3
+      - 'amp config:set --db_type=mysql_dsn --mysql_dsn="mysql://root:@$LOCALHOST:$MYSQL_PORT"'
+      ## apache-vdr detects new vhosts automatically
+      - 'amp config:set --httpd_type=apache24 --httpd_restart_command=NONE'
+    run: 'sleep 10000'
