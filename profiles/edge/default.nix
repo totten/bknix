@@ -15,7 +15,7 @@ in [
     pkgs.nodejs-8_x
     pkgs.apacheHttpd
     pkgs.memcached
-    pkgs.mysql57
+    pkgs.mariadb
     pkgs.redis
 
     /* CLI utilities */
