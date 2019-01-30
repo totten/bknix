@@ -19,6 +19,7 @@ in [
     pkgs.redis
 
     /* CLI utilities */
+    bkpkgs.loco
     pkgs.bzip2
     pkgs.curl
     pkgs.git
