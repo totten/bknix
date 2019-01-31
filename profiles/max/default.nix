@@ -20,6 +20,7 @@ in [
 
     /* CLI utilities */
     bkpkgs.loco
+    bkpkgs.ramdisk
     pkgs.bzip2
     pkgs.curl
     pkgs.git
