@@ -11,6 +11,7 @@ default_environment:
  - PHPFPM_PORT=9000
  - REDIS_PORT=6379
  - XDEBUG_PORT=9000
+ - RAMDISK_SIZE=800
 
 environment:
  # CLI applications should use our stuff
@@ -26,6 +27,11 @@ environment:
  - MYSQL2_PORT=3308
  - PHPFPM_PORT=9009
  - REDIS_PORT=6380
+
+volume:
+  init: 'ramdisk start "$LOCO_VAR" "$RAMDISK_SIZE"'
+  cleanup: 'ramdisk stop "$LOCO_VAR"'
+  message: 'Loco data volume is "<comment>$LOCO_VAR</comment>".'
 
 services:
 
