@@ -13,10 +13,13 @@ or system-level process manager), this may be the most convenient arrangement. I
 This document can be summarized as two steps (three commands):
 
 ```
-me@localhost:~$ sudo -i nix-env -i \
+me@localhost:~$ sudo -i
+root@localhost:~$ nix-env -iA cachix -f https://cachix.org/api/v1/install
+root@localhost:~$ cachix use bknix
+root@localhost:~$ nix-env -i \
   -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl' \
-  -p /nix/var/nix/profiles/bknix-dfl \
-  --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false
+  -p /nix/var/nix/profiles/bknix-dfl
+root@localhost:~$ exit
 me@localhost:~$ export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
 me@localhost:~$ eval $(bknix env --data-dir "$HOME/bknix")
 ```
@@ -24,15 +27,26 @@ me@localhost:~$ eval $(bknix env --data-dir "$HOME/bknix")
 The rest of this document explains these steps in more depth.  If you
 already understand them, then proceed to [bknix: General usage](usage.md).
 
+## Cache Setup
+
+This step is technically optional, but it will improve download times --
+allowing you to download build-compiled binaries.
+
+```bash
+sudo -i
+nix-env -iA cachix -f https://cachix.org/api/v1/install
+cachix use bknix
+```
+
 ## Download
 
 The command `nix-env -i` will download all of the packages for `dfl`.
 
 ```bash
-sudo -i nix-env -i \
+sudo -i
+nix-env -i \
   -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl' \
   -p /nix/var/nix/profiles/bknix-dfl \
-  --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false
 ```
 
 Let's break down into a few parts:
@@ -42,7 +56,6 @@ Let's break down into a few parts:
 * `-f 'https://github.com/totten/bknix/archive/master.tar.gz'` means *download the latest bknix configuration file from Github*
 * `-E 'f: f.profiles.dfl'` means *evaluate the configuration file and return property `f.profiles.dfl` (the list of packages for `dfl`))*
 * `-p /nix/var/nix/profiles/bknix-dfl` means *put the packages in the shared profile folder `bknix-dfl`*
-* `--option binary-caches ...` means *download pre-compiled packages from the official `cache.nixos.org` server and the supplemental `bknix.think.hm` server*
 
 The command may take some time when you first it -- it will need to download a combination of pre-compiled binaries and source-code. (It goes
 faster when using pre-compiled binaries; if those aren't available, then it will download source-code and compile it.)

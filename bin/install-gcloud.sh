@@ -144,11 +144,9 @@ function install_use_bknix() {
 }
 
 function install_warmup() {
-  echo "Warming up binary cache"
-  nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . dfl -c true
-  nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . min -c true
-  nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . max -c true
-  #x nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . edge -c true
+  echo "Setup binary cache"
+  nix-env -iA cachix -f https://cachix.org/api/v1/install
+  cachix use bknix
 }
 
 ###########################################################
