@@ -14,8 +14,9 @@ This document can be summarized as a few small commands:
 
 ```
 me@localhost:~$ git clone https://github.com/totten/bknix
+me@localhost:~$ nix-env -iA cachix -f https://cachix.org/api/v1/install
+me@localhost:~$ cachix use bknix
 me@localhost:~$ cd bknix
-me@localhost:~/bknix$ sudo nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . dfl -c true
 me@localhost:~/bknix$ nix-shell -A dfl
 [nix-shell:~/bknix]$
 ```
@@ -38,24 +39,15 @@ This should be pretty quick.
 `nix` does the heavy lifting of downloading packages. It can download prebuilt binaries; and it can build new binaries
 (from source); and all of this is automated and generally works without any special steps.
 
-There's a small catch.  Installing prebuilt binaries is faster than building from source.  The official download server (`cache.nixos.org`)
-only has binaries for official packages -- but not for our customized packages.  To get prebuilt binaries for our customized packages, you
-can use the supplemental server (`bknix.think.hm`).  This command downloads binaries wherever they're available (official or supplemental
-servers).
+There's a small catch.  Installing prebuilt binaries is faster than building from source.  The official download server
+(`cache.nixos.org`) only has binaries for official packages -- but not for our customized packages.  To get prebuilt
+binaries for our customized packages, you can use the supplemental "cachix" system.  This command downloads binaries
+wherever they're available (official or supplemental servers).
 
 ```
-cd bknix
-sudo nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . dfl -c true
+nix-env -iA cachix -f https://cachix.org/api/v1/install
+cachix use bknix
 ```
-
-> TIP: If you use more profiles, then repeat this command -- and substitute `dfl` with the appropriate profile-name, e.g.
->
-> ```
-> sudo nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . min -c true
-> sudo nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . max -c true
-> ```
-
-This can take a chunk of time (depending on how many packages need to be downloaded and/or compiled).
 
 ## Step 3. (Day-to-day) Open a subshell
 
