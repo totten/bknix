@@ -3,14 +3,14 @@
 [client]
 user		= root
 #password	= your_password
-port		= {{MYSQL_PORT}}
+port		= {{MYSQLD_PORT}}
 socket		= {{LOCO_SVC_VAR}}/run/mysql.sock
 
 [mysqld]
-server-id	= {{MYSQL_PORT}}
+server-id	= {{MYSQLD_PORT}}
 bind-address	= {{LOCALHOST}}
 # bind-address	= *
-port		= {{MYSQL_PORT}}
+port		= {{MYSQLD_PORT}}
 socket		= {{LOCO_SVC_VAR}}/run/mysql.sock
 pid_file        = {{LOCO_SVC_VAR}}/run/mysql.pid
 tmpdir          = {{LOCO_SVC_VAR}}/tmp

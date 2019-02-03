@@ -1,24 +1,32 @@
 format: 'loco-0.1'
 default_environment:
+ - HOSTS_TYPE=file
  - HTTPD_DOMAIN=localhost
  - HTTPD_PORT=8000
  - HTTPD_VDROOT=$LOCO_PRJ/web
+ - HTTPD_VISIBILITY=local
  - LOCALHOST=127.0.0.1
  - MEMCACHED_PORT=11211
- - MYSQL_PORT=$MYSQL1_PORT
+ - MYSQLD_PORT=$MYSQL1_PORT
  - MYSQL1_PORT=3306
  - MYSQL2_PORT=3307
  - PHPFPM_PORT=9000
  - REDIS_PORT=6379
  - XDEBUG_PORT=9000
- - RAMDISK_SIZE=800
+ - RAMDISK_SIZE=600
 
 environment:
  # CLI applications should use our stuff
- - AMP_HOME=$LOCO_VAR/amp
- - MYSQL_HOME=$LOCO_VAR/mysql-1/conf
+ - AMPHOME=$LOCO_VAR/amp
+ - BKIT=$LOCO_PRJ/civicrm-buildkit
+ - MYSQL_HOME=$LOCO_VAR/mysql/conf
+ #- MYSQL_HOME=$LOCO_VAR/mysql-1/conf
+ #FIXME# - NODE_PATH=$BKIT/node_modules:$NODE_PATH
+ #FIXME# - PATH=$BKIT/bin:$PATH
  
  # Overrides for bknix peculiarities
+ - BKNIXDIR=$LOCO_PRJ/build
+ - HOSTS_TYPE=none
  - HTTPD_DOMAIN=bknix
  - HTTPD_PORT=8001
  - HTTPD_VDROOT=$LOCO_PRJ/build
@@ -41,6 +49,7 @@ services:
     message: 'Redis is running on "<comment>$LOCALHOST:$REDIS_PORT</comment>".'
 
   memcached:
+    enabled: false
     run: 'memcached --port=$MEMCACHED_PORT --pidfile="$LOCO_SVC_VAR/memcached.pid"'
     pid_file: '$LOCO_SVC_VAR/memcached.pid'
     message: 'Memcached is running on "<comment>$LOCALHOST:$MEMCACHED_PORT</comment>".'
@@ -61,7 +70,18 @@ services:
     pid_file: '$LOCO_SVC_VAR/httpd.pid'
     message: 'Apache HTTPD is running at "<comment>http://$LOCALHOST:$HTTPD_PORT</comment>" with content from "<comment>$HTTPD_VDROOT</comment>".'
 
+  mysql:
+    enabled: true
+    environment:
+      - MYSQL_HOME=$LOCO_SVC_VAR/conf
+    init:
+      - 'loco-mysql-init'
+    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+    message: 'MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
+
   mysql-1:
+    enabled: false
     environment:
       - MYSQL_HOME=$LOCO_SVC_VAR/conf
     init:
@@ -71,6 +91,7 @@ services:
     message: 'MySQL (master) is running on "<comment>$LOCALHOST:$MYSQL1_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
 
   mysql-2:
+    enabled: false
     environment:
       - MYSQL_HOME=$LOCO_SVC_VAR/conf
     init:
@@ -80,6 +101,7 @@ services:
     message: 'MySQL (slave) is running on "<comment>$LOCALHOST:$MYSQL2_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
 
   mysql-repl:
+    enabled: false
     ## We probably need to figure a better way for this... does work with 'loco run', but doesn't work with 'loco init'
     depends: ['mysql-1', 'mysql-2']
     init:
@@ -92,14 +114,15 @@ services:
     message: 'MySQL master-slave setup between "<comment>$LOCALHOST:$MYSQL1_PORT</comment>" and "<comment>$LOCALHOST:$MYSQL2_PORT</comment>".'
 
   amp:
-    depends: ['mysql-repl']
     init:
       ## FIXME: We currently don't have a good signal for when processes have started. Maybe letting the daemons handle forking will help?
       ## Otherwise I guess we need a richer ping/heartbeat mechanism?
       # - 'for n in $(seq 4 -2 2) ; do echo "Start $LOCO_SVC in $n sec..."; sleep 2; done'
       - 'step=2; total=4; for n in `seq $total -$step $step` ; do echo "Start $LOCO_SVC in $n sec..."; sleep $step; done'
-      - 'amp config:set --db_type=mysql_dsn --mysql_dsn="mysql://root:@$LOCALHOST:$MYSQL_PORT"'
-      ## apache-vdr detects new vhosts automatically
-      - 'amp config:set --httpd_type=apache24 --httpd_restart_command=NONE'
+      - 'amp config:set --db_type=mysql_dsn --mysql_dsn="mysql://root:@$LOCALHOST:$MYSQLD_PORT"'
+      ## apache-vdr detects new vhosts automatically. We could probably even use httpd_type=none, except for its console spamminess.
+      - 'amp config:set --httpd_type=apache24 --httpd_restart_command=NONE --httpd_visibility="$HTTPD_VISIBILITY" --httpd_shared_ports="80,$HTTPD_PORT"'
+      - 'amp config:set --hosts_type="$HOSTS_TYPE" --hosts_ip="$LOCALHOST"'
+      - 'amp config:set --perm_type=none'
     run: 'sleep 10000'
     message: 'AMP-CLI is configured to use these services.'
