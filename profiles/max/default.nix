@@ -24,6 +24,7 @@ in [
     pkgs.bzip2
     pkgs.curl
     pkgs.git
+    pkgs.gitAndTools.hub
     pkgs.gnutar
     pkgs.hostname
     pkgs.ncurses
