@@ -44,15 +44,17 @@ echo "Setup slave\n";
 list ($masterStatus) = master()->query('SHOW MASTER STATUS')->fetchAll();
 
 $slave = slave();
-$changeMaster = $slave->prepare("CHANGE MASTER TO MASTER_HOST=:host, MASTER_PORT=:port, MASTER_USER=:user,  MASTER_PASSWORD=:pass, MASTER_LOG_FILE=:file, MASTER_LOG_POS=:pos");
-$changeMaster->bindValue(':host', '127.0.0.1');
-$changeMaster->bindValue(':port', (int)getenv('MYSQL1_PORT'), PDO::PARAM_INT);
-$changeMaster->bindValue(':user', 'repl');
-$changeMaster->bindValue(':pass', 'totallyInsecureRepl');
-$changeMaster->bindValue(':file', $masterStatus['File']);
-$changeMaster->bindValue(':pos', $masterStatus['Position'], PDO::PARAM_INT);
-$changeMaster->execute();
-
+$changeMaster = strtr(
+  "CHANGE MASTER TO MASTER_HOST=:host, MASTER_PORT=:port, MASTER_USER=:user,  MASTER_PASSWORD=:pass, MASTER_LOG_FILE=:file, MASTER_LOG_POS=:pos", [
+    ':host' => $slave->quote('127.0.0.1'),
+    ':port' => (int)getenv('MYSQL1_PORT'),
+    ':user' => $slave->quote('repl'),
+    ':pass' => $slave->quote('totallyInsecureRepl'),
+    ':file' => $slave->quote($masterStatus['File']),
+    ':pos' => (int)$masterStatus['Position'],
+  ]
+);
+$slave->exec($changeMaster);
 $slave->exec('START SLAVE');
 
 $master->exec("UNLOCK TABLES");
