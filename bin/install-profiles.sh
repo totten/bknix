@@ -22,6 +22,7 @@
 
 VERSION=${VERSION:-master}
 PROFILES=${PROFILES:-min max dfl}
+DEFN="${DEFN:-https://github.com/totten/bknix/archive/$VERSION.tar.gz}"
 
 if [ -z `which nix` ]; then
   echo "Please install \"nix\" before running this. See: https://nixos.org/nix/manual/"
@@ -29,6 +30,12 @@ if [ -z `which nix` ]; then
 fi
 
 for PROFILE in $PROFILES ; do
-  echo "Creating profile \"/nix/var/nix/profiles/bknix-$PROFILE\" (version \"$VERSION\")"
-  sudo -i nix-env -i -p /nix/var/nix/profiles/bknix-$PROFILE -f "https://github.com/totten/bknix/archive/$VERSION.tar.gz" -E "f: f.profiles.$PROFILE"
+  PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
+  if [ -d "$PRFDIR" ]; then
+    echo "Removing profile \"$PRFDIR\""
+    sudo -i nix-env -p "$PRFDIR" -e '.*'
+  fi
+  echo "Creating profile \"$PRFDIR\" (version \"$VERSION\")"
+  #sudo -i nix-env -i -p $PRFDIR -f "https://github.com/totten/bknix/archive/$VERSION.tar.gz" -E "f: f.profiles.$PROFILE"
+  sudo -i nix-env -i -p "$PRFDIR" -f "$DEFN" -E "f: f.profiles.$PROFILE"
 done
