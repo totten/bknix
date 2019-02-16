@@ -37,9 +37,7 @@ environment:
  - REDIS_PORT=6380
 
 volume:
-  init: 'ramdisk start "$LOCO_VAR" "$RAMDISK_SIZE"'
-  cleanup: 'ramdisk stop "$LOCO_VAR"'
-  message: 'Loco data volume is "<comment>$LOCO_VAR</comment>".'
+  ramdisk: $RAMDISK_SIZE
 
 services:
 
