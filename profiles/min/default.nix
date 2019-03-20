@@ -25,7 +25,7 @@ in [
     pkgs.git
     pkgs.gnutar
     pkgs_1809.hostname
-    pkgs.ncurses
+    pkgs_1809.ncurses
     pkgs.patch
     pkgs.rsync
     pkgs.unzip
