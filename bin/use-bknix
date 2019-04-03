@@ -31,7 +31,8 @@ fi
 
 export PATH="$PRFDIR/bin:$PATH"
 
-for CANDIDATE in "/home/$OWNER/bknix" "/home/$OWNER/bknix-$PROFILE" ; do
+## FIXME: The OWNER thing probably shouldn't exist. Easier to just use HOME and USER. But removing it requires other updates/verification.
+for CANDIDATE in "/home/$OWNER/bknix" "/home/$OWNER/bknix-$PROFILE" "/Users/$OWNER/bknix" "/Users/$OWNER/bknix-$PROFILE" ; do
   if [ -d "$CANDIDATE" ]; then
     export BKNIXDIR="$CANDIDATE"
   fi
