@@ -19,6 +19,9 @@
 #
 # Example: Install (or upgrade) all the profiles defined in some other branch
 #   env VERSION=someBranch sh <(curl https://raw.githubusercontent.com/totten/bknix/someBranch/bin/install-profiles.sh)
+#
+# Example: Install (or upgrade) using the local profile definitions
+#    env PROFILES="min dfl max edge" DEFN=$PWD ./bin/install-profiles.sh
 
 VERSION=${VERSION:-master}
 PROFILES=${PROFILES:-min max dfl}
