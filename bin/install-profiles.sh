@@ -22,6 +22,9 @@
 #
 # Example: Install (or upgrade) using the local profile definitions
 #    env PROFILES="min dfl max edge" DEFN=$PWD ./bin/install-profiles.sh
+#
+# Example: Install (or upgrade) the profiles for the current user based on the current/local definitions
+#   env DEFN=$PWD FORUSER=1 ./bin/install-profiles.sh
 
 VERSION=${VERSION:-master}
 PROFILES=${PROFILES:-min max dfl}
@@ -32,13 +35,20 @@ if [ -z `which nix` ]; then
   exit 2
 fi
 
+if [ -n "$FORUSER" ]; then
+  BASEDIR="/nix/var/nix/profiles/per-user/$USER"
+  SUDO=
+else
+  BASEDIR=/nix/var/nix/profiles
+  SUDO='sudo -i'
+fi
+
 for PROFILE in $PROFILES ; do
-  PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
+  PRFDIR="$BASEDIR/bknix-$PROFILE"
   if [ -d "$PRFDIR" ]; then
     echo "Removing profile \"$PRFDIR\""
-    sudo -i nix-env -p "$PRFDIR" -e '.*'
+    $SUDO nix-env -p "$PRFDIR" -e '.*'
   fi
   echo "Creating profile \"$PRFDIR\" (version \"$VERSION\")"
-  #sudo -i nix-env -i -p $PRFDIR -f "https://github.com/totten/bknix/archive/$VERSION.tar.gz" -E "f: f.profiles.$PROFILE"
-  sudo -i nix-env -i -p "$PRFDIR" -f "$DEFN" -E "f: f.profiles.$PROFILE"
+  $SUDO nix-env -i -p "$PRFDIR" -f "$DEFN" -E "f: f.profiles.$PROFILE"
 done
