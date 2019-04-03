@@ -6,32 +6,32 @@ set -e
 function get_svcs() {
   for svc in bknix{,-publisher}-{dfl,min,max,edge}{,-mysqld} ; do
     if [ -f "/etc/systemd/system/$svc.service" ]; then
-      echo $svc
+      echo -n " $svc"
     fi
   done
 }
 function get_ramdisks() {
   for svc in mnt-mysql-{jenkins,publisher}.mount ; do
     if [ -f "/etc/systemd/system/$svc" ]; then
-      echo $svc
+      echo -n " $svc"
     fi
   done
 }
 
 function do_stop() {
-  echo "Stopping all services"
+  echo "Stopping all services: $(get_svcs)"
   $GUARD systemctl stop $(get_svcs)
   $GUARD sleep 3 # Don't know if this is actually needed, but it's improved reliability in the past.
-  echo "Stopping all ramdisks"
+  echo "Stopping all ramdisks: $(get_ramdisks)"
   $GUARD systemctl stop $(get_ramdisks)
 }
 
 
 function do_start() {
-  echo "Starting all ramdisks"
+  echo "Starting all ramdisks: $(get_ramdisks)"
   $GUARD systemctl start $(get_ramdisks)
   $GUARD sleep 3 # Don't know if this is actually needed, but it's improved reliability in the past.
-  echo "Starting all services"
+  echo "Starting all services: $(get_svcs)"
   $GUARD systemctl start $(get_svcs)
 }
 
