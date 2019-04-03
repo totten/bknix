@@ -13,7 +13,7 @@ in [
 
     /* Major services */
     bkpkgs.php56
-    pkgs.nodejs-6_x
+    pkgs.nodejs-8_x
     pkgs.apacheHttpd
     pkgs.memcached
     bkpkgs.mysql55
