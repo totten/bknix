@@ -8,8 +8,18 @@
 ##   eval $(use-bknix max)
 ##   eval $(use-bknix dfl)
 
+if [ -z "$OWNER" ]; then
+  OWNER=$USER
+fi
+
 PROFILE="$1"
-PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
+
+for BASEDIR in "/nix/var/nix/profiles/per-user/$OWNER" "/nix/var/nix/profiles" ;do
+  PRFDIR="$BASEDIR/bknix-$PROFILE"
+  if [ -d "$PRFDIR" ]; then
+    break
+  fi
+done
 
 if [ -z "$PROFILE" -o ! -d "$PRFDIR" ]; then
   echo "The specified profile does not correspond to an actual profile"
@@ -21,10 +31,11 @@ fi
 
 export PATH="$PRFDIR/bin:$PATH"
 
-if [ -z "$OWNER" ]; then
-  OWNER=$USER
-fi
-export BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
+for CANDIDATE in "/home/$OWNER/bknix" "/home/$OWNER/bknix-$PROFILE" ; do
+  if [ -d "$CANDIDATE" ]; then
+    export BKNIXDIR="$CANDIDATE"
+  fi
+done
 if [ ! -d "$BKNIXDIR" ]; then
   echo "WARNING: The BKNIXDIR ($BKNIXDIR) does not exist. If it was initialized by another user, try setting OWNER first." >&2
 fi
