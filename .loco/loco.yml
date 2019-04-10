@@ -6,6 +6,8 @@ default_environment:
  - HTTPD_VDROOT=$LOCO_PRJ/web
  - HTTPD_VISIBILITY=local
  - LOCALHOST=127.0.0.1
+ - MAIL_SMTP_PORT=1025
+ - MAIL_HTTP_PORT=1080
  - MEMCACHED_PORT=11211
  - MYSQLD_PORT=$MYSQL1_PORT
  - MYSQL1_PORT=3306
@@ -56,6 +58,10 @@ services:
     run: 'php-fpm -y "$LOCO_SVC_VAR/php-fpm.conf" --nodaemonize'
     pid_file: '$LOCO_SVC_VAR/php-fpm.pid'
     message: 'PHP-FPM is running on "<comment>$LOCALHOST:$PHPFPM_PORT</comment>"'
+
+  mailcatcher:
+    enabled: false
+    run: 'mailcatcher --ip "$LOCALHOST" --smtp-port "$MAIL_SMTP_PORT" --http-port "$MAIL_HTTP_PORT" -f'
 
   ## apache-vdr uses a "virtual document root" to host a wildcard domain;
   ## Formula: "http://{SUBDOMAIN}.{HTTPD_DOMAIN}:{HTTPD_PORT}/" <==> "./build/{SUBDOMAIN}/"

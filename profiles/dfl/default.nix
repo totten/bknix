@@ -16,6 +16,7 @@ in [
     bkpkgs.php56
     pkgs.nodejs-8_x
     pkgs.apacheHttpd
+    pkgs_1809.mailcatcher
     pkgs.memcached
     pkgs_1809.mysql57
     pkgs.redis
