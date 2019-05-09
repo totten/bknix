@@ -54,7 +54,7 @@ For example:
   <thead>
     <tr>
       <th>Goal</th>
-      <th>Suggestion</th>
+      <th>Documentation</th>
     </tr>
   </thead>
   <tbody>
