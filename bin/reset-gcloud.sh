@@ -4,8 +4,17 @@
 
 set -e
 
+function get_svcs() {
+  for svc in bknix{,-publisher}-{dfl,min,max,old,edge}{,-mysqld} ; do
+    if [ -f "/etc/systemd/system/$svc.service" ]; then
+      echo -n " $svc"
+    fi
+  done
+}
+SVCS=$(get_svcs)
+
 echo "Stopping services"
-systemctl stop bknix-{dfl,min,max}{,-mysqld}
+systemctl stop $SVCS
 
 echo "Waiting"
 # Don't know if this is actually needed, but it's improved reliability in the past.
@@ -21,7 +30,7 @@ echo "Starting ramdisk"
 systemctl start mnt-mysql-jenkins.mount
 
 echo "Starting services"
-systemctl start bknix-{dfl,min,max}{,-mysqld}
+systemctl start $SVCS
 
 echo "Updating buildkit"
 ./bin/update-ci-buildkit.sh
