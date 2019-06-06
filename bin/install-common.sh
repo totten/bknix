@@ -79,6 +79,11 @@ function install_profile() {
   SYSTEMSVC="bknix-$PROFILE"
   if [ "$OWNER" != "jenkins" ]; then SYSTEMSVC="bknix-$OWNER-$PROFILE"; fi
 
+  if [ -d "$PRFDIR" ]; then
+    echo "Removing profile \"$PRFDIR\""
+    $SUDO nix-env -p "$PRFDIR" -e '.*'
+  fi
+
   echo "Creating profile \"$PRFDIR\""
   nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
 
