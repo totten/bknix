@@ -11,7 +11,7 @@ in [
     bkpkgs.launcher
 
     /* Major services */
-    bkpkgs.php72
+    bkpkgs.php73
     pkgs.nodejs-8_x
     pkgs.apacheHttpd
     pkgs.memcached
