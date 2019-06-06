@@ -46,6 +46,7 @@ function install_all_jenkins() {
   PROFILE=dfl HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8001 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 MYSQLD_PORT=3307 install_profile
   PROFILE=min HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8002 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 MYSQLD_PORT=3308 install_profile
   PROFILE=max HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8003 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 MYSQLD_PORT=3309 install_profile
+  #x PROFILE=edge HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8004 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12224 PHPFPM_PORT=9012 REDIS_PORT=6383 MYSQLD_PORT=3310 install_profile
 
   unset OWNER RAMDISK RAMDISKSVC RAMDISKSIZE
 }
@@ -103,6 +104,11 @@ function install_profile() {
   SYSTEMSVC="bknix-$PROFILE"
   if [ "$OWNER" != "jenkins" ]; then SYSTEMSVC="bknix-$OWNER-$PROFILE"; fi
 
+  if [ -d "$PRFDIR" ]; then
+    echo "Removing profile \"$PRFDIR\""
+    $SUDO nix-env -p "$PRFDIR" -e '.*'
+  fi
+
   echo "Creating profile \"$PRFDIR\""
   nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
 
@@ -142,6 +148,7 @@ function install_warmup() {
   nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . dfl -c true
   nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . min -c true
   nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . max -c true
+  #x nix run --option binary-caches "https://bknix.think.hm/ https://cache.nixos.org" --option require-sigs false -f . edge -c true
 }
 
 ###########################################################
