@@ -1,4 +1,12 @@
-# Updating binary caches
+# Updating binary caches (cachix)
+
+```
+cd bknix
+export CACHIX_SIGNING_KEY=...fixme...
+nix-build -E 'let p=import ./profiles; in builtins.attrValues p' | sort -u | cachix push bknix
+```
+
+# Updating binary caches (bknix.think.hm)
 
 ```
 cd bknix/pkgs
