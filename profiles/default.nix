@@ -15,7 +15,12 @@ rec {
    max = import ./max/default.nix;
 
    /**
-    * The bleeding-edge build; we may test against this but don't currently need to pass.
+    * An old minimum from a past release.
+    */
+   old = import ./old/default.nix;
+
+   /**
+    * A new maximum for a future release.
     */
    edge = import ./edge/default.nix;
 
