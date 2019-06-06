@@ -13,7 +13,7 @@ in [
     bkpkgs.launcher
 
     /* Major services */
-    bkpkgs.php56
+    bkpkgs.php70
     pkgs.nodejs-8_x
     pkgs.apacheHttpd
     pkgs_1809.mailcatcher
