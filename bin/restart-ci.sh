@@ -4,7 +4,7 @@ GUARD=
 set -e
 
 function get_svcs() {
-  for svc in bknix{,-publisher}-{dfl,min,max,edge}{,-mysqld} ; do
+  for svc in bknix{,-publisher}-{dfl,min,max,old,edge}{,-mysqld} ; do
     if [ -f "/etc/systemd/system/$svc.service" ]; then
       echo -n " $svc"
     fi
