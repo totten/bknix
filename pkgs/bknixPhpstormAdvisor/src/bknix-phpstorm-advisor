@@ -10,6 +10,34 @@ function find_phpunits() {
   done
 }
 
+function show_project_cfg() {
+  echo "Project Preferences:"
+  echo "    PHP: Register the interpreter:"
+  echo "        $PHP"
+  echo "    PHP: Register one of these include paths:"
+  for PHPUNIT in $PHPUNITS ; do
+    echo "        $BKIT/extern/$PHPUNIT"
+  done
+  echo "    Test Frameworks/PHPUnit: Register one of these PHARs:"
+  for PHPUNIT in $PHPUNITS ; do
+    echo "        $BKIT/extern/$PHPUNIT/$PHPUNIT.phar"
+  done
+  echo
+}
+
+function show_run_cfg() {
+  echo "Run: Edit Configuration"
+  echo "    Defaults/Templates: PHPUnit:"
+  echo "        Alternative configuration file:"
+  echo "            $CIVI_CORE/phpunit.xml.dist"
+  echo "        Custom working directory:"
+  echo "            $CIVI_CORE"
+  echo "        Environment variables:"
+  echo "            CIVICRM_UF=UnitTests"
+  echo "            PATH=$PATH"
+  echo
+}
+
 ####################################################
 ## Main
 if [ -z "$LOCO_PRJ" ]; then
@@ -17,40 +45,21 @@ if [ -z "$LOCO_PRJ" ]; then
   exit 1
 fi
 
-BLDNAME="$1"
-if [ -z "$BLDNAME" ]; then
-  echo "About: Identify key details for configuring PhpStorm"
-  echo "Usage: $0 <build-name>"
-  exit 2
-fi
-if [ ! -f "$HTTPD_VDROOT/$BLDNAME.sh" ]; then
-  echo "Failed to find $HTTPD_VDROOT/$BLDNAME.sh"
-  exit 3
-fi
-source "$HTTPD_VDROOT/$BLDNAME.sh"
-
 PHP=$(which php)
 PHPUNITS=$(find_phpunits)
 
 echo "Key details for configuring PhpStorm to run unit-tests:"
 echo
-echo "Project Preferences:"
-echo "    PHP: Register the interpreter:"
-echo "        $PHP"
-echo "    PHP: Register one of these include paths:"
-for PHPUNIT in $PHPUNITS ; do 
-  echo "        $BKIT/extern/$PHPUNIT"
-done
-echo "    Test Frameworks/PHPUnit: Register one of these PHARs:"
-for PHPUNIT in $PHPUNITS ; do 
-  echo "        $BKIT/extern/$PHPUNIT/$PHPUNIT.phar"
-done
-echo "Run: Edit Configuration"
-echo "    Defaults/Templates: PHPUnit:"
-echo "        Alternative configuration file:"
-echo "            $CIVI_CORE/phpunit.xml.dist"
-echo "        Custom working directory:"
-echo "            $CIVI_CORE"
-echo "        Environment variables:"
-echo "            CIVICRM_UF=UnitTests"
-echo "            PATH=$PATH"
+
+show_project_cfg
+
+BLDNAME="$1"
+if [ -z "$BLDNAME" ]; then
+  echo "TIP: To see full phpunit options, specify the name of the target build, e.g."
+  echo "  $0 dmaster"
+elif [ ! -f "$HTTPD_VDROOT/$BLDNAME.sh" ]; then
+  echo "WARNING: Cannot show full phpunit options. Failed to find $HTTPD_VDROOT/$BLDNAME.sh"
+else
+  source "$HTTPD_VDROOT/$BLDNAME.sh"
+  show_run_cfg
+fi
