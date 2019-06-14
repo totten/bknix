@@ -3,22 +3,13 @@
 if [ ! -e "$BKIT" ]; then
   echo "Download buildkit toolchain ($BKIT)"
   git clone https://github.com/civicrm/civicrm-buildkit "$BKIT"
-else
-  echo "Found existing buildkit toolchain ($BKIT)."
 fi
-civi-download-tools -q
 
-## TODO: Move to a template file
-if [ ! -e "$BKIT/app/civibuild.conf" ]; then
-  echo "Initialize civibuild config ($BKIT/app/civibuild.conf)"
-  echo "#!/usr/bin/env bash" > "$BKIT/app/civibuild.conf"
-  echo 'if [ -z "$LOCO_PRJ" ]; then echo "Undefined: LOCO_PRJ" >&2 ; exit 1; fi' >> "$BKIT/app/civibuild.conf"
-  echo 'BLDDIR="$LOCO_PRJ/build"' >> "$BKIT/app/civibuild.conf"
-  echo "URL_TEMPLATE=\"http://%SITE_NAME%.$HTTPD_DOMAIN:$HTTPD_PORT\"" >> "$BKIT/app/civibuild.conf"
-  echo "APACHE_VHOST_ALIAS=1" >> "$BKIT/app/civibuild.conf"
-else
-  echo "Found existing civibuild config ($BKIT/app/civibuild.conf). Files not changed."
-fi
+echo "#!/usr/bin/env bash" > "$BKIT/app/civibuild.conf"
+echo 'if [ -z "$LOCO_CFG" ]; then echo "Undefined: LOCO_CFG" >&2 ; exit 1; fi' >> "$BKIT/app/civibuild.conf"
+echo 'source "$LOCO_CFG"/buildkit/civibuild.conf' >> "$BKIT/app/civibuild.conf"
+
+civi-download-tools -q
 
 # export PATH="$BKIT/bin:$PATH"
 amp config:set --db_type=mysql_dsn --mysql_dsn="mysql://root:@$LOCALHOST:$MYSQLD_PORT"

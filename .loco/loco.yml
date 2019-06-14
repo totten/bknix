@@ -16,6 +16,9 @@ default_environment:
  - REDIS_PORT=6379
  - XDEBUG_PORT=9000
  - RAMDISK_SIZE=600
+ - CIVICRM_LOCALES=en_US,fr_FR
+ # Optional: Set a default admin password. Otherwise, passwords are generated randomly.
+ # - CIVIBUILD_ADMIN_PASS=admin
 
 environment:
  # CLI applications should use our stuff
@@ -120,10 +123,5 @@ services:
   ## FIXME: Consider moving this to nix download system
   buildkit:
     init:
-      ## FIXME: We currently don't have a good signal for when processes have started. Maybe letting the daemons handle forking will help?
-      ## Otherwise I guess we need a richer ping/heartbeat mechanism?
-      # - 'for n in $(seq 4 -2 2) ; do echo "Start $LOCO_SVC in $n sec..."; sleep 2; done'
-      - 'step=2; total=4; for n in `seq $total -$step $step` ; do echo "Start $LOCO_SVC in $n sec..."; sleep $step; done'
       - 'loco-buildkit-init'
-    run: 'sleep 20000'
     message: 'Buildkit (<comment>$BKIT</comment>) is configured to use these services. It produces builds in "<comment>$HTTPD_VDROOT</comment>".'
