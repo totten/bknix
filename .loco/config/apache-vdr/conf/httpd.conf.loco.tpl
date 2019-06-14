@@ -117,5 +117,3 @@ SSLRandomSeed connect builtin
     </FilesMatch>
 
 </VirtualHost>
-
-# IncludeOptional %%BKNIXDIR%%/var/amp/apache.d/*.conf
