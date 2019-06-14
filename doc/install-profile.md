@@ -12,16 +12,15 @@ or system-level process manager), this may be the most convenient arrangement. I
 
 This document can be summarized as two steps (three commands):
 
+<!-- TODO: Combine these into a script "install-workstation.sh"? Maybe also download nix (if it's missing /nix)? -->
+
 ```
-me@localhost:~$ sudo -i
-root@localhost:~$ nix-env -iA cachix -f https://cachix.org/api/v1/install
-root@localhost:~$ cachix use bknix
-root@localhost:~$ nix-env -i \
-  -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl' \
-  -p /nix/var/nix/profiles/bknix-dfl
-root@localhost:~$ exit
-me@localhost:~$ export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
-me@localhost:~$ eval $(bknix env --data-dir "$HOME/bknix")
+me@localhost:~$ nix-env -iA cachix -f https://cachix.org/api/v1/install
+me@localhost:~$ cachix use bknix
+me@localhost:~$ git clone https://github.com/totten/bknix -b master-loco ~/bknix
+me@localhost:~$ env PROFILES="dfl" DEFN=$PWD FORUSER=1 ./bin/install-profiles.sh
+me@localhost:~$ sudo ln -s ~/bknix/bin/use-bknix /usr/local/bin/use-bknix
+me@localhost:~$ eval $( use-bknix dfl )
 ```
 
 The rest of this document explains these steps in more depth.  If you
@@ -40,30 +39,35 @@ cachix use bknix
 
 ## Download
 
-The command `nix-env -i` will download all of the packages for `dfl`.
+For the download process, we perform three installation steps. First, we get
+a copy of `bknix` specifications:
 
 ```bash
-sudo -i
-nix-env -i \
-  -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl' \
-  -p /nix/var/nix/profiles/bknix-dfl \
+git clone https://github.com/totten/bknix -b master-loco ~/bknix
 ```
 
-Let's break down into a few parts:
+Then, we download and install the default profile (`dfl`) in `/nix/var/nix/profiles/per-user/$USER/bknix-dfl`.
 
-* `sudo -i` means *run the command as `root`*
-* `nix-env -i` means *install packages to a live environment*
-* `-f 'https://github.com/totten/bknix/archive/master.tar.gz'` means *download the latest bknix configuration file from Github*
-* `-E 'f: f.profiles.dfl'` means *evaluate the configuration file and return property `f.profiles.dfl` (the list of packages for `dfl`))*
-* `-p /nix/var/nix/profiles/bknix-dfl` means *put the packages in the shared profile folder `bknix-dfl`*
+```
+env PROFILES="dfl" DEFN=$PWD FORUSER=1 ./bin/install-profiles.sh
+```
 
-The command may take some time when you first it -- it will need to download a combination of pre-compiled binaries and source-code. (It goes
-faster when using pre-compiled binaries; if those aren't available, then it will download source-code and compile it.)
+Note the options:
+
+* `PROFILES`: A space-delimited list profiles to install or update (within quote marks)
+* `DEFN`: The location of the `bknix` specification
+* `FORUSER`: The profile should be installed as a `per-user` profile
+
+Finally, we need to register a small utility (`use-bknix`) which will help us work with bknix later.
+
+```
+sudo ln -s ~/bknix/bin/use-bknix /usr/local/bin/use-bknix
+```
 
 Once it's finished downloading, `nix-env` creates a `bin` folder with symlinks to all of the downloaded software.
 
 ```
-$ ls /nix/var/nix/profiles/bknix-dfl/bin/
+$ ls /nix/var/nix/profiles/per-user/$USER/bknix-dfl/bin/
 ab@            bzmore@                      git-receive-pack@    memcached@                   mysql_plugin@               mysqlimport@         redis-check-aof@     zip@
 apachectl@     checkgid@                    git-shell@           my_print_defaults@           mysql_secure_installation@  mysqlpump@           redis-check-rdb@     zipcloak@
 bknix@         curl@                        git-upload-archive@  myisam_ftdump@               mysql_ssl_rsa_setup@        mysqlshow@           redis-cli@           zipgrep@
@@ -81,24 +85,23 @@ bzless@        git-http-backend@            lz4_decompress@      mysql_install_d
 
 ## Environment
 
-After downloading, the programs are available in `/nix/var/nix/profiles/bknix-dfl` but their not ready to use on the command line.  You
-need to setup the environment.
+After downloading, the programs are available in `/nix/var/nix/profiles/per-user/$USER/bknix-dfl`, but they're not ready to use on the command line.
+
+You need to setup the environment. The helper script `use-bknix` will do this, ie
 
 ```
-export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
+eval $(use-bknix dfl)
 ```
 
-This ensures that downloaded *commands* are available. Additionally, you need to set some environment
-variables to ensure that each command *stores data in the appropriate folder*.
+In the example below, observe how we get access to a new version of `php`:
 
 ```
-eval $(bknix env --data-dir "$HOME/bknix")
+me@localhost:~/bknix$ which php
+/usr/bin/php
+me@localhost:~/bknix$ eval $(use-bknix dfl)
+[bknix-dfl:~/bknix] which php
+/nix/var/nix/profiles/bknix-dfl/bin/php
 ```
-
-You can run these two statements manually and they will apply to the current shell.
-
-Additionally, to ensure that the environment is configured in the future (when you open new shells or logout/login/reboot), add
-both statements to your shell initialization script (`~/.profile` or `~/.bashrc`).
 
 Once we know how to open a shell with a well-configured environment, we can proceed to [bknix: General usage](usage.md).
 
