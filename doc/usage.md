@@ -7,11 +7,11 @@ Once you know how to setup a shell (with [nix-shell](nix-shell.md) or [nix-env -
 The highlights of this document can be summarized as a few steps:
 
 ```
-# Step 1. Initialize the data directory (Optional)
-bknix init
+# Step 1. Configure the services (Optional)
+vi .loco/loco.yml
 
 # Step 2. Run the services
-bknix run
+loco run
 
 # Step 3. Do developer-y stuff (New shell)
 civibuild create dmaster
@@ -19,50 +19,19 @@ civibuild create dmaster
 
 The rest of this document explains these steps in more depth. 
 
-## Step 1. Initialize the data directory (Optional)
+## Important Folders
 
-The data directory (`$BKNIXDIR`) stores several things:
+* `./build` - A workspace with various web-builds, git-repos, and such.
+* `./civicrm-buildkit` - A collection of PHP/JS/BASH tools like `civix`, `phpunit4`, `drush`, or `civibuild`
+* `./.loco/var` - Auto-generated configuration files (like `civibuild.conf`, `httpd.conf`, or `redis.conf`), PID files, log files, MySQL data, etc
 
-* `var` - Auto-generated configuration files (like civibuild.conf`, `httpd.conf`, or `redis.conf`), PID files, log files, etc
-* `civicrm-buildkit` - A collection of PHP/JS tools like `civix`, `phpunit4`, or `drush`
-* `build` - A workspace with various git repos for developing code
+## Step 1. Configure the services (Optional)
 
-The `bknix init` command initializes this folder.
+The file `.loco/loco.yml` contains some high-level configuration options. These are used
+to generate some data-files and some configuration-files. You may wish to edit the file
+before starting any services.
 
-This step is optional -- if you skip it, then it will be done automatically.  However, doing this yourself provides
-a good opportunity to customize the configuration.
-
-The first way to customize is to pass options into `bknix init`, as in:
-
-```
-$ env HTTPD_PORT=8001 \
-  MEMCACHED_PORT=12221 \
-  PHPFPM_PORT=9009 \
-  REDIS_PORT=6380 \
-  bknix init
-(bknix) Initialize php config (/Users/me/bknix/var/php)
-(bknix) Initialize redis config (/Users/me/bknix/var/redis)
-(bknix) Initialize memcached config (/Users/me/bknix/var/memcached)
-(bknix) Initialize php-fpm config (/Users/me/bknix/var/php-fpm)
-(bknix) Initialize httpd config (/Users/me/bknix/var/httpd)
-(bknix) Initialize buildkit toolchain (/Users/me/bknix/civicrm-buildkit)
-(bknix) Initialize amp config (/Users/me/bknix/var/amp)
-(bknix) Initialize civibuild config (/Users/me/bknix/civicrm-buildkit/app/civibuild.conf)
-```
-
-For full details on command usage, run `bknix init -h`
-
-After the data directory are generated, you can edit the configuration files to taste -- with commands like:
-
-```
-vi var/php-fpm/php-fpm.conf
-less civicrm-buildkit/app/civibuild.conf.tmpl
-vi civicrm-buildkit/app/civibuild.conf
-# ... and so on ...
-```
-
-Some interesting configurations:
-
+<!-- TODO:
 * Setup default passwords for the admin and demo users.
     * Edit `civicrm-buildkit/app/civibuild.conf`
     * Set `ADMIN_PASS` and `DEMO_PASS`.
@@ -70,36 +39,48 @@ Some interesting configurations:
 * Setup wildcard DNS. (With wildcard DNS, your builds don't need to be registered in `/etc/hosts`, so this avoids `sudo` usage.)
     * Search Google for instructions for installing `dnsmasq` on your platform (e.g. `dnsmasq ubuntu` or `dnsmasq osx`).
     * Run `amp config:set --hosts_type=none`. (This tells `amp` that it doesn't need to do any special work setup DNS records.)
+-->
 <!-- * Set the PHP timezone in `config/php.ini`. -->
 <!-- * Create `etc/bashrc.local` with some CLI customizations -->
 
 (*Aside*: You can update these settings after initial setup, but some settings may require destroying/rebuilding.)
 
-# Step 2. Run the services
+## Step 2. Run the services
 
-Once the data folder is initialized, you can start the major services (`httpd`, `php-fpm`, etc).
+The key command is `loco run`.  This will `loco.yml`, auto-initialize data-files and configuration-files (if needed),
+and start the corresponding services.
 
 ```
-$ bknix run
-(bknix) Found existing php config (/Users/me/bknix/var/php). Files not changed.
-(bknix) Found existing redis config (/Users/me/bknix/var/redis). Files not changed.
-(bknix) Found existing memcached config (/Users/me/bknix/var/memcached). Files not changed.
-(bknix) Found existing php-fpm config (/Users/me/bknix/var/php-fpm). Files not changed.
-(bknix) Found existing httpd config (/Users/me/bknix/var/httpd). Files not changed.
-(bknix) Found existing buildkit toolchain (/Users/me/bknix/civicrm-buildkit).
-(bknix) Found existing amp config (/Users/me/bknix/var/amp). Files not changed.
-(bknix) Found existing civibuild config (/Users/me/bknix/civicrm-buildkit/app/civibuild.conf). Files not changed.
-[apache] Starting
-[php-fpm] Starting
-[redis] Starting
-[memcached] Starting
+$ loco run
+[VOLUME] Initialize folder: /Users/myuser/bknix/.loco/var
+[[ Start ramdisk at "/Users/myuser/bknix/.loco/var" (600mb) ]]
+> Create ramdevice (600mb)
+> Format device (/dev/disk2)
+Initialized /dev/rdisk2 as a 600 MB case-insensitive HFS Plus volume
+> Mount (/Users/myuser/bknix/.loco/var)
+[VOLUME] Service does not specify "run" option
+[redis] Initialize folder: /Users/myuser/bknix/.loco/var/redis
+[php-fpm] Initialize folder: /Users/myuser/bknix/.loco/var/php-fpm
+[redis] Start service: redis-server --port "6380" --bind "127.0.0.1" --pidfile "/Users/myuser/bknix/.loco/var/redis/redis.pid" --dir "/Users/myuser/bknix/.loco/var/redis"
+
+...
+
+======================[ Startup Summary ]======================
+[VOLUME] Loco data volume is a ram disk "/Users/myuser/bknix/.loco/var".
+[redis] Redis is running on "127.0.0.1:6380".
+[php-fpm] PHP-FPM is running on "127.0.0.1:9009"
+[mailcatcher] Mailcatcher is running on "smtp://127.0.0.1:1025" and "http://127.0.0.1:1080"
+[apache-vdr] Apache HTTPD is running at "http://127.0.0.1:8001" with content from "/Users/myuser/bknix/build".
+[mysql] MySQL is running on "127.0.0.1:3307". The default credentials are user="root" and password="".
+[buildkit] Buildkit (/Users/myuser/bknix/civicrm-buildkit) is configured to use these services. It produces builds in "/Users/myuser/bknix/build".
+
+Services have been started. To shutdown, press Ctrl-C.
+===============================================================
 ```
 
 The services are running in the foreground -- additional errors and log messages will be displayed here. 
 
-If you need to stop these services, simply press `Ctrl-C`.
-
-# Step 3. Do developer-y stuff
+## Step 3. Do developer-y stuff
 
 Once the services are running, you can open a new terminal and do more interesting things, e.g.
 
@@ -118,26 +99,27 @@ civibuild create dmaster
 
 For more documentation on `civibuild`, see [Developer Guide: Tools: civibuild](https://docs.civicrm.org/dev/en/latest/tools/civibuild/).
 
-## MySQL Shutdowns and Reboots
+## Cleanups, Shutdowns and Reboots
 
-Eventually, you may need to shutdown or restart the services. This works intuitively for most services; as mentioned above,
-most services will be stopped by simply pressing `Ctrl-C` in the console. But MySQL is special.
+Eventually, you may need to shutdown or restart the services.  This works intuitively for most services; as mentioned
+above, services will be stopped by simply pressing `Ctrl-C` in the console. You can restart the services by
+calling `loco run` again.
 
-To fully and manually shutdown MySQL:
+The runtime data is stored in a ramdisk (`./.loco/var`). The data in this ramdisk can be destroyed either:
 
-* *Stop MySQL daemon*: Run `amp mysql:stop`. (If this doesn't work for some reason, use `killall mysqld` or `killall -9 mysqld`). 
-* *Stop MySQL ramdisk*:
-    * (Linux): Run `mount` to display a list of filesystems. Note the path to the "amp" ramdisk. Use `umount` to unmount it.
-    * (OS X): Open the "Disk Utility" and eject the "AMP" ram disk.
+* _Explicitly_: Run `loco clean` to remove it and release memory promptly
+* _Implicitly_: Whenever you shutdown or reboot the computer, the ramdisk is destroyed.
 
-Shutting down or restarting the workstation will also stop MySQL.
+This begs a question: suppose that you're doing some work, that you reboot, and then you want to continue with work?
 
-How do you bring MySQL back online? If I'm working on a build named `dmaster`, then I'd run one of these two commands:
+The first step should be intuitive: simply call `loco run` to start the services again.
+
+But what about MySQL? The database content is not re-created. Fortunately, `civibuild` provides a few ways to get going again:
 
 ```
-### Load a saved DB snapshot of dmaster. If mysql isn't running, it autostarts.
+### (Option 1) Load a saved DB snapshot of dmaster.
 civibuild restore dmaster
 
-### Build a new DB and new settings files for dmaster.  If mysql isn't running, it autostarts.
+### (Option 2) Build a new DB and new settings files for dmaster.
 civibuild reinstall dmaster
 ```

@@ -18,23 +18,23 @@ CiviCRM system-requirements:
 ## Usage
 
 For day-to-day usage, you start by choosing a profile (such as `dfl`).  Open a suitable shell environment and start the process-manager
-(`bknix run`).  For example:
+(`loco run`).  For example:
 
 ```
 me@localhost:~/bknix$ nix-shell -A dfl
-[nix-shell:~/bknix]$ bknix run
-(bknix) Found existing php config (/Users/me/bknix/var/php). Files not changed.
-(bknix) Found existing redis config (/Users/me/bknix/var/redis). Files not changed.
-(bknix) Found existing memcached config (/Users/me/bknix/var/memcached). Files not changed.
-(bknix) Found existing php-fpm config (/Users/me/bknix/var/php-fpm). Files not changed.
-(bknix) Found existing httpd config (/Users/me/bknix/var/httpd). Files not changed.
-(bknix) Found existing buildkit toolchain (/Users/me/bknix/civicrm-buildkit).
-(bknix) Found existing amp config (/Users/me/bknix/var/amp). Files not changed.
-(bknix) Found existing civibuild config (/Users/me/bknix/civicrm-buildkit/app/civibuild.conf). Files not changed.
-[apache] Starting
-[php-fpm] Starting
-[redis] Starting
-[memcached] Starting
+[nix-shell:~/bknix]$ loco run
+...
+======================[ Startup Summary ]======================
+[VOLUME] Loco data volume is a ram disk "/Users/myuser/bknix/.loco/var".
+[redis] Redis is running on "127.0.0.1:6380".
+[php-fpm] PHP-FPM is running on "127.0.0.1:9009"
+[mailcatcher] Mailcatcher is running on "smtp://127.0.0.1:1025" and "http://127.0.0.1:1080"
+[apache-vdr] Apache HTTPD is running at "http://127.0.0.1:8001" with content from "/Users/myuser/bknix/build".
+[mysql] MySQL is running on "127.0.0.1:3307". The default credentials are user="root" and password="".
+[buildkit] Buildkit (/Users/myuser/bknix/civicrm-buildkit) is configured to use these services. It produces builds in "/Users/myuser/bknix/build".
+
+Services have been started. To shutdown, press Ctrl-C.
+===============================================================
 ```
 
 The services are running in the foreground -- additional errors and log messages will be displayed here. 
@@ -128,7 +128,7 @@ Some of these policies/opinions can be changed, as described below ("Extended in
 * Make it easier to switch between php56, php70, php71. (Currently, you need to search/replace in `default.nix`.)
 * Instead of putting most code in `./civicrm-buildkit`, put it in `$out`. (Preferrably... without neutering git cache.)
 * `mysqld` is spawned in the background via `amp` (b/c that has the automated ramdisk handling). However, it'd be conceptually cleaner
-  to launch `mysqld` in the foreground via `bknix run`.
+  to launch `mysqld` in the foreground via `loco run`.
 
 ## Tips
 
@@ -146,7 +146,7 @@ Some of these policies/opinions can be changed, as described below ("Extended in
 * If you don't already have `git` on your system, patch `default.nix` and add it to the list of `buildInputs`.
   However, if you already have it, then leave the default. (This would prevent potential concerns about different programs managing the same `.git` folders.)
 * To open a MySQL command prompt with admin credentials, run `amp sql -a`.
-* If you're doing development on the bknix initialization process, use `bknix purge` to produce a clean folder (without any data or config).
+* If you're doing development on the bknix service configuration, use `loco clean` or `loco run -f` to produce a clean folder (without any data or config).
 * When you shutdown, the mysql ramdisk remains in memory. To remove or reset it, unmount it with `umount` (in Linux) or *Disk Utility* (in OS X).
 
 ## Updates
@@ -157,7 +157,7 @@ There are a few levels of updates. They run a spectrum from regular (daily)
 to irregular (once every months).
 
 * (*Most frequent; perhaps every day*) *Update the CiviCRM source*: See [CiviCRM Developer Guide: civibuild](https://docs.civicrm.org/dev/en/latest/tools/civibuild/#upgrade-site)
-* (*Mid-level; perhaps every couple weeks*) *Update buildkit's CLI tools*: Run `bknix update`.
+* (*Mid-level; perhaps every couple weeks*) *Update buildkit's CLI tools*: Run `cd civicrm-buildkit && git pull && civi-download-tools`.
 * (*Least frequent; perhaps every couple months*) *Update the full `bknix` stack (mysqld/httpd/etc)*: This takes a few steps.
     * If you haven't already, shutdown any active services (`Ctrl-C` in the background terminal)
     * Exit any active `nix-shell` environments.
