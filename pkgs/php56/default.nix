@@ -24,6 +24,7 @@ let
     { options = ''
             zend_extension=${phpPkgs.xdebug}/lib/php/extensions/xdebug.so
             extension=${phpPkgs.redis}/lib/php/extensions/redis.so
+            extension=${phpPkgs.yaml}/lib/php/extensions/yaml.so
             extension=${phpPkgs.apcu}/lib/php/extensions/apcu.so
             extension=${phpPkgs.memcache}/lib/php/extensions/memcache.so
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
@@ -39,7 +40,7 @@ let
 
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php56";
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.apcu phpPkgs.memcached phpPkgs.memcache phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.apcu phpPkgs.memcached phpPkgs.memcache phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
           makeWrapper ${phpRuntime}/bin/php-fpm $out/bin/php-fpm --add-flags -c --add-flags "${phpIni}"
