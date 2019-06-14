@@ -68,6 +68,10 @@ function install_nix() {
   echo
   echo "Running: sh <(curl https://nixos.org/nix/install) $mode"
   sh <(curl https://nixos.org/nix/install) $mode
+
+  if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+    . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+  fi
 }
 
 function check_reqs() {
@@ -148,6 +152,7 @@ function template_render() {
 
 function install_use_bknix() {
   echo "Installing global helper \"use-bknix\" (/usr/local/bin/use-bknix)"
+  [ ! -d /usr/local/bin ] && sudo mkdir /usr/local/bin
   sudo cp -f bin/use-bknix /usr/local/bin/use-bknix
 }
 
