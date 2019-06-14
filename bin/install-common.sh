@@ -45,6 +45,31 @@ function install_all_publisher() {
 ###########################################################
 ## Install helpers
 
+function install_nix() {
+  if [ -d /nix ]; then
+    return
+  fi
+
+  if [ -z "$(which curl)" ]; then
+    echo "Missing required program: curl" >&2
+    exit 1
+  fi
+
+  local mode
+  if [ -d /etc/systemd ]; then
+    mode="--daemon"
+  elif [ "$(uname)" == "Darwin" ] ; then
+    mode="--daemon"
+  else
+    mode="--no-daemon"
+  fi
+
+  echo "Creating /nix ( https://nixos.org/nix/about.html ). This folder will store any new software in separate folder:"
+  echo
+  echo "Running: sh <(curl https://nixos.org/nix/install) $mode"
+  sh <(curl https://nixos.org/nix/install) $mode
+}
+
 function check_reqs() {
   if [ -z `which nix` ]; then
    echo "Please install \"nix\" before running this. See: https://nixos.org/nix/manual/"
