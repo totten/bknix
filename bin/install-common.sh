@@ -152,7 +152,10 @@ function install_use_bknix() {
 }
 
 function install_warmup() {
+  if grep -q bknix.cachix.org /etc/nix/nix.conf ; then
+    return
+  fi
   echo "Setup binary cache"
-  nix-env -iA cachix -f https://cachix.org/api/v1/install
-  cachix use bknix
+  sudo -i nix-env -iA cachix -f https://cachix.org/api/v1/install
+  sudo -i cachix use bknix
 }
