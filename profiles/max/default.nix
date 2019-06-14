@@ -9,6 +9,7 @@ let
 in [
     /* Custom programs */
     bkpkgs.launcher
+    bkpkgs.bknixPhpstormAdvisor
 
     /* Major services */
     bkpkgs.php72

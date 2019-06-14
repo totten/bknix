@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+####################################################
+## Library
+function find_phpunits() {
+  for n in phpunit{4,5,6,7,8,9} ; do
+    if [ -f "$BKIT/extern/$n/$n.phar" ]; then
+      echo "$n"
+    fi
+  done
+}
+
+####################################################
+## Main
+if [ -z "$LOCO_PRJ" ]; then
+  echo "Please run this within bknix."
+  exit 1
+fi
+
+BLDNAME="$1"
+if [ -z "$BLDNAME" ]; then
+  echo "About: Identify key details for configuring PhpStorm"
+  echo "Usage: $0 <build-name>"
+  exit 2
+fi
+if [ ! -f "$HTTPD_VDROOT/$BLDNAME.sh" ]; then
+  echo "Failed to find $HTTPD_VDROOT/$BLDNAME.sh"
+  exit 3
+fi
+source "$HTTPD_VDROOT/$BLDNAME.sh"
+
+PHP=$(which php)
+PHPUNITS=$(find_phpunits)
+
+echo "Key details for configuring PhpStorm to run unit-tests:"
+echo
+echo "Project Preferences:"
+echo "    PHP: Register the interpreter:"
+echo "        $PHP"
+echo "    PHP: Register one of these include paths:"
+for PHPUNIT in $PHPUNITS ; do 
+  echo "        $BKIT/extern/$PHPUNIT"
+done
+echo "    Test Frameworks/PHPUnit: Register one of these PHARs:"
+for PHPUNIT in $PHPUNITS ; do 
+  echo "        $BKIT/extern/$PHPUNIT/$PHPUNIT.phar"
+done
+echo "Run: Edit Configuration"
+echo "    Defaults/Templates: PHPUnit:"
+echo "        Alternative configuration file:"
+echo "            $CIVI_CORE/phpunit.xml.dist"
+echo "        Custom working directory:"
+echo "            $CIVI_CORE"
+echo "        Environment variables:"
+echo "            CIVICRM_UF=UnitTests"
+echo "            PATH=$PATH"
