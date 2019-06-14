@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [ ! -e "$BKIT" ]; then
+  echo "Download buildkit toolchain ($BKIT)"
+  git clone https://github.com/civicrm/civicrm-buildkit "$BKIT"
+else
+  echo "Found existing buildkit toolchain ($BKIT)."
+fi
+civi-download-tools -q
+
+## TODO: Move to a template file
+if [ ! -e "$BKIT/app/civibuild.conf" ]; then
+  echo "Initialize civibuild config ($BKIT/app/civibuild.conf)"
+  echo "#!/usr/bin/env bash" > "$BKIT/app/civibuild.conf"
+  echo 'if [ -z "$LOCO_PRJ" ]; then echo "Undefined: LOCO_PRJ" >&2 ; exit 1; fi' >> "$BKIT/app/civibuild.conf"
+  echo 'BLDDIR="$LOCO_PRJ/build"' >> "$BKIT/app/civibuild.conf"
+  echo "URL_TEMPLATE=\"http://%SITE_NAME%.$HTTPD_DOMAIN:$HTTPD_PORT\"" >> "$BKIT/app/civibuild.conf"
+  echo "APACHE_VHOST_ALIAS=1" >> "$BKIT/app/civibuild.conf"
+else
+  echo "Found existing civibuild config ($BKIT/app/civibuild.conf). Files not changed."
+fi
+
+# export PATH="$BKIT/bin:$PATH"
+amp config:set --db_type=mysql_dsn --mysql_dsn="mysql://root:@$LOCALHOST:$MYSQLD_PORT"
+## apache-vdr detects new vhosts automatically. We could probably even use httpd_type=none, except for its console spamminess.
+amp config:set --httpd_type=apache24 --httpd_restart_command=NONE --httpd_visibility="$HTTPD_VISIBILITY" --httpd_shared_ports="80,$HTTPD_PORT"
+amp config:set --hosts_type="$HOSTS_TYPE" --hosts_ip="$LOCALHOST"
+amp config:set --perm_type=none

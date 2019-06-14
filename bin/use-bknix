@@ -41,7 +41,9 @@ if [ ! -d "$BKNIXDIR" ]; then
   echo "WARNING: The BKNIXDIR ($BKNIXDIR) does not exist. If it was initialized by another user, try setting OWNER first." >&2
 fi
 
-bknix env --data-dir "$BKNIXDIR"
+CODE=`loco env --export`
+echo "$CODE"
+eval "$CODE"
 ## "bknix env" doesn't add itself to PATH - so we add everything
-echo "export PATH='$PRFDIR/bin:$BKNIXDIR/civicrm-buildkit/bin':\"\$PATH\""
+echo "export PATH='$PRFDIR/bin:$LOCO_PRJ/civicrm-buildkit/bin':\"\$PATH\""
 echo "export PS1=\"[\[\e[34m\]bknix-$PROFILE\[\e[m\]:\[\e[32m\]\w\[\e[m\]] \""

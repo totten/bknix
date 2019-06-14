@@ -19,7 +19,7 @@ default_environment:
 
 environment:
  # CLI applications should use our stuff
- - AMPHOME=$LOCO_VAR/amp
+ - AMPHOME=$LOCO_VAR.keep/amp
  - BKIT=$LOCO_PRJ/civicrm-buildkit
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
  #- MYSQL_HOME=$LOCO_VAR/mysql-1/conf
@@ -27,7 +27,6 @@ environment:
  #FIXME# - PATH=$BKIT/bin:$PATH
  
  # Overrides for bknix peculiarities
- - BKNIXDIR=$LOCO_PRJ/build
  - HOSTS_TYPE=none
  - HTTPD_DOMAIN=bknix
  - HTTPD_PORT=8001
@@ -70,6 +69,7 @@ services:
     init:
       - cp "$LOCO_SVC_CFG"/conf/magic "$LOCO_SVC_CFG"/conf/mime.types "$LOCO_SVC_VAR/conf"
       - mk-apache-links
+      - 'if [ ! -d "$HTTPD_VDROOT" ]; then mkdir "$HTTPD_VDROOT"; fi'
     run: 'apachectl -d "$LOCO_SVC_VAR" -DFOREGROUND'
     pid_file: '$LOCO_SVC_VAR/httpd.pid'
     message: 'Apache HTTPD is running at "<comment>http://$LOCALHOST:$HTTPD_PORT</comment>" with content from "<comment>$HTTPD_VDROOT</comment>".'
@@ -117,16 +117,13 @@ services:
     run: 'sleep 10000'
     message: 'MySQL master-slave setup between "<comment>$LOCALHOST:$MYSQL1_PORT</comment>" and "<comment>$LOCALHOST:$MYSQL2_PORT</comment>".'
 
-  amp:
+  ## FIXME: Consider moving this to nix download system
+  buildkit:
     init:
       ## FIXME: We currently don't have a good signal for when processes have started. Maybe letting the daemons handle forking will help?
       ## Otherwise I guess we need a richer ping/heartbeat mechanism?
       # - 'for n in $(seq 4 -2 2) ; do echo "Start $LOCO_SVC in $n sec..."; sleep 2; done'
       - 'step=2; total=4; for n in `seq $total -$step $step` ; do echo "Start $LOCO_SVC in $n sec..."; sleep $step; done'
-      - 'amp config:set --db_type=mysql_dsn --mysql_dsn="mysql://root:@$LOCALHOST:$MYSQLD_PORT"'
-      ## apache-vdr detects new vhosts automatically. We could probably even use httpd_type=none, except for its console spamminess.
-      - 'amp config:set --httpd_type=apache24 --httpd_restart_command=NONE --httpd_visibility="$HTTPD_VISIBILITY" --httpd_shared_ports="80,$HTTPD_PORT"'
-      - 'amp config:set --hosts_type="$HOSTS_TYPE" --hosts_ip="$LOCALHOST"'
-      - 'amp config:set --perm_type=none'
-    run: 'sleep 10000'
-    message: 'AMP-CLI is configured to use these services.'
+      - 'loco-buildkit-init'
+    run: 'sleep 20000'
+    message: 'Buildkit (<comment>$BKIT</comment>) is configured to use these services. It produces builds in "<comment>$HTTPD_VDROOT</comment>".'
