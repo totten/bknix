@@ -120,6 +120,23 @@ function install_profile() {
   systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
 }
 
+## Install just the binaries for a profile
+## Pre-condition:
+##   PROFILE is a name like "min" or "max"
+##   USER is the current user
+function install_user_profile_binaries() {
+  local PRFDIR
+  PRFDIR="/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
+
+  if [ -d "$PRFDIR" ]; then
+    echo "Removing profile \"$PRFDIR\""
+    nix-env -p "$PRFDIR" -e '.*'
+  fi
+
+  echo "Creating profile \"$PRFDIR\""
+  nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
+}
+
 function template_render() {
   cat "$1" \
     | sed "s;%%RAMDISK%%;$RAMDISK;g" \
