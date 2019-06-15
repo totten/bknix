@@ -32,7 +32,7 @@ source "$BINDIR/install-common.sh"
 
 PROFILES=${PROFILES:-min max dfl}
 
-install_nix
+install_nix_single
 check_reqs
 install_warmup
 install_use_bknix

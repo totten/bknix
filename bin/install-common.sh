@@ -45,7 +45,7 @@ function install_all_publisher() {
 ###########################################################
 ## Install helpers
 
-function install_nix() {
+function install_nix_single() {
   if [ -d /nix ]; then
     return
   fi
@@ -56,15 +56,10 @@ function install_nix() {
   fi
 
   local mode
-  if [ -d /etc/systemd ]; then
-    mode="--daemon"
-  elif [ "$(uname)" == "Darwin" ] ; then
-    mode="--daemon"
-  else
-    mode="--no-daemon"
-  fi
+  mode="--no-daemon"
 
   echo "Creating /nix ( https://nixos.org/nix/about.html ). This folder will store any new software in separate folder:"
+  echo "This will be installed in single-user mode to allow the easiest administration."
   echo
   echo "Running: sh <(curl https://nixos.org/nix/install) $mode"
   sh <(curl https://nixos.org/nix/install) $mode
@@ -161,6 +156,6 @@ function install_warmup() {
     return
   fi
   echo "Setup binary cache"
-  sudo -i nix-env -iA cachix -f https://cachix.org/api/v1/install
-  sudo -i cachix use bknix
+  nix-env -iA cachix -f https://cachix.org/api/v1/install
+  cachix use bknix
 }
