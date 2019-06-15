@@ -41,7 +41,7 @@ if [ ! -d "$BKNIXDIR" ]; then
   echo "WARNING: The BKNIXDIR ($BKNIXDIR) does not exist. If it was initialized by another user, try setting OWNER first." >&2
 fi
 
-CODE=`loco env --export`
+CODE=`cd "$BKNIXDIR" && loco env --export`
 echo "$CODE"
 eval "$CODE"
 ## "bknix env" doesn't add itself to PATH - so we add everything
