@@ -1,6 +1,11 @@
 #!/bin/bash
 
 ###########################################################
+
+# Current v2.2.1 suffers https://github.com/NixOS/nix/issues/2633 (eg on Debain Stretch/gcloud). Use v2.0.4.
+NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.0.4/install"
+
+###########################################################
 ## Primary install routines
 
 ## Setup all services for user "jenkins"
@@ -55,16 +60,15 @@ function install_nix_single() {
     exit 1
   fi
 
-  local mode
-  mode="--no-daemon"
-
   echo "Creating /nix ( https://nixos.org/nix/about.html ). This folder will store any new software in separate folder:"
   echo "This will be installed in single-user mode to allow the easiest administration."
   echo
-  echo "Running: sh <(curl https://nixos.org/nix/install) $mode"
-  sh <(curl https://nixos.org/nix/install) $mode
+  echo "Running: sh <(curl $NIX_INSTALLER_URL) --no-daemon"
+  sh <(curl $NIX_INSTALLER_URL) --no-daemon
 
-  if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+  elif [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
     . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
   fi
 }
@@ -152,8 +156,10 @@ function install_use_bknix() {
 }
 
 function install_warmup() {
-  if grep -q bknix.cachix.org /etc/nix/nix.conf ; then
-    return
+  if [ -f /etc/nix/nix.conf ]; then
+    if grep -q bknix.cachix.org /etc/nix/nix.conf ; then
+      return
+    fi
   fi
   echo "Setup binary cache"
   nix-env -iA cachix -f https://cachix.org/api/v1/install
