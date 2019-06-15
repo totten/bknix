@@ -21,7 +21,7 @@ in rec {
    php73 = import ./php73/default.nix;
    bknixPhpstormAdvisor = import ./bknixPhpstormAdvisor/default.nix;
    transifexClient = import ./transifexClient/default.nix;
-   ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/7a24b2d9ca0b64bbb063b51669d710d384b32616.tar.gz) {};
+   ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/v0.1.1.tar.gz) {};
    loco = callPackage (fetchTarball https://github.com/totten/loco/archive/v0.2.2.tar.gz) {};
    launcher = import ./launcher;
 }
