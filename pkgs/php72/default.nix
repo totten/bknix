@@ -28,6 +28,7 @@ let
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
             extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
+            openssl.cafile=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
       '';
     }
     ''
@@ -38,7 +39,7 @@ let
 
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php72";
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper pkgs.cacert];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
           makeWrapper ${phpRuntime}/bin/php-fpm $out/bin/php-fpm --add-flags -c --add-flags "${phpIni}"

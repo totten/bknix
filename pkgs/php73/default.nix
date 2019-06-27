@@ -22,6 +22,7 @@ let
             extension=${phpPkgs.yaml}/lib/php/extensions/yaml.so
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
+            openssl.cafile=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
       '';
        ## TEST ME: Do we still need imagick? Can we get away with gd nowadays?
        #    extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
@@ -35,8 +36,8 @@ let
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php73";
         ## TEST ME: Do we still need imagick? Can we get away with gd nowadays?
-        # buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper];
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpExtras.timecop pkgs.makeWrapper];
+        # buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper pkgs.cacert];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpExtras.timecop pkgs.makeWrapper pkgs.cacert];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
           makeWrapper ${phpRuntime}/bin/php-fpm $out/bin/php-fpm --add-flags -c --add-flags "${phpIni}"
