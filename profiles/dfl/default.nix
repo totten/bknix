@@ -25,6 +25,7 @@ in [
     pkgs.curl
     pkgs.git
     pkgs.gitAndTools.hub
+    pkgs.gnugrep
     pkgs.gnutar
     pkgs_1809.hostname
     pkgs_1809.ncurses
