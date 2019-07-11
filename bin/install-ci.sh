@@ -12,6 +12,11 @@
 #   Only tested with multiuser mode.
 #   Login as proper root (e.g. `sudo -i bash`)
 #
+# Tip: The default list of active profiles for CI is "dfl min max" (jenkins).
+# To enable "old" or "edge" profiles (or "publisher" user), customize:
+#  - /etc/bknix-ci/install_all_jenkins.sh
+#  - /etc/bknix-ci/install_all_publisher.sh
+#
 # Example: Install (or upgrade) all the profiles
 #   ./bin/install-ci.sh
 #
@@ -34,4 +39,4 @@ check_reqs
 install_warmup
 install_use_bknix
 install_all_jenkins
-#install_all_publisher
+install_all_publisher

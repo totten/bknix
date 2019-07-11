@@ -9,17 +9,22 @@ function install_all_jenkins() {
   RAMDISK="/mnt/mysql/$OWNER"
   RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
   RAMDISKSIZE=8G
+  PROFILES=${PROFILES:-dfl min max}
 
   [ -f /etc/bknix-ci/install_all_jenkins.sh ] && source /etc/bknix-ci/install_all_jenkins.sh
 
   install_user
   install_ramdisk
 
-  PROFILE=dfl HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8001 MEMCACHED_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 MYSQLD_PORT=3307 install_profile
-  PROFILE=min HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8002 MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 MYSQLD_PORT=3308 install_profile
-  PROFILE=max HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8003 MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 MYSQLD_PORT=3309 install_profile
-  #EDGE# PROFILE=edge HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8004 MEMCACHED_PORT=12224 PHPFPM_PORT=9012 REDIS_PORT=6383 MYSQLD_PORT=3310 install_profile
-  #OLD#  PROFILE=old  HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8005 MEMCACHED_PORT=12225 PHPFPM_PORT=9013 REDIS_PORT=6384 MYSQLD_PORT=3311 install_profile
+  for PROFILE in $PROFILES ; do
+    case "$PROFILE" in
+      dfl) HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8001 MEMCACHED_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 MYSQLD_PORT=3307 install_profile ; ;;
+      min) HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8002 MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 MYSQLD_PORT=3308 install_profile ; ;;
+      max) HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8003 MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 MYSQLD_PORT=3309 install_profile ; ;;
+      old) HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8006 MEMCACHED_PORT=12226 PHPFPM_PORT=9014 REDIS_PORT=6385 MYSQLD_PORT=3312 install_profile ; ;;
+      edge) HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8007 MEMCACHED_PORT=12227 PHPFPM_PORT=9015 REDIS_PORT=6386 MYSQLD_PORT=3313 install_profile ; ;;
+    esac
+  done
 
   unset OWNER RAMDISK RAMDISKSVC RAMDISKSIZE
 }
@@ -30,14 +35,19 @@ function install_all_publisher() {
   RAMDISK="/mnt/mysql/$OWNER"
   RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
   RAMDISKSIZE=500M
+  PROFILES=""
 
   [ -f /etc/bknix-ci/install_all_publisher.sh ] && source /etc/bknix-ci/install_all_publisher.sh
 
   install_user
   install_ramdisk
 
-  PROFILE=min HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8004 MEMCACHED_PORT=12224 PHPFPM_PORT=9012 REDIS_PORT=6383 MYSQLD_PORT=3310 install_profile
-  PROFILE=old HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8005 MEMCACHED_PORT=12225 PHPFPM_PORT=9013 REDIS_PORT=6384 MYSQLD_PORT=3311 install_profile
+  for PROFILE in $PROFILES ; do
+    case "$PROFILE" in
+      min) HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8004 MEMCACHED_PORT=12224 PHPFPM_PORT=9012 REDIS_PORT=6383 MYSQLD_PORT=3310 install_profile ; ;;
+      old) HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8005 MEMCACHED_PORT=12225 PHPFPM_PORT=9013 REDIS_PORT=6384 MYSQLD_PORT=3311 install_profile ; ;;
+    esac
+  done
 
   unset OWNER RAMDISK RAMDISKSVC RAMDISKSIZE
 }
@@ -94,7 +104,7 @@ function install_profile() {
   template_render examples/systemd.service > "/etc/systemd/system/${SYSTEMSVC}.service"
   template_render examples/systemd-mysqld.service > "/etc/systemd/system/${SYSTEMSVC}-mysqld.service"
 
-  echo "Activating systemd services \"$SYSTEMSVC\" and \"bknix-$PROFILE-mysqld\""
+  echo "Activating systemd services \"$SYSTEMSVC\" and \"$SYSTEMSVC-mysqld\""
   systemctl daemon-reload
   systemctl start "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
   systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
