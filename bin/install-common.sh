@@ -3,7 +3,9 @@
 ###########################################################
 
 # Current v2.2.1 suffers https://github.com/NixOS/nix/issues/2633 (eg on Debain Stretch/gcloud). Use v2.0.4.
+# But 2.0.4 may not be working on macOS Mojave. Blerg.
 NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.0.4/install"
+# NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.2.1/install"
 
 ###########################################################
 ## Primary install routines
