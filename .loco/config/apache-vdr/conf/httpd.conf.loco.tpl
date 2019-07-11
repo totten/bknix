@@ -96,7 +96,7 @@ SSLRandomSeed connect builtin
     ServerName {{HTTPD_DOMAIN}}
 
     UseCanonicalName    Off
-    VirtualDocumentRoot "{{HTTPD_VDROOT}}/%1"
+    VirtualDocumentRoot "{{HTTPD_VDROOT}}/%1/web"
 
     <Directory "{{HTTPD_VDROOT}}">
         Options All
