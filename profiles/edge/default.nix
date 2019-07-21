@@ -5,6 +5,7 @@
  */
 let
     pkgs = import (import ../../pins/18.09.nix) {};
+    masterMysql = import (import ../../pins/master-mysql-8.nix) {};
     bkpkgs = import ../../pkgs;
 in [
     /* Custom programs */
@@ -17,7 +18,8 @@ in [
     pkgs.apacheHttpd
     pkgs.mailcatcher
     pkgs.memcached
-    pkgs.mariadb
+    /* pkgs.mariadb */
+    masterMysql.mysql80
     pkgs.redis
 
     /* CLI utilities */
