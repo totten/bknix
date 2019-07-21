@@ -1,3 +1,11 @@
+<?php
+function ver() {
+  static $ver = NULL;
+  if ($ver === NULL) $ver = `mysql --version`;
+  return $ver;
+}
+function matchVer($pat) {return (bool) preg_match($pat, ver());}
+?>
 [mysqld]
 skip-external-locking
 key_buffer_size = 256M
@@ -8,7 +16,8 @@ read_buffer_size = 1M
 read_rnd_buffer_size = 4M
 myisam_sort_buffer_size = 64M
 thread_cache_size = 8
-query_cache_size= 16M
+<?php if (!matchVer('/Ver 8.0/')) { ?>query_cache_size= 16M<?php } ?>
+
 # Try number of CPU's*2 for thread_concurrency
 #MariaDB?# thread_concurrency = 8
 

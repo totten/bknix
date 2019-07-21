@@ -4,8 +4,13 @@
 
 mkdir "$LOCO_SVC_VAR"/{log,tmp,run}
 
+php "$LOCO_SVC_CFG"/conf/common-my.cnf.php > "$LOCO_SVC_VAR"/conf/common-my.cnf
+
 ## MySQL v5.7
 if mysql --version | grep 'Distrib 5.7' -q; then
+  mysqld --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
+
+elif mysql --version | grep 'Ver 8.0' -q; then
   mysqld --initialize-insecure --explicit_defaults_for_timestamp --datadir="$LOCO_SVC_VAR/data"
 
 ## MariaDB v10.2
