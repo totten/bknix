@@ -3,7 +3,8 @@
 ## This is an example of how to setup /etc/bknix-ci/install_all_jenkins.sh
 ## for an ephemeral/dev-oriented gcloud VM.
 ##
-## It defines very high-level options for installing profiles for user "jenkins".
+## It defines very high-level options for installing profiles for user "jenkins",
+## changing defaults for `HTTPD_DOMAIN`, `PROFILES`, etc.
 
 ## This ramdisk is smaller than usual because we use pre-emptible instances that don't retain data as long.
 RAMDISKSIZE=4G
