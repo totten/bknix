@@ -5,7 +5,6 @@
  */
 let
     pkgs = import (import ../../pins/18.09.nix) {};
-    pr_mysql80 = import (import ../../pins/nixpkgs-pr-mysql80.nix) {};
     bkpkgs = import ../../pkgs;
 in [
     /* Custom programs */
@@ -19,7 +18,7 @@ in [
     pkgs.mailcatcher
     pkgs.memcached
     /* pkgs.mariadb */
-    pr_mysql80.mysql80
+    bkpkgs.mysql80
     pkgs.redis
 
     /* CLI utilities */
