@@ -91,6 +91,11 @@ SSLRandomSeed startup builtin
 SSLRandomSeed connect builtin
 </IfModule>
 
+Timeout 600
+<Proxy fcgi://{{LOCALHOST}}:{{PHPFPM_PORT}}>
+  ProxySet timeout=600
+</Proxy>
+
 <VirtualHost *:{{HTTPD_PORT}}>
     ServerAdmin webmaster@{{HTTPD_DOMAIN}}
     ServerName {{HTTPD_DOMAIN}}
