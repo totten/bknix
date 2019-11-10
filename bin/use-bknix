@@ -9,6 +9,19 @@
 ##   eval $(use-bknix dfl)
 
 ###########################################################
+## Constants
+
+TXT_RESET='\033[0m'
+TXT_BLACK='\033[0;30m'
+TXT_RED='\033[0;31m'
+TXT_GREEN='\033[0;32m'
+TXT_YELLOW='\033[0;33m'
+TXT_BLUE='\033[0;34m'
+TXT_PURPLE='\033[0;35m'
+TXT_CYAN='\033[0;36m'
+TXT_WHITE='\033[0;37m'
+
+###########################################################
 ## Input parsing
 
 MODE=env
@@ -74,14 +87,26 @@ case "$MODE" in
     ## "bknix env" doesn't add itself to PATH - so we add everything
     ## FIXME: when loco.yml supports recursive variables, remove some of these
     echo "export PATH='$PRFDIR/bin:$LOCO_PRJ/civicrm-buildkit/bin:$LOCO_PRJ/civicrm-buildkit/node_modules/.bin':\"\$PATH\" ;"
-    echo "export PS1=\"[\[\e[34m\]bknix-$PROFILE\[\e[m\]:\[\e[32m\]\w\[\e[m\]] \" ;"
-    echo
+    echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
     if [ -f "$BKNIXDIR/etc/bashrc.local" ]; then
       echo "source \"$BKNIXDIR/etc/bashrc.local\""
     fi
     echo
     ;;
   shell)
-    bash --rcfile <( "$0" "$PROFILE" --env ) -i
+    ## We will can ourselves in --env mode and use that as the bash --rcfile.
+
+    ## Bash v4(?) would support '--rcfile <( ...some command ... )'; but for
+    ## backward compat, we explicitly make a temp file.
+
+    ## Note: "mktemp" in BSD and GNU work differently, but this formulation seems close enough to be portable.
+    TMPFILE=$(mktemp -t .use-bknix.XXXXXXXX)
+    function cleanup_bashrc() {
+      rm -f "$TMPFILE"
+    }
+    trap cleanup_bashrc EXIT
+
+    "$0" "$PROFILE" --env > "$TMPFILE"
+    bash --rcfile "$TMPFILE" -i
     ;;
 esac
