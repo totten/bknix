@@ -21,7 +21,8 @@ For day-to-day usage, you start by choosing a profile (such as `dfl`).  Open a s
 (`loco run`).  For example:
 
 ```
-me@localhost:~/bknix$ nix-shell -A dfl
+me@localhost:~$ cd bknix
+me@localhost:~/bknix$ use-bknix min -s
 [nix-shell:~/bknix]$ loco run
 ...
 ======================[ Startup Summary ]======================
