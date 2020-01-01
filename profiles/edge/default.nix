@@ -5,6 +5,7 @@
  */
 let
     pkgs = import (import ../../pins/18.09.nix) {};
+    mpkgs = import (import ../../pins/19.09.nix) {};
     bkpkgs = import ../../pkgs;
 in [
     /* Custom programs */
@@ -15,7 +16,7 @@ in [
     pkgs.nodejs-8_x
     pkgs.apacheHttpd
     pkgs.memcached
-    pkgs.mysql57
+    mpkgs.mysql80
     pkgs.redis
 
     /* CLI utilities */
