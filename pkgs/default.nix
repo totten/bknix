@@ -14,7 +14,6 @@ let
 
 in rec {
    mysql55 = (import ./mysql55/default.nix).mysql55;
-   mysql80 = (import (import ../pins/nixpkgs-pr-mysql80.nix) {}).mysql80;
    php56 = import ./php56/default.nix;
    php70 = import ./php70/default.nix;
    ## Not used, don't waste any build-time on it ## php71 = import ./php71/default.nix;
