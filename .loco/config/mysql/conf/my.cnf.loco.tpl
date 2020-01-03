@@ -1,4 +1,4 @@
-!include {{LOCO_CFG}}/mysql/my.cnf
+!include {{LOCO_SVC_VAR}}/conf/common-my.cnf
 
 [client]
 user		= root
