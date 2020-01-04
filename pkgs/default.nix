@@ -10,6 +10,7 @@ rec {
    php71 = import ./php71/default.nix;
    php72 = import ./php72/default.nix;
    php73 = import ./php73/default.nix;
+   php74 = import ./php74/default.nix;
    transifexClient = import ./transifexClient/default.nix;
    launcher = import ./launcher;
 }
