@@ -1,7 +1,7 @@
 <?php
 function ver() {
   static $ver = NULL;
-  if ($ver === NULL) $ver = `mysql --version`;
+  if ($ver === NULL) $ver = `mysqld --version`;
   return $ver;
 }
 function matchVer($pat) {return (bool) preg_match($pat, ver());}
@@ -33,6 +33,12 @@ innodb_file_per_table = 1
 #innodb_log_buffer_size = 8M
 #innodb_flush_log_at_trx_commit = 1
 #innodb_lock_wait_timeout = 50
+
+<?php if (matchVer('/Ver 5.7/')) { ?>
+# https://expressionengine.com/blog/mysql-5.7-server-os-x-has-gone-away
+interactive_timeout = 300
+wait_timeout = 300
+<?php } ?>
 
 [mysqldump]
 quick
