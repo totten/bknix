@@ -25,6 +25,7 @@ in [
     bkpkgs.ramdisk
     pkgs.bzip2
     pkgs.curl
+    pkgs.gettext
     pkgs.git
     pkgs.gitAndTools.hub
     pkgs.gnugrep
