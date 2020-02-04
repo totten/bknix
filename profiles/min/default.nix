@@ -16,7 +16,7 @@ in [
     pkgs.nodejs-8_x
     pkgs.apacheHttpd
     pkgs.memcached
-    bkpkgs.mysql55
+    pkgs_1809.mysql57
     pkgs.redis
 
     /* CLI utilities */
