@@ -29,7 +29,7 @@ in [
     pkgs.curl
     pkgs.gettext
     pkgs.git
-    pkgs.gitAndTools.hub
+    pkgs_1909.gitAndTools.hub
     pkgs.gnugrep
     pkgs.gnutar
     pkgs.hostname

@@ -5,6 +5,7 @@
  */
 let
     pkgs = import (import ../../pins/18.09.nix) {};
+    pkgs_1909 = import (import ../../pins/19.09.nix) {};
     bkpkgs = import ../../pkgs;
 in [
     /* Custom programs */
@@ -27,7 +28,7 @@ in [
     pkgs.curl
     pkgs.gettext
     pkgs.git
-    pkgs.gitAndTools.hub
+    pkgs_1909.gitAndTools.hub
     pkgs.gnugrep
     pkgs.gnutar
     pkgs.hostname
