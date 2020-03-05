@@ -5,6 +5,11 @@
  */
 rec {
    /**
+    * Common base shared by all other profiles
+    */
+   base = import ./base/default.nix;
+
+   /**
     * The minimum system requirements.
     */
    min = import ./min/default.nix;
