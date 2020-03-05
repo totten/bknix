@@ -16,7 +16,7 @@ in rec {
    mysql55 = (import ./mysql55/default.nix).mysql55;
    php56 = import ./php56/default.nix;
    php70 = import ./php70/default.nix;
-   ## Not used, don't waste any build-time on it ## php71 = import ./php71/default.nix;
+   php71 = import ./php71/default.nix;
    php72 = import ./php72/default.nix;
    php73 = import ./php73/default.nix;
    bknixPhpstormAdvisor = import ./bknixPhpstormAdvisor/default.nix;
