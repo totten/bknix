@@ -40,5 +40,6 @@ in [
     pkgs.unzip
     pkgs.which
     pkgs.zip
+    pkgs_1909.glibcLocales
     bkpkgs.transifexClient
 ]
