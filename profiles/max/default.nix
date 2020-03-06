@@ -6,19 +6,15 @@
 let
     pkgs = import (import ../../pins/18.09.nix) {};
     bkpkgs = import ../../pkgs;
-    baseProfile = import ../base/default.nix;
-in baseProfile ++ [
-    /* Custom programs */
-    bkpkgs.launcher
 
-    /* Major services */
+in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
+
     bkpkgs.php72
     pkgs.nodejs-8_x
     pkgs.apacheHttpd
     pkgs.memcached
     pkgs.mysql57
     pkgs.redis
-
-    /* CLI utilities */
     bkpkgs.transifexClient
+
 ]
