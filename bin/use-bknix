@@ -85,6 +85,10 @@ case "$MODE" in
     ## "bknix env" doesn't add itself to PATH - so we add everything
     echo "export PATH='$PRFDIR/bin:$BKNIXDIR/civicrm-buildkit/bin':\"\$PATH\" ;"
     echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
+    ## Newer versions of nix's glibc (for linux) require extra env-var for l10n
+    if [ -e "$PRFDIR/lib/locale/locale-archive" ]; then
+      echo "export LOCALE_ARCHIVE='$PRFDIR/lib/locale/locale-archive'"
+    fi
     if [ -f "$BKNIXDIR/etc/bashrc.local" ]; then
       echo "source \"$BKNIXDIR/etc/bashrc.local\""
     fi
