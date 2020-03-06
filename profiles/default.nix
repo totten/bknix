@@ -4,10 +4,20 @@
  * list of packages that can be installed in (one of) your profile(s).
  */
 rec {
+
+   /* ---------- Partial profiles; building-blocks ---------- */
+
    /**
-    * Common base shared by all other profiles
+    * Common CLI utilities shared by all other profiles
     */
    base = import ./base/default.nix;
+
+   /**
+    * bknix-specific management utilities
+    */
+   mgmt = import ./mgmt/default.nix;
+
+   /* ---------- Full profiles ---------- */
 
    /**
     * The minimum system requirements.
