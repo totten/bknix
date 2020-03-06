@@ -7,7 +7,8 @@ let
     pkgs = import (import ../../pins/18.09.nix) {};
     pkgs_1909 = import (import ../../pins/19.09.nix) {};
     bkpkgs = import ../../pkgs;
-in [
+    base = import ../base/default.nix;
+in base ++ [
     /* Custom programs */
     bkpkgs.launcher
 
@@ -20,18 +21,5 @@ in [
     pkgs.redis
 
     /* CLI utilities */
-    pkgs.bzip2
-    pkgs.curl
-    pkgs.git
-    pkgs.gitAndTools.hub
-    pkgs.gnugrep
-    pkgs.gnutar
-    pkgs.hostname
-    pkgs.ncurses
-    pkgs.patch
-    pkgs.rsync
-    pkgs.unzip
-    pkgs.which
-    pkgs.zip
     bkpkgs.transifexClient
 ]
