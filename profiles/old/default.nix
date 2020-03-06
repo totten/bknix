@@ -7,7 +7,8 @@ let
     pkgs = import (import ../../pins/18.03.nix) {};
     pkgs_1809 = import (import ../../pins/18.09.nix) {};
     bkpkgs = import ../../pkgs;
-in [
+    base = import ../base/default.nix;
+in base ++ [
     /* Custom programs */
     bkpkgs.launcher
     bkpkgs.bknixPhpstormAdvisor
@@ -24,19 +25,5 @@ in [
     /* CLI utilities */
     bkpkgs.loco
     bkpkgs.ramdisk
-    pkgs.bzip2
-    pkgs.curl
-    pkgs.gettext
-    pkgs.git
-    pkgs.gitAndTools.hub
-    pkgs.gnugrep
-    pkgs.gnutar
-    pkgs_1809.hostname
-    pkgs_1809.ncurses
-    pkgs.patch
-    pkgs.rsync
-    pkgs.unzip
-    pkgs.which
-    pkgs.zip
     bkpkgs.transifexClient
 ]
