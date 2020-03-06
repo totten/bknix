@@ -14,7 +14,6 @@ function get_svcs() {
   done
 }
 
-
 function get_ramdisk_svcs() {
   for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount ; do
     if [ -f "/etc/systemd/system/$svc" ]; then
@@ -26,26 +25,29 @@ function get_ramdisk_svcs() {
 SVCS=$(get_svcs)
 RAMDISKS=$(get_ramdisk_svcs)
 
-echo "Stopping services"
+echo "Stopping services:$SVCS"
 systemctl stop $SVCS
 
 ## This is slightly aggressive, but the scripts in `pkgs/launcher` don't seem to do a good job of shutting down php-fpm.
-killall php-fpm
+set +e
+  killall php-fpm
+  killall mysqld
+set -e
 
 echo "Waiting"
 # Don't know if this is actually needed, but it's improved reliability in the past.
 sleep 5
 
-echo "Stopping ramdisk"
+echo "Stopping ramdisks:$RAMDISKS"
 systemctl stop $RAMDISKS
 
 echo "Reinstalling profiles"
 FORCE_INIT=-f ./bin/install-gcloud.sh
 
-echo "Starting ramdisk"
+echo "Starting ramdisks:$RAMDISKS"
 systemctl start $RAMDISKS
 
-echo "Starting services"
+echo "Starting services:$SVCS"
 systemctl start $SVCS
 
 echo "Updating buildkit"
