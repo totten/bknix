@@ -28,6 +28,9 @@ RAMDISKS=$(get_ramdisk_svcs)
 echo "Stopping services"
 systemctl stop $SVCS
 
+## This is slightly aggressive, but the scripts in `pkgs/launcher` don't seem to do a good job of shutting down php-fpm.
+killall php-fpm
+
 echo "Waiting"
 # Don't know if this is actually needed, but it's improved reliability in the past.
 sleep 5
