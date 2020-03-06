@@ -88,6 +88,10 @@ case "$MODE" in
     ## FIXME: when loco.yml supports recursive variables, remove some of these
     echo "export PATH='$PRFDIR/bin:$LOCO_PRJ/civicrm-buildkit/bin:$LOCO_PRJ/civicrm-buildkit/node_modules/.bin':\"\$PATH\" ;"
     echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
+    ## Newer versions of nix's glibc (for linux) require extra env-var for l10n
+    if [ -e "$PRFDIR/lib/locale/locale-archive" ]; then
+      echo "export LOCALE_ARCHIVE='$PRFDIR/lib/locale/locale-archive'"
+    fi
     if [ -f "$BKNIXDIR/etc/bashrc.local" ]; then
       echo "source \"$BKNIXDIR/etc/bashrc.local\""
     fi
