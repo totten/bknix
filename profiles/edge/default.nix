@@ -8,8 +8,8 @@ let
     pkgs = import (import ../../pins/19.09.nix) {};
     pkgs_1809 = import (import ../../pins/18.09.nix) {};
     bkpkgs = import ../../pkgs;
-    base = import ../base/default.nix;
-in base ++ [
+    baseProfile = import ../base/default.nix;
+in baseProfile ++ [
     /* Custom programs */
     bkpkgs.launcher
     bkpkgs.bknixPhpstormAdvisor
