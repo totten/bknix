@@ -14,7 +14,6 @@ function get_svcs() {
   done
 }
 
-
 function get_ramdisk_svcs() {
   for svc in mnt-mysql-jenkins.mount mnt-mysql-publisher.mount ; do
     if [ -f "/etc/systemd/system/$svc" ]; then
@@ -37,7 +36,7 @@ echo "Stopping ramdisk"
 systemctl stop $RAMDISKS
 
 echo "Reinstalling profiles"
-FORCE_INIT=-f ./bin/install-gcloud.sh
+FORCE_INIT=-f ./bin/install-ci.sh
 
 echo "Starting ramdisk"
 systemctl start $RAMDISKS
