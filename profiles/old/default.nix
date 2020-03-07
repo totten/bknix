@@ -9,7 +9,7 @@ let
     bkpkgs = import ../../pkgs;
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
-    bkpkgs.php56
+    bkpkgs.php70
     pkgs.nodejs-8_x
     pkgs.apacheHttpd
     pkgs.memcached
