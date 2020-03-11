@@ -17,7 +17,8 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     /* pkgs_1809.mailcatcher */
     pkgs.memcached
     /* pkgs.mariadb */
-    pkgs.mysql80
+    /* pkgs.mysql80 */
+    pkgs.mysql57
     pkgs.redis
     bkpkgs.transifexClient
 
