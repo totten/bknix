@@ -95,7 +95,7 @@ For example:
       </td>
       <td>
         <ul>
-          <li><a href="doc/install-ci.md">install-ci.sh: Install all profiles and system services</a></li>
+          <li><a href="doc/install-ci.md">install-ci.sh: Install all profiles and system services for concurrent usage</a></li>
         </ul>
       </td>
     </tr>
