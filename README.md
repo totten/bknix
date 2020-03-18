@@ -102,7 +102,10 @@ For example:
   </tbody>
 </table>
 
-## Policies/Opinions
+## Ports
+
+With `nix-shell` or `install-developer.sh`, it is typical to only launch one
+"stack" of services. The services run on the following ports:
 
 | Service     | Typical Port |
 |-------------|--------------|
@@ -112,6 +115,16 @@ For example:
 | PHP FPM     | 9009         |
 | PHP Xdebug  | 9000         |
 | Redis       | 6380         |
+| Mailcatcher (SMTP) | 1025  |
+| Mailcatcher (HTTP) | 1080  |
+
+With `install-ci.sh`, the services use a wide range of ports.
+
+<!-- FIXME: Document use of HTTPD_PORT, MYSQLD_PORT, etc -->
+
+<!--
+
+FIXME: rewrite this for master-loco branch
 
 * A "build" is a collection of PHP/JS/CSS/etc source-code projects, with a database and an HTTP virtual host. You can edit/commit directly in the source-tree.
 * All builds are stored in the `build` folder.
@@ -120,6 +133,8 @@ For example:
 * All services run as the current, logged-in user. This means that files require no special permissions.
 * MySQL launches on-demand with all-ram-disk-based storage. Launching is triggered on-demand (`civibuild create ...`) or by calling `amp mysql:start`
 * PHP enables `xdebug`, which connects to a debugger UI on port 9000. (Changeable)
+
+-->
 
 Some of these policies/opinions can be changed, as described below ("Extended installation")
 
