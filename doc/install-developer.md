@@ -1,70 +1,64 @@
-# nix-env: Install bknix to a profile folder
+# install-developer.sh: Install bknix to a profile folder
 
 (*This assumes that you have already [met the basic requirements](requirements.md).*)
 
-Let's use the `dfl` profile and install all its packages (PHP, MySQL, etc) to one folder (`/nix/var/nix/profiles/bknix-dfl`).
+The `install-developer.sh` script is optimized for a personal developer workstation (e.g.  macOS or Ubuntu).
+It's tuned for the following assumptions:
 
-If you need to integrate with tools, workflows, or initialization systems that are not specifically aware of `nix` (such as a graphical IDE
-or system-level process manager), this may be the most convenient arrangement. It feels a bit like installing an application suite under
-`/opt/<foo>` except that the actual path is `/nix/var/nix/profiles/<foo>`.
+* You are likely to need *periodic access* to different permutations of PHP, MySQL, etc. This allows one to investigate
+  bug-reports that are version-specific.
+* You don't need to *concurrently* use all services (php70+php71+php72+mysql54+mysql57+mysql80 ad nauseum).
+  Supporting this would add complexity (more port-numbers, host-names, config-files, etc) and increase 
+  resource-utilization.
+* You need to integrate *third-party tooling* - such as an IDE - with the chosen environment. This requires
+  having a stable set of file locations.
+
 
 ## Quick Version
 
-This document can be summarized as two steps (three commands):
-
-<!-- TODO: Combine these into a script "install-workstation.sh"? Maybe also download nix (if it's missing /nix)? -->
+This document can be summarized as two steps:
 
 ```
-me@localhost:~$ nix-env -iA cachix -f https://cachix.org/api/v1/install
-me@localhost:~$ cachix use bknix
 me@localhost:~$ git clone https://github.com/totten/bknix -b master-loco ~/bknix
-me@localhost:~$ env PROFILES="dfl" DEFN=$PWD FORUSER=1 ./bin/install-profiles.sh
-me@localhost:~$ sudo ln -s ~/bknix/bin/use-bknix /usr/local/bin/use-bknix
-me@localhost:~$ eval $( use-bknix dfl )
+me@localhost:~$ cd ~/bknix
+me@localhost:~$ env PROFILES="dfl" ./bin/install-developer.sh
+me@localhost:~$ use-bknix dfl -s
 ```
 
 The rest of this document explains these steps in more depth.  If you
 already understand them, then proceed to [bknix: General usage](usage.md).
 
-## Cache Setup
+## Download configuration
 
-This step is technically optional, but it will improve download times --
-allowing you to download build-compiled binaries.
-
-```bash
-sudo -i
-nix-env -iA cachix -f https://cachix.org/api/v1/install
-cachix use bknix
-```
-
-## Download
-
-For the download process, we perform three installation steps. First, we get
-a copy of `bknix` specifications:
+First, we need to get a copy of the `bknix` specification. This provides configuration files which list
+the various packages/programs, and it provides some helper scripts to make use of them.
 
 ```bash
 git clone https://github.com/totten/bknix -b master-loco ~/bknix
 ```
 
-Then, we download and install the default profile (`dfl`) in `/nix/var/nix/profiles/per-user/$USER/bknix-dfl`.
+## Download and install binaries
+
+Second, we download and install the actual binaries.  For example, this will install the `dfl` profile in
+`/nix/var/nix/profiles/per-user/$USER/bknix-dfl`:
 
 ```
-env PROFILES="dfl" DEFN=$PWD FORUSER=1 ./bin/install-profiles.sh
+env PROFILES="dfl" ./bin/install-developer.sh
 ```
 
-Note the options:
+> __TIP__: The environment variables `PROFILES` optionally specifies a space-delimited list of profiles.  If you run
+> `install-developer.sh` without specifying the profiles, it will use `min max dfl`.
 
-* `PROFILES`: A space-delimited list profiles to install or update (within quote marks)
-* `DEFN`: The location of the `bknix` specification
-* `FORUSER`: The profile should be installed as a `per-user` profile
+The `install-developer.sh` script will:
 
-Finally, we need to register a small utility (`use-bknix`) which will help us work with bknix later.
+* Install binaries for each profile in a predictable location: `/nix/var/nix/profiles/...`
+  (*This feels a bit like installing an application under `/opt/<foo>` except that the actual path is `/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE`.*)
+* Install a helper command, `use-bknix`, which facilitates access to these binaries.
+  (*This feels a bit like using `nix-shell` or `docker exec`.*)
+* Install a helper command, `loco run`, which will start and stop services.
 
-```
-sudo ln -s ~/bknix/bin/use-bknix /usr/local/bin/use-bknix
-```
-
-Once it's finished downloading, `nix-env` creates a `bin` folder with symlinks to all of the downloaded software.
+Once it's finished, you can inspect the list of binaries that were installed.  The `bin` folder contains symlinks for
+all of the downloaded software.
 
 ```
 $ ls /nix/var/nix/profiles/per-user/$USER/bknix-dfl/bin/
@@ -87,10 +81,10 @@ bzless@        git-http-backend@            lz4_decompress@      mysql_install_d
 
 After downloading, the programs are available in `/nix/var/nix/profiles/per-user/$USER/bknix-dfl`, but they're not ready to use on the command line.
 
-You need to setup the environment. The helper script `use-bknix` will do this, ie
+You need to setup the environment. The helper script `use-bknix` will do this, as in:
 
 ```
-eval $(use-bknix dfl)
+use-bknix dfl -s
 ```
 
 In the example below, observe how we get access to a new version of `php`:
@@ -98,7 +92,7 @@ In the example below, observe how we get access to a new version of `php`:
 ```
 me@localhost:~/bknix$ which php
 /usr/bin/php
-me@localhost:~/bknix$ eval $(use-bknix dfl)
+me@localhost:~/bknix$ use-bknix dfl -s
 [bknix-dfl:~/bknix] which php
 /nix/var/nix/profiles/bknix-dfl/bin/php
 ```
@@ -111,7 +105,10 @@ If you use a graphical IDE, you should be able to view and edit code without any
 use the Nice Stuff (such as debugging), then the IDE needs to have the same environment configuration.  The details
 will depend a lot on your how the IDE and OS's graphical-shell work. Here are a few approaches to consider:
 
-* In some platforms, the OS's graphical-shell might respect `~/.profile` -- which is great because everything else will pick up on this.
+* The primary job of `use-bknix` is to set environment variables. You can use it in a couple ways:
+    * `use-bknix <PROFILE> -s`: This starts a new sub-shell and sets up the environment. If you type `exit`, it will go back to your original shell.
+    * `eval $( use-bknix <PROFILE> )`: This keeps your existing shell and updates all the required environment variables.
+* In some platforms, the OS's graphical-shell might respect `~/.profile`. If you want to always `bknix` available, you could edit the profile script and add `eval $( use-bknix <PROFILE> )`
 * In some platforms, the OS's graphical-shell might have a similar-but-different file (like `.xsession` or `.xinitrc`?).
 * In some platforms, the OS's graphical-shell might let you use a custom launch command -- have it setup the environment and then run the IDE.
 * In some platforms, the OS's graphical-shell might give explicit options for managing the environment of each program. Use this to add `PATH` (and all the other variables from `bknix env`).

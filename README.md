@@ -82,7 +82,7 @@ For example:
       </td>
       <td>
         <ul>
-          <li><a href="doc/install-profile.md">nix-env: Install bknix to a profile folder</a></li>
+          <li><a href="doc/install-developer.md">install-developer.sh: Install all profiles for use by a single developer</a></li>
           <li><a href="doc/usage.md">bknix: General usage</a></li>
         </ul>
       </td>

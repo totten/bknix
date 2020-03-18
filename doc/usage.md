@@ -1,6 +1,6 @@
 # bknix: General usage
 
-Once you know how to setup a shell (with [nix-shell](nix-shell.md) or [nix-env -i](install-profile.md)), we can start using `bknix`.
+Once you know how to setup a shell (with [nix-shell](nix-shell.md), [install-developer.sh](install-developer.md), or [install-ci.sh](install-ci.md)), we can start using `bknix`.
 
 ## Quick Version
 
@@ -95,7 +95,7 @@ civibuild create dmaster
 ```
 
 > TIP: If the `civibuild` is missing, then the environment has probably not been setup correctly. Go back to the guidelines for
-> [nix-shell](nix-shell.md) or [nix-env -i](install-profile.md).
+> [nix-shell](nix-shell.md), [install-developer.sh](install-developer.md), or [install-ci.sh](install-ci.md).
 
 For more documentation on `civibuild`, see [Developer Guide: Tools: civibuild](https://docs.civicrm.org/dev/en/latest/tools/civibuild/).
 
