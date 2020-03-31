@@ -23,8 +23,8 @@ self = stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake bison pkgconfig ];
 
-  buildInputs = [ boost libedit libevent lz4 ncurses openssl protobuf readline zlib ]
-     ++ stdenv.lib.optionals stdenv.isDarwin [ perl cctools CoreServices developer_cmds ];
+  buildInputs = [ boost libedit libevent lz4 ncurses openssl perl protobuf readline zlib ]
+     ++ stdenv.lib.optionals stdenv.isDarwin [ cctools CoreServices developer_cmds ];
 
   outputs = [ "out" "static" ];
 
@@ -66,7 +66,6 @@ self = stdenv.mkDerivation rec {
   '';
   postInstall = ''
     moveToOutput "lib/*.a" $static
-#    ln -s libmysqlclient${stdenv.hostPlatform.extensions.sharedLibrary} $out/lib/libmysqlclient_r${stdenv.hostPlatform.extensions.sharedLibrary}
   '';
 
   passthru = {
