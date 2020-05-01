@@ -1,17 +1,9 @@
 # with import <nixpkgs> {};
-with import (import ../../pins/18.09.nix) {};
-with python36.pkgs;
+with import (import ../../pins/19.09.nix) {};
+with python37.pkgs;
 
 let
 
-  slugify = callPackage ./slugify.nix {};
-  requests = callPackage ./requests.nix {
-     python = python36;
-  };
-  transifexClient = callPackage ./transifexClient.nix {
-    python = python36;
-    slugify = slugify;
-    requests = requests;
-  };
+  transifexClient = python37.pkgs.callPackage ./transifexClient.nix { };
 
 in transifexClient
