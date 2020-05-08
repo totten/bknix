@@ -23,7 +23,11 @@ let
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
             openssl.cafile=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
-      '';
+      ''
+
+       ## Per https://bugs.php.net/bug.php?id=77260 -- in php73, pcre.jit uses MAP_JIT which is quirky on diff versions of macOS
+       + (if stdenv.isDarwin then "pcre.jit=0\n" else "");
+
        ## TEST ME: Do we still need imagick? Can we get away with gd nowadays?
        #    extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
     }
