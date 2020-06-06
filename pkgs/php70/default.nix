@@ -28,6 +28,8 @@ let
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
             extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
+            extension=${phpExtras.runkit7_1}/lib/php/extensions/runkit.so
+            runkit.internal_override=1
             openssl.cafile=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
       '';
     }
@@ -39,7 +41,7 @@ let
 
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php70";
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper pkgs.cacert];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_1 pkgs.makeWrapper pkgs.cacert];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/phar $out/bin/phar
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"

@@ -22,4 +22,34 @@ in rec {
     buildInputs = [ ];
   };
 
+  ## runkit7 v3.x: Only series to support PHP 7.4 (pending in v3.1...)
+  runkit7_3 = buildPecl {
+    name = "runkit7-3.0.0";
+    sha256 = "1wm530l5xrfp4zyac1diyf1w5w5fxf4bdbw390lhqv3rgvicv5ml";
+    configureFlags = [ ];
+    nativeBuildInputs = [ pkgs.pkgconfig ];
+    buildInputs = [ ];
+  };
+
+  ## runkit7 v2.x: Bridge, supporting old+new APIs, but only supports PHP 7.1-7.3
+  runkit7_2 = buildPecl {
+    name = "runkit7-2.1.0";
+    sha256 = "1pdhabxqnwlxgbayw9clzlfk6qbh9wfa31gsd5f9nfhz2ym4wr34";
+    configureFlags = [ ];
+    nativeBuildInputs = [ pkgs.pkgconfig ];
+    buildInputs = [ ];
+  };
+
+  ## The runkit7 v1.x: Only version to support PHP 7.0.
+  runkit7_1 = buildPecl {
+    name = "runkit7-1.0.11";
+    src = pkgs.fetchurl {
+      url = "https://github.com/runkit7/runkit7/releases/download/1.0.11/runkit-1.0.11.tgz";
+      sha256 = "056v6h8cscqbkdxs9lr33j0x8255k4k3yqlnylvkwl4daavxwlfp";
+    };
+    configureFlags = [ ];
+    nativeBuildInputs = [ pkgs.pkgconfig ];
+    buildInputs = [ ];
+  };
+
 }
