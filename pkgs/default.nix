@@ -14,6 +14,7 @@ let
 
 in rec {
    mysql55 = (import ./mysql55/default.nix).mysql55;
+   mysql56 = (import ./mysql56/default.nix).mysql56;
    php56 = import ./php56/default.nix;
    php70 = import ./php70/default.nix;
    php71 = import ./php71/default.nix;
