@@ -16,7 +16,7 @@ in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
     pkgs.apacheHttpd
     pkgs_1809.mailcatcher
     pkgs.memcached
-    bkpkgs.mysql55
+    bkpkgs.mysql56
     pkgs.redis
     bkpkgs.transifexClient
 
