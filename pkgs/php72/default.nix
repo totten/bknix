@@ -29,7 +29,6 @@ let
             extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
             extension=${phpExtras.runkit7_3}/lib/php/extensions/runkit7.so
-            runkit.internal_override=1
             openssl.cafile=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
       '';
     }
