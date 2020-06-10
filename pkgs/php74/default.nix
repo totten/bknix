@@ -22,6 +22,7 @@ let
             extension=${phpPkgs.yaml}/lib/php/extensions/yaml.so
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
+            extension=${phpExtras.runkit7_3}/lib/php/extensions/runkit7.so
       '';
        ## TEST ME: Do we still need imagick? Can we get away with gd nowadays?
        #    extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
@@ -35,8 +36,8 @@ let
     phpOverride = stdenv.mkDerivation rec {
         name = "bknix-php74";
         ## TEST ME: Do we still need imagick? Can we get away with gd nowadays?
-        # buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop pkgs.makeWrapper];
-        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpExtras.timecop pkgs.makeWrapper];
+        # buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpPkgs.imagick phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper];
+        buildInputs = [phpRuntime phpPkgs.xdebug phpPkgs.redis phpPkgs.yaml phpPkgs.memcached phpExtras.timecop phpExtras.runkit7_3 pkgs.makeWrapper];
         buildCommand = ''
           makeWrapper ${phpRuntime}/bin/phar $out/bin/phar
           makeWrapper ${phpRuntime}/bin/php $out/bin/php --add-flags -c --add-flags "${phpIni}"
