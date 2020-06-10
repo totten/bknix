@@ -1,3 +1,8 @@
+__The changes from `master-loco` branch have been merged into `master`. `master-loco` will not be maintained any more.__
+
+
+----
+
 `bknix` is a highly opinionated environment for developing in PHP/JS -- esp for developing patches/add-ons for CiviCRM.
 
 ## Background
