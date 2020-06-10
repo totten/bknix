@@ -1,4 +1,4 @@
-# Installation for Jenkins/CI Worker nodes
+# Installation for Jenkins/CI Worker nodes (*legacy*)
 
 A Jenkins/CI worker node, we want all profiles to be used concurrently. For each profile:
 

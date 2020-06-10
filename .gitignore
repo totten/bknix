@@ -1,3 +1,5 @@
+/.loco/var/
+/.loco/var.keep/
 /var/
 /civicrm-buildkit/
 /build/

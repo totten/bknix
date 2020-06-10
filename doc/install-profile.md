@@ -1,4 +1,4 @@
-# nix-env: Install bknix to a profile folder
+# nix-env: Install bknix to a profile folder (*legacy*)
 
 (*This assumes that you have already [met the basic requirements](requirements.md).*)
 
@@ -25,7 +25,7 @@ me@localhost:~$ eval $(bknix env --data-dir "$HOME/bknix")
 ```
 
 The rest of this document explains these steps in more depth.  If you
-already understand them, then proceed to [bknix: General usage](usage.md).
+already understand them, then proceed to [bknix: General usage (legacy)](usage-legacy.md).
 
 ## Cache Setup
 
@@ -100,7 +100,7 @@ You can run these two statements manually and they will apply to the current she
 Additionally, to ensure that the environment is configured in the future (when you open new shells or logout/login/reboot), add
 both statements to your shell initialization script (`~/.profile` or `~/.bashrc`).
 
-Once we know how to open a shell with a well-configured environment, we can proceed to [bknix: General usage](usage.md).
+Once we know how to open a shell with a well-configured environment, we can proceed to [bknix: General usage (legacy)](usage-legacy.md).
 
 ## TIP: IDEs and Environments
 
