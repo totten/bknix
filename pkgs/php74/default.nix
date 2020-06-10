@@ -2,7 +2,7 @@
 # add all extensions needed as buildInputs and don't forget to load them in the php.ini above
 
 let
-    pkgs = import (import ../../pins/php74.nix) {};
+    pkgs = import (import ../../pins/20.03.nix) {};
     ## TEST ME: Do we need to set config.php.mysqlnd = true?
 
     stdenv = pkgs.stdenv;
