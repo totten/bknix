@@ -154,7 +154,7 @@ function template_render() {
 function install_use_bknix() {
   echo "Installing global helper \"use-bknix\" (/usr/local/bin/use-bknix)"
   [ ! -d /usr/local/bin ] && sudo mkdir /usr/local/bin
-  sudo cp -f bin/use-bknix /usr/local/bin/use-bknix
+  sudo cp -f bin/use-bknix.loco /usr/local/bin/use-bknix
 }
 
 function install_warmup() {
