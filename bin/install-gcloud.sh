@@ -31,7 +31,8 @@
 
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-source "$BINDIR/install-common.sh"
+source "$BINDIR/../lib/common-base.sh"
+source "$BINDIR/../lib/common-legacy.sh"
 
 check_reqs
 install_warmup
