@@ -23,7 +23,6 @@ let
             extension=${phpPkgs.memcached}/lib/php/extensions/memcached.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
             extension=${phpExtras.runkit7_3}/lib/php/extensions/runkit7.so
-            runkit.internal_override=1
       ''
 
        ## Per https://bugs.php.net/bug.php?id=77260 -- in php73, pcre.jit uses MAP_JIT which is quirky on diff versions of macOS

@@ -29,7 +29,6 @@ let
             extension=${phpPkgs.imagick}/lib/php/extensions/imagick.so
             extension=${phpExtras.timecop}/lib/php/extensions/timecop.so
             extension=${phpExtras.runkit7_1}/lib/php/extensions/runkit.so
-            runkit.internal_override=1
       '';
     }
     ''
