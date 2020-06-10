@@ -19,7 +19,7 @@ It's tuned for the following assumptions:
 This document can be summarized as two steps:
 
 ```
-me@localhost:~$ git clone https://github.com/totten/bknix -b master-loco ~/bknix
+me@localhost:~$ git clone https://github.com/totten/bknix ~/bknix
 me@localhost:~$ cd ~/bknix
 me@localhost:~$ env PROFILES="dfl" ./bin/install-developer.sh
 me@localhost:~$ use-bknix dfl -s
@@ -34,7 +34,7 @@ First, we need to get a copy of the `bknix` specification. This provides configu
 the various packages/programs, and it provides some helper scripts to make use of them.
 
 ```bash
-git clone https://github.com/totten/bknix -b master-loco ~/bknix
+git clone https://github.com/totten/bknix ~/bknix
 ```
 
 ## Download and install binaries
