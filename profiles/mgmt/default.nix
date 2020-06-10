@@ -10,7 +10,7 @@ let
     bkpkgs = import ../../pkgs;
 in [
     bkpkgs.launcher
-    # bkpkgs.bknixPhpstormAdvisor
-    # bkpkgs.loco
-    # bkpkgs.ramdisk
+    bkpkgs.bknixPhpstormAdvisor
+    bkpkgs.loco
+    bkpkgs.ramdisk
 ]

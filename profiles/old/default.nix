@@ -7,11 +7,13 @@ let
     pkgs = import (import ../../pins/18.03.nix) {};
     pkgs_1809 = import (import ../../pins/18.09.nix) {};
     bkpkgs = import ../../pkgs;
+
 in (import ../base/default.nix) ++ (import ../mgmt/default.nix) ++ [
 
     bkpkgs.php70
     pkgs.nodejs-8_x
     pkgs.apacheHttpd
+    pkgs_1809.mailcatcher
     pkgs.memcached
     bkpkgs.mysql55
     pkgs.redis
