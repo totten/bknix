@@ -22,7 +22,7 @@ me@localhost:~/bknix$ nix-shell -A dfl
 ```
 
 The rest of this document explains these steps in more depth. If you already
-understand them, then proceed to [bknix: General usage](usage.md).
+understand them, then proceed to [bknix: General usage (loco)](usage-loco.md) or [bknix: General usage (legacy)](usage-legacy.md).
 
 ## Step 1. Download bknix definitions
 
@@ -70,4 +70,4 @@ me@localhost:~/bknix$ nix-shell -A dfl
 
 After running `nix-shell`, the command-prompt changes. This demonstrates that we're working in the new shell with a properly configured environment.
 
-Once we know how to open a shell, we can proceed to [bknix: General usage](usage.md).
+Once we know how to open a shell, we can proceed to [bknix: General usage (loco)](usage-loco.md) or [bknix: General usage (legacy)](usage-legacy.md).
