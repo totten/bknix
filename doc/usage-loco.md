@@ -1,12 +1,20 @@
-# bknix: General usage (*loco*)
+# Work with services and sites
 
-Once you know how to setup a shell (with [nix-shell](nix-shell.md), [install-developer.sh](install-developer.md), or [install-ci.sh](install-ci.md)), we can start using `bknix`.
+Once you've downloaded the software packages, you can run the software and create new Civi sites.
+
+(*Note: This document uses the `loco` process manager, which is suited for local development.
+CI servers have different workflow based on `systemd`. See [Installation for Jenkins/CI Worker nodes](install-ci.md).*)
 
 ## Quick Version
 
 The highlights of this document can be summarized as a few steps:
 
 ```
+# Step 0. Open a profile/shell
+cd ~/bknix
+nix-shell -A dfl
+# ... or similarly: use-bknix dfl -s
+
 # Step 1. Configure the services (Optional)
 vi .loco/loco.yml
 
@@ -21,9 +29,22 @@ The rest of this document explains these steps in more depth.
 
 ## Important Folders
 
-* `./build` - A workspace with various web-builds, git-repos, and such.
-* `./civicrm-buildkit` - A collection of PHP/JS/BASH tools like `civix`, `phpunit4`, `drush`, or `civibuild`
-* `./.loco/var` - Auto-generated configuration files (like `civibuild.conf`, `httpd.conf`, or `redis.conf`), PID files, log files, MySQL data, etc
+* `~/bknix` - The location where you put the `bknix` repo.
+* `~/bknix/build` - A workspace with various web-builds, git-repos, and such.
+* `~/bknix/civicrm-buildkit` - A collection of PHP/JS/BASH tools like `civix`, `phpunit4`, `drush`, or `civibuild`
+* `~/bknix/.loco/var` - Auto-generated configuration files (like `civibuild.conf`, `httpd.conf`, or `redis.conf`), PID files, log files, MySQL data, etc
+
+## Step 0. Open a profile/shell
+
+Before working with services and sites, you need to open a shell with a [profile](../README.md#profiles).
+To open a shell with the `dfl` profile, you would typically run either:
+
+* `nix-shell -A dfl`, or
+* `use-bknix dfl -s`
+
+The `nix-shell` command is appropriate if you followed the tutorial [Use a profile in a temporary subshell (`nix-shell`)](nix-shell.md).
+Alternatively, the `use-bknix` command is appropriate if you followed the tutorial
+[Install all profiles for use by a single developer (`install-developer.sh`)](install-developer.md).
 
 ## Step 1. Configure the services (Optional)
 
@@ -47,7 +68,7 @@ before starting any services.
 
 ## Step 2. Run the services
 
-The key command is `loco run`.  This will `loco.yml`, auto-initialize data-files and configuration-files (if needed),
+The key command is `loco run`.  This will read `loco.yml`, auto-initialize data-files and configuration-files (if needed),
 and start the corresponding services.
 
 ```

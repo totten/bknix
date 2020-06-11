@@ -1,4 +1,4 @@
-# install-developer.sh: Install bknix to a profile folder (*loco*)
+# Install all profiles for use by a single developer (<code>install-developer.sh</code>)</a>
 
 (*This assumes that you have already [met the basic requirements](requirements.md).*)
 

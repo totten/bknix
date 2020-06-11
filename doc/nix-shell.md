@@ -1,12 +1,14 @@
-# nix-shell: Run bknix in a temporary subshell
+# Use a profile in a temporary subshell (`nix-shell`)
 
 (*This assumes that you have already [met the basic requirements](requirements.md).*)
 
 In this tutorial, we'll start a new subshell with all of the packages for `dfl`.  The packages will only be visible within our
-shell.
+shell. This approaches has a few advantages/characteristics:
 
-This approach minimizes the impact on other parts of the subsystem.  It is easier to juggle multiple profiles (and to
-change the profile definition) if you work within a subshell.
+* It minimizes the impact on other parts of the workstation/server. You do not need to install any permanent system services.
+* It is easier to juggle multiple profiles -- simply open different shells with different profiles.
+* It uses an auto-download behavior: whenever you open a shell, it will re-read the configuration and automatically 
+  download any missing or updated packages.
 
 ## Quick Version
 

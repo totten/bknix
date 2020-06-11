@@ -1,4 +1,4 @@
-# bknix: General usage (*legacy*)
+# Work with services and sites (*legacy* `bknix run`)
 
 Once you know how to setup a shell (with [nix-shell](nix-shell.md) or [nix-env -i](install-profile.md)), we can start using `bknix`.
 
