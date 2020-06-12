@@ -10,18 +10,18 @@ CI servers have different workflow based on `systemd`. See [Installation for Jen
 The highlights of this document can be summarized as a few steps:
 
 ```
-# Step 0. Open a profile/shell
+## Step 1. Open a subshell
 cd ~/bknix
 nix-shell -A dfl
 # ... or similarly: use-bknix dfl -s
 
-# Step 1. Configure the services (Optional)
+## Step 2. (Optional) Configure the services
 vi .loco/loco.yml
 
-# Step 2. Run the services
+## Step 3. Run the services
 loco run
 
-# Step 3. Do developer-y stuff (New shell)
+## Step 4. Do developer-y stuff (New shell)
 civibuild create dmaster
 ```
 
@@ -34,7 +34,7 @@ The rest of this document explains these steps in more depth.
 * `~/bknix/civicrm-buildkit` - A collection of PHP/JS/BASH tools like `civix`, `phpunit4`, `drush`, or `civibuild`
 * `~/bknix/.loco/var` - Auto-generated configuration files (like `civibuild.conf`, `httpd.conf`, or `redis.conf`), PID files, log files, MySQL data, etc
 
-## Step 0. Open a profile/shell
+## Step 1. Open a subshell
 
 Before working with services and sites, you need to open a shell with a [profile](../README.md#profiles).
 To open a shell with the `dfl` profile, you would typically run either:
@@ -46,7 +46,7 @@ The `nix-shell` command is appropriate if you followed the tutorial [Use a profi
 Alternatively, the `use-bknix` command is appropriate if you followed the tutorial
 [Install all profiles for use by a single developer (`install-developer.sh`)](install-developer.md).
 
-## Step 1. Configure the services (Optional)
+## Step 2. (Optional) Configure the services
 
 The file `.loco/loco.yml` contains some high-level configuration options. These are used
 to generate some data-files and some configuration-files. You may wish to edit the file
@@ -66,7 +66,7 @@ before starting any services.
 
 (*Aside*: You can update these settings after initial setup, but some settings may require destroying/rebuilding.)
 
-## Step 2. Run the services
+## Step 3. Run the services
 
 The key command is `loco run`.  This will read `loco.yml`, auto-initialize data-files and configuration-files (if needed),
 and start the corresponding services.
@@ -101,9 +101,10 @@ Services have been started. To shutdown, press Ctrl-C.
 
 The services are running in the foreground -- additional errors and log messages will be displayed here. 
 
-## Step 3. Do developer-y stuff
+## Step 4. Do developer-y stuff
 
-Once the services are running, you can open a new terminal and do more interesting things, e.g.
+Once the services are running, you can open a new terminal with another subshell (`nix-shell...` or `use-bknix...`).
+Now you have access to more interesting commands:
 
 ```
 civibuild create -h
@@ -115,7 +116,7 @@ or
 civibuild create dmaster
 ```
 
-> TIP: If the `civibuild` is missing, then the environment has probably not been setup correctly. Go back to the guidelines for
+> TIP: If `civibuild` is missing, then the environment has probably not been setup correctly. Go back to the guidelines for
 > [nix-shell](nix-shell.md), [install-developer.sh](install-developer.md), or [install-ci.sh](install-ci.md).
 
 For more documentation on `civibuild`, see [Developer Guide: Tools: civibuild](https://docs.civicrm.org/dev/en/latest/tools/civibuild/).
