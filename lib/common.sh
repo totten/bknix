@@ -1,7 +1,48 @@
 #!/bin/bash
 
 ###########################################################
+
+# Current v2.2.1 suffers https://github.com/NixOS/nix/issues/2633 (eg on Debain Stretch/gcloud). Use v2.0.4.
+# But 2.0.4 may not be working on macOS Mojave. Blerg.
+NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.0.4/install"
+# NIX_INSTALLER_URL="https://nixos.org/releases/nix/nix-2.2.1/install"
+
+###########################################################
 ## Primary install routines
+
+function install_nix_single() {
+  if [ -d /nix ]; then
+    return
+  fi
+
+  if [ -z "$(which curl)" ]; then
+    echo "Missing required program: curl" >&2
+    exit 1
+  fi
+
+  echo "Creating /nix ( https://nixos.org/nix/about.html ). This folder will store any new software in separate folder:"
+  echo "This will be installed in single-user mode to allow the easiest administration."
+  echo
+  echo "Running: sh <(curl $NIX_INSTALLER_URL) --no-daemon"
+  sh <(curl $NIX_INSTALLER_URL) --no-daemon
+
+  if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+  elif [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+    . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+  fi
+}
+
+function install_warmup() {
+  if [ -f /etc/nix/nix.conf ]; then
+    if grep -q bknix.cachix.org /etc/nix/nix.conf ; then
+      return
+    fi
+  fi
+  echo "Setup binary cache"
+  nix-env -iA cachix -f https://cachix.org/api/v1/install
+  cachix use bknix
+}
 
 ## Setup all services for user "jenkins"
 function install_all_jenkins() {
@@ -65,40 +106,20 @@ function check_reqs() {
   fi
 }
 
-## usage: init_folder <src-folder> <tgt-folder>
-## If the target folder doesn't exist, create it (by copying the source folder).
-## ex: init_folder "$PWD/examples/gcloud-bknix-ci" "/etc/bknix-ci"
-function init_folder() {
+## Install a binary file
+##
+## usage: install_bin <src-path-relative> <dest-path-absolute>
+## example: install_bin bin/foo /usr/local/bin/foo
+function install_bin() {
   local src="$1"
-  local tgt="$2"
-  if [ -d "$tgt" ]; then
-    echo "Found $tgt"
-    return
-  fi
+  local dest="$2"
+  local destdir=$(dirname "$dest")
 
-  echo "Initializing $tgt ($src)"
-  cp -r "$src" "$tgt"
+  echo "Installing global helper (\"$src\" => \"$dest\")"
+  [ ! -d "$destdir" ] && sudo mkdir "$destdir"
+  sudo cp -f "$src" "$dest"
 }
 
-function install_user() {
-  if id "$OWNER" 2>/dev/null 1>/dev/null ; then
-    echo "User $OWNER already exists"
-  else
-    adduser --disabled-password "$OWNER"
-  fi
-}
-
-function install_ramdisk() {
-  if [ -z "$NO_SYSTEMD" ]; then
-    echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
-    template_render examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
-    systemctl daemon-reload
-    systemctl start "$RAMDISKSVC.mount"
-    systemctl enable "$RAMDISKSVC.mount"
-  else
-    echo "Skip: Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
-  fi
-}
 
 ## Setup the binaries, data folder, and service for a given profile.
 ##
@@ -111,13 +132,7 @@ function install_profile() {
   SYSTEMSVC="bknix-$PROFILE"
   if [ "$OWNER" != "jenkins" ]; then SYSTEMSVC="bknix-$OWNER-$PROFILE"; fi
 
-  if [ -d "$PRFDIR" ]; then
-    echo "Removing profile \"$PRFDIR\""
-    $SUDO nix-env -p "$PRFDIR" -e '.*'
-  fi
-
-  echo "Creating profile \"$PRFDIR\""
-  nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
+  install_profile_binaries "$PROFILE" "$PRFDIR"
 
   echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
   sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\" HTTPD_PORT=\"$HTTPD_PORT\" HTTPD_VISIBILITY=\"$HTTPD_VISIBILITY\" HOSTS_TYPE=\"$HOSTS_TYPE\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" MYSQLD_PORT=\"$MYSQLD_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init $FORCE_INIT"
@@ -136,6 +151,65 @@ function install_profile() {
   fi
 }
 
+## Install just the binaries for a profile
+##
+## usage: install_profile_binaries <profile-name> <install-path>
+## example: install_profile_binaries dfl /nix/var/nix/profiles/foobar
+function install_profile_binaries() {
+  local PROFILE="$1"
+  local PRFDIR="$2"
+
+  if [ -d "$PRFDIR" ]; then
+    echo "Removing profile \"$PRFDIR\""
+    nix-env -p "$PRFDIR" -e '.*'
+  fi
+
+  echo "Creating profile \"$PRFDIR\""
+  nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
+}
+
+## Create systemd ramdisk unit
+##
+## Pre-conditions/variable inputs:
+## - RAMDISK: Path to the mount point
+## - RAMDISKSVC: Name of systemd unit
+## - (optional) NO_SYSTEMD
+function install_ramdisk() {
+  if [ -z "$NO_SYSTEMD" ]; then
+    echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
+    template_render examples/systemd.mount > "/etc/systemd/system/${RAMDISKSVC}.mount"
+    systemctl daemon-reload
+    systemctl start "$RAMDISKSVC.mount"
+    systemctl enable "$RAMDISKSVC.mount"
+  else
+    echo "Skip: Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
+  fi
+}
+
+## Create the user, $OWNER
+function install_user() {
+  if id "$OWNER" 2>/dev/null 1>/dev/null ; then
+    echo "User $OWNER already exists"
+  else
+    adduser --disabled-password "$OWNER"
+  fi
+}
+
+## usage: init_folder <src-folder> <tgt-folder>
+## If the target folder doesn't exist, create it (by copying the source folder).
+## ex: init_folder "$PWD/examples/gcloud-bknix-ci" "/etc/bknix-ci"
+function init_folder() {
+  local src="$1"
+  local tgt="$2"
+  if [ -d "$tgt" ]; then
+    echo "Found $tgt"
+    return
+  fi
+
+  echo "Initializing $tgt ($src)"
+  cp -r "$src" "$tgt"
+}
+
 function template_render() {
   cat "$1" \
     | sed "s;%%RAMDISK%%;$RAMDISK;g" \
@@ -143,15 +217,4 @@ function template_render() {
     | sed "s;%%RAMDISKSIZE%%;$RAMDISKSIZE;g" \
     | sed "s/%%OWNER%%/$OWNER/g" \
     | sed "s/%%PROFILE%%/$PROFILE/g"
-}
-
-function install_use_bknix() {
-  echo "Installing global helper \"use-bknix\""
-  cp -f bin/use-bknix.legacy /usr/local/bin/use-bknix
-}
-
-function install_warmup() {
-  echo "Setup binary cache"
-  nix-env -iA cachix -f https://cachix.org/api/v1/install
-  cachix use bknix
 }
