@@ -15,9 +15,14 @@ shell. This approaches has a few advantages/characteristics:
 This document can be summarized as a few small commands:
 
 ```
+## Step 1. Download the configuration
 me@localhost:~$ git clone https://github.com/totten/bknix
+
+## Step 2. (Optional) Warmup with prebuilt binaries
 me@localhost:~$ nix-env -iA cachix -f https://cachix.org/api/v1/install
 me@localhost:~$ cachix use bknix
+
+## Step 3. (Day-to-day) Open a subshell
 me@localhost:~$ cd bknix
 me@localhost:~/bknix$ nix-shell -A dfl
 [nix-shell:~/bknix]$
@@ -26,7 +31,7 @@ me@localhost:~/bknix$ nix-shell -A dfl
 The rest of this document explains these steps in more depth. If you already
 understand them, then proceed to [bknix: General usage (loco)](usage-loco.md) or [bknix: General usage (legacy)](usage-legacy.md).
 
-## Step 1. Download bknix definitions
+## Step 1. Download the configuration
 
 The `bknix` repository stores some *metadata* -- basically, a list of required packages.  We download a copy via `git`:
 
@@ -43,7 +48,7 @@ This should be pretty quick.
 
 There's a small catch.  Installing prebuilt binaries is faster than building from source.  The official download server
 (`cache.nixos.org`) only has binaries for official packages -- but not for our customized packages.  To get prebuilt
-binaries for our customized packages, you can use the supplemental "cachix" system.  This command downloads binaries
+binaries for our customized packages, you can use the supplemental [cachix](https://cachix.org/) system.  This command downloads binaries
 wherever they're available (official or supplemental servers).
 
 ```

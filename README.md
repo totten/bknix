@@ -17,7 +17,7 @@ CiviCRM system-requirements:
 
 ## Launchers
 
-Given that you have several pieces of software (e.g. `php-fpm` + `mysqld` + `redis-server`), the *launcher* or *process manager*
+Given that you have several pieces of software (e.g. PHP + MySQL + Redis), the *launcher* or *process manager*
 is responsible for starting and stopping processes. `bknix` works with a few launchers:
 
 * `loco run`: [Loco](https://github.com/totten/loco) runs local processes in the foreground.
