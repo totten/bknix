@@ -38,5 +38,5 @@ check_reqs
 install_warmup
 install_use_bknix
 for PROFILE in $PROFILES ; do 
-  install_user_profile_binaries
+  install_profile_binaries "$PROFILE" "/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
 done

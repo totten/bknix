@@ -81,13 +81,7 @@ function install_profile() {
   SYSTEMSVC="bknix-$PROFILE"
   if [ "$OWNER" != "jenkins" ]; then SYSTEMSVC="bknix-$OWNER-$PROFILE"; fi
 
-  if [ -d "$PRFDIR" ]; then
-    echo "Removing profile \"$PRFDIR\""
-    $SUDO nix-env -p "$PRFDIR" -e '.*'
-  fi
-
-  echo "Creating profile \"$PRFDIR\""
-  nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
+  install_profile_binaries "$PROFILE" "$PRFDIR"
 
   echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
   sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\" HTTPD_PORT=\"$HTTPD_PORT\" HTTPD_VISIBILITY=\"$HTTPD_VISIBILITY\" HOSTS_TYPE=\"$HOSTS_TYPE\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" MYSQLD_PORT=\"$MYSQLD_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init $FORCE_INIT"

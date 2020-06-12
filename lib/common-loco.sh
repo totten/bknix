@@ -64,8 +64,7 @@ function install_profile() {
   SYSTEMSVC="bknix-$PROFILE"
   if [ "$OWNER" != "jenkins" ]; then SYSTEMSVC="bknix-$OWNER-$PROFILE"; fi
 
-  echo "Creating profile \"$PRFDIR\""
-  nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
+  install_profile_binaries "$PROFILE" "$PRFDIR"
 
   echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
   sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\" HTTPD_PORT=\"$HTTPD_PORT\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" MYSQLD_PORT=\"$MYSQLD_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init $FORCE_INIT"
@@ -78,23 +77,6 @@ function install_profile() {
   systemctl daemon-reload
   systemctl start "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
   systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
-}
-
-## Install just the binaries for a profile
-## Pre-condition:
-##   PROFILE is a name like "min" or "max"
-##   USER is the current user
-function install_user_profile_binaries() {
-  local PRFDIR
-  PRFDIR="/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
-
-  if [ -d "$PRFDIR" ]; then
-    echo "Removing profile \"$PRFDIR\""
-    nix-env -p "$PRFDIR" -e '.*'
-  fi
-
-  echo "Creating profile \"$PRFDIR\""
-  nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
 }
 
 function install_use_bknix() {

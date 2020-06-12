@@ -54,6 +54,24 @@ function check_reqs() {
   fi
 }
 
+## Install just the binaries for a profile
+##
+## usage: install_profile_binaries <profile-name> <install-path>
+## example: install_profile_binaries dfl /nix/var/nix/profiles/foobar
+function install_profile_binaries() {
+  local PROFILE="$1"
+  local PRFDIR="$2"
+
+  if [ -d "$PRFDIR" ]; then
+    echo "Removing profile \"$PRFDIR\""
+    nix-env -p "$PRFDIR" -e '.*'
+  fi
+
+  echo "Creating profile \"$PRFDIR\""
+  nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
+}
+
+## Create the user, $OWNER
 function install_user() {
   if id "$OWNER" 2>/dev/null 1>/dev/null ; then
     echo "User $OWNER already exists"
