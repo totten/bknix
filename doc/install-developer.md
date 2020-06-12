@@ -16,46 +16,55 @@ It's tuned for the following assumptions:
 
 ## Quick Version
 
-This document can be summarized as two steps:
+This document can be summarized as a few steps:
 
 ```
-me@localhost:~$ git clone https://github.com/totten/bknix ~/bknix
+## Step 1. Download the configuration
+me@localhost:~$ git clone https://github.com/totten/bknix
+
+## Step 2. Download and install the binaries
 me@localhost:~$ cd ~/bknix
-me@localhost:~$ env PROFILES="dfl" ./bin/install-developer.sh
+me@localhost:~/bknix$ ./bin/install-developer.sh
+
+## Step 3. (Day-to-day) Open a subshell
 me@localhost:~$ use-bknix dfl -s
 ```
 
-The rest of this document explains these steps in more depth.  If you
-already understand them, then proceed to [bknix: General usage](usage-loco.md).
+The rest of this document explains the steps in more depth.  If you
+already understand them, then proceed to [Work with services and sites](usage-loco.md).
 
-## Download configuration
+## Step 1. Download the configuration
 
-First, we need to get a copy of the `bknix` specification. This provides configuration files which list
+First, we need to get a copy of `bknix` repository. This provides configuration files which list
 the various packages/programs, and it provides some helper scripts to make use of them.
 
 ```bash
-git clone https://github.com/totten/bknix ~/bknix
+git clone https://github.com/totten/bknix.git
 ```
 
-## Download and install binaries
+## Step 2. Download and install the binaries
 
-Second, we download and install the actual binaries.  For example, this will install the `dfl` profile in
-`/nix/var/nix/profiles/per-user/$USER/bknix-dfl`:
+Second, we download and install the actual binaries.
 
 ```
-env PROFILES="dfl" ./bin/install-developer.sh
+cd bknix
+./bin/install-developer.sh
 ```
-
-> __TIP__: The environment variables `PROFILES` optionally specifies a space-delimited list of profiles.  If you run
-> `install-developer.sh` without specifying the profiles, it will use `min max dfl`.
 
 The `install-developer.sh` script will:
 
-* Install binaries for each profile in a predictable location: `/nix/var/nix/profiles/...`
-  (*This feels a bit like installing an application under `/opt/<foo>` except that the actual path is `/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE`.*)
-* Install a helper command, `use-bknix`, which facilitates access to these binaries.
-  (*This feels a bit like using `nix-shell` or `docker exec`.*)
-* Install a helper command, `loco run`, which will start and stop services.
+1. Enable [cachix](https://cachix.org/) to speed-up downloads/install process.
+2. Install the binaries in a distinct folder. This is conceptually similar to creating a folder `/opt/<foo>/bin`,
+   but `nix` specifies a longer path (`/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE/bin`).
+3. Install a global helper command, `use-bknix`, under `/usr/local/bin`. This command is similar to `nix-shell` or `docker exec`;
+   it opens a subshell and registers `/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE` in the `PATH`.
+
+> __TIP__: By default, `install-developer.sh` will install 3 profiles: `min max dfl`.
+> Optionally, you may give a list of different profiles using the `PROFILES` variable, e.g.
+>
+> ```
+> env PROFILES="max edge" ./bin/install-developer.sh
+> ```
 
 Once it's finished, you can inspect the list of binaries that were installed.  The `bin` folder contains symlinks for
 all of the downloaded software.
@@ -77,11 +86,11 @@ bzip2recover@  git-cvsserver@               logresolve@          mysql_embedded@
 bzless@        git-http-backend@            lz4_decompress@      mysql_install_db@            mysqldumpslow@              redis-benchmark@     unzipsfx@
 ```
 
-## Environment
+## Step 3. (Day-to-day) Open a subshell
 
 After downloading, the programs are available in `/nix/var/nix/profiles/per-user/$USER/bknix-dfl`, but they're not ready to use on the command line.
 
-You need to setup the environment. The helper script `use-bknix` will do this, as in:
+You need to setup the environment. The helper script `use-bknix` will open a subshell with a proper environment.
 
 ```
 use-bknix dfl -s
@@ -97,7 +106,7 @@ me@localhost:~/bknix$ use-bknix dfl -s
 /nix/var/nix/profiles/bknix-dfl/bin/php
 ```
 
-Once we know how to open a shell with a well-configured environment, we can proceed to [bknix: General usage](usage-loco.md).
+Once we know how to open a shell with a well-configured environment, we can proceed to [Work with services and sites](usage-loco.md).
 
 ## TIP: IDEs and Environments
 
