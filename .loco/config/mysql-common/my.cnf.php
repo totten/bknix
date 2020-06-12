@@ -34,6 +34,10 @@ innodb_file_per_table = 1
 #innodb_flush_log_at_trx_commit = 1
 #innodb_lock_wait_timeout = 50
 
+<?php if (matchVer('/Ver 5.6/')) { ?>
+innodb_large_prefix = 1
+<?php } ?>
+
 <?php if (matchVer('/Ver 5.7/')) { ?>
 # https://expressionengine.com/blog/mysql-5.7-server-os-x-has-gone-away
 interactive_timeout = 300
