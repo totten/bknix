@@ -38,6 +38,6 @@ source "$BINDIR/../lib/common-legacy.sh"
 
 check_reqs
 install_warmup
-install_use_bknix
+install_bin bin/use-bknix.legacy /usr/local/bin/use-bknix
 install_all_jenkins
 install_all_publisher

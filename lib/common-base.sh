@@ -106,6 +106,21 @@ function check_reqs() {
   fi
 }
 
+## Install a binary file
+##
+## usage: install_bin <src-path-relative> <dest-path-absolute>
+## example: install_bin bin/foo /usr/local/bin/foo
+function install_bin() {
+  local src="$1"
+  local dest="$2"
+  local destdir=$(dirname "$dest")
+
+  echo "Installing global helper (\"$src\" => \"$dest\")"
+  [ ! -d "$destdir" ] && sudo mkdir "$destdir"
+  sudo cp -f "$src" "$dest"
+}
+
+
 ## Setup the binaries, data folder, and service for a given profile.
 ##
 ## Pre-condition:

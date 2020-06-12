@@ -36,7 +36,7 @@ PROFILES=${PROFILES:-min max dfl}
 install_nix_single
 check_reqs
 install_warmup
-install_use_bknix
+install_bin bin/use-bknix.loco /usr/local/bin/use-bknix
 for PROFILE in $PROFILES ; do 
   install_profile_binaries "$PROFILE" "/nix/var/nix/profiles/per-user/$USER/bknix-$PROFILE"
 done
