@@ -58,36 +58,6 @@ function install_all_publisher() {
 ###########################################################
 ## Install helpers
 
-function check_reqs() {
-  if [ -z `which nix` ]; then
-   echo "Please install \"nix\" before running this. See: https://nixos.org/nix/manual/"
-    exit 2
-  fi
-}
-
-## usage: init_folder <src-folder> <tgt-folder>
-## If the target folder doesn't exist, create it (by copying the source folder).
-## ex: init_folder "$PWD/examples/gcloud-bknix-ci" "/etc/bknix-ci"
-function init_folder() {
-  local src="$1"
-  local tgt="$2"
-  if [ -d "$tgt" ]; then
-    echo "Found $tgt"
-    return
-  fi
-
-  echo "Initializing $tgt ($src)"
-  cp -r "$src" "$tgt"
-}
-
-function install_user() {
-  if id "$OWNER" 2>/dev/null 1>/dev/null ; then
-    echo "User $OWNER already exists"
-  else
-    adduser --disabled-password "$OWNER"
-  fi
-}
-
 function install_ramdisk() {
   if [ -z "$NO_SYSTEMD" ]; then
     echo "Creating systemd ramdisk \"$RAMDISK\" ($RAMDISKSVC)"
@@ -136,22 +106,8 @@ function install_profile() {
   fi
 }
 
-function template_render() {
-  cat "$1" \
-    | sed "s;%%RAMDISK%%;$RAMDISK;g" \
-    | sed "s;%%RAMDISKSVC%%;$RAMDISKSVC;g" \
-    | sed "s;%%RAMDISKSIZE%%;$RAMDISKSIZE;g" \
-    | sed "s/%%OWNER%%/$OWNER/g" \
-    | sed "s/%%PROFILE%%/$PROFILE/g"
-}
-
 function install_use_bknix() {
-  echo "Installing global helper \"use-bknix\""
-  cp -f bin/use-bknix.legacy /usr/local/bin/use-bknix
-}
-
-function install_warmup() {
-  echo "Setup binary cache"
-  nix-env -iA cachix -f https://cachix.org/api/v1/install
-  cachix use bknix
+  echo "Installing global helper \"use-bknix\" (/usr/local/bin/use-bknix)"
+  [ ! -d /usr/local/bin ] && sudo mkdir /usr/local/bin
+  sudo cp -f bin/use-bknix.legacy /usr/local/bin/use-bknix
 }
