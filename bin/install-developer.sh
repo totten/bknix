@@ -28,7 +28,7 @@
 
 set -e
 BINDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-source "$BINDIR/../lib/common-base.sh"
+source "$BINDIR/../lib/common.sh"
 
 PROFILES=${PROFILES:-min max dfl}
 
