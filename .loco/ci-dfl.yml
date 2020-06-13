@@ -25,9 +25,6 @@ default_environment:
  - REDIS_PORT=6380
  - XDEBUG_PORT=9000
 
- ## CIVICRM_LOCALES: When pre-generating CiviCRM datasets, limit the number of locales.
- - CIVICRM_LOCALES=en_US,fr_FR
-
  ## CIVIBUILD_ADMIN_PASS: When creating an administrative user, set the default password.
  # - CIVIBUILD_ADMIN_PASS=admin
 
