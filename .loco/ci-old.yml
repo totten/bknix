@@ -14,7 +14,7 @@ default_environment:
  ## HTTPD_*: Determine how a local folder (eg "./build/dmaster") relates to a local HTTP service (eg "http://dmaster.bknix:8001").
  - HTTPD_DOMAIN=bknix
  - HTTPD_PORT=8006
- - HTTPD_VDROOT=$LOCO_PRJ/build
+ - HTTPD_VDROOT=$BKIT/build
  - HTTPD_VISIBILITY=all
 
  ## *_PORT: Most daemons run on auxiliary/non-standard TCP/UDP ports.
@@ -46,7 +46,7 @@ environment:
  # CLI applications should use our stuff
  - AMPHOME=$LOCO_VAR.keep/amp
  - CIVIBUILD_HOME=$HTTPD_VDROOT
- - BKIT=$LOCO_PRJ/civicrm-buildkit
+ - BKIT=$(dirname $LOCO_PRJ)
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
  #- MYSQL_HOME=$LOCO_VAR/mysql-1/conf
  #FIXME# - NODE_PATH=$BKIT/node_modules:$NODE_PATH
