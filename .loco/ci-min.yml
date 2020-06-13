@@ -9,7 +9,6 @@ default_environment:
 
  ## HOSTS_TYPE: When creating an HTTP service, should we register the hostname in "/etc/hosts" ('file') or not ('none')?
  - HOSTS_TYPE=none
- # - HOSTS_TYPE=file
 
  ## HTTPD_*: Determine how a local folder (eg "./build/dmaster") relates to a local HTTP service (eg "http://dmaster.bknix:8001").
  - HTTPD_DOMAIN=bknix
@@ -25,9 +24,6 @@ default_environment:
  - PHPFPM_PORT=9010
  - REDIS_PORT=6381
  - XDEBUG_PORT=9000
-
- ## RAMDISK_SIZE: Most daemons (including MySQL) store runtime data in a ramdisk.
- # - RAMDISK_SIZE=600
 
  ## CIVICRM_LOCALES: When pre-generating CiviCRM datasets, limit the number of locales.
  - CIVICRM_LOCALES=en_US,fr_FR
@@ -50,9 +46,6 @@ environment:
  - MYSQL_HOME=$LOCO_VAR/mysql/conf
  - NODE_PATH=$BKIT/node_modules:$NODE_PATH
  - PATH=$BKIT/bin:$BKIT/node_modules/.bin:$LOCO_PRJ/.loco/bin:$PATH
-
-volume:
-  # ramdisk: $RAMDISK_SIZE
 
 #### Functional service definitions
 services:
