@@ -1,6 +1,6 @@
 format: 'loco-0.1'
 
-## This is the default configuration used for local development environments.
+## This is an alternative configuration for local development environments. It uses replicated MySQL.
 
 #### General configuration
 default_environment:
@@ -19,7 +19,9 @@ default_environment:
  - MAIL_SMTP_PORT=1025
  - MAIL_HTTP_PORT=1080
  - MEMCACHED_PORT=12221
- - MYSQLD_PORT=3307
+ - MYSQLD_PORT=$MYSQL1_PORT
+ - MYSQL1_PORT=3307
+ - MYSQL2_PORT=3308
  - PHPFPM_PORT=9009
  - REDIS_PORT=6380
  - XDEBUG_PORT=9000
@@ -87,11 +89,46 @@ services:
 
   mysql:
     enabled: true
+    environment:
+      - MYSQL_HOME=$LOCO_SVC_VAR/conf
     init:
       - 'loco-mysql-init'
     run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
     pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
     message: 'MySQL is running on "<comment>$LOCALHOST:$MYSQLD_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
+
+  mysql-1:
+    enabled: false
+    environment:
+      - MYSQL_HOME=$LOCO_SVC_VAR/conf
+    init:
+      - 'loco-mysql-init'
+    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+    message: 'MySQL (master) is running on "<comment>$LOCALHOST:$MYSQL1_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
+
+  mysql-2:
+    enabled: false
+    environment:
+      - MYSQL_HOME=$LOCO_SVC_VAR/conf
+    init:
+      - 'loco-mysql-init'
+    run: 'mysqld --datadir="$LOCO_SVC_VAR/data"'
+    pid_file: '$LOCO_SVC_VAR/run/mysql.pid'
+    message: 'MySQL (slave) is running on "<comment>$LOCALHOST:$MYSQL2_PORT</comment>". The default credentials are user="<comment>root</comment>" and password="".'
+
+  mysql-repl:
+    enabled: false
+    ## We probably need to figure a better way for this... does work with 'loco run', but doesn't work with 'loco init'
+    depends: ['mysql-1', 'mysql-2']
+    init:
+      ## FIXME: We currently don't have a good signal for when processes have started. Maybe letting the daemons handle forking will help?
+      ## Otherwise I guess we need a richer ping/heartbeat mechanism?
+      # - 'for n in $(seq 8 -2 2) ; do echo "Start $LOCO_SVC in $n sec..."; sleep 2; done'
+      - 'step=2; total=8; for n in `seq $total -$step $step` ; do echo "Start $LOCO_SVC in $n sec..."; sleep $step; done'
+      - 'loco-mysql-repl'
+    run: 'sleep 10000'
+    message: 'MySQL master-slave setup between "<comment>$LOCALHOST:$MYSQL1_PORT</comment>" and "<comment>$LOCALHOST:$MYSQL2_PORT</comment>".'
 
   ## FIXME: Consider moving this to nix download system
   buildkit:
