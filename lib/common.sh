@@ -47,24 +47,24 @@ function install_warmup() {
 ## Setup all services for user "jenkins"
 function install_all_jenkins() {
   OWNER=jenkins
-  RAMDISK="/mnt/mysql/$OWNER"
-  RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
+  RAMDISK="/home/$OWNER/.bknix-var"
+  RAMDISKSVC=$(systemd-escape "home/$OWNER/.bknix-var")
   RAMDISKSIZE=8G
   PROFILES=${PROFILES:-dfl min max}
   HTTPD_DOMAIN=$(hostname -f)
 
   [ -f /etc/bknix-ci/install_all_jenkins.sh ] && source /etc/bknix-ci/install_all_jenkins.sh
 
-  install_user
+  install_user "$OWNER"
   install_ramdisk
 
   for PROFILE in $PROFILES ; do
     case "$PROFILE" in
-      dfl) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8001 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 MYSQLD_PORT=3307 install_profile ; ;;
-      min) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8002 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 MYSQLD_PORT=3308 install_profile ; ;;
-      max) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8003 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 MYSQLD_PORT=3309 install_profile ; ;;
-      old) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8006 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12226 PHPFPM_PORT=9014 REDIS_PORT=6385 MYSQLD_PORT=3312 install_profile ; ;;
-      edge) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8007 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12227 PHPFPM_PORT=9015 REDIS_PORT=6386 MYSQLD_PORT=3313 install_profile ; ;;
+      dfl) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
+      min) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
+      max) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
+      old) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
+      edge) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
     esac
   done
 
@@ -74,22 +74,22 @@ function install_all_jenkins() {
 ## Setup all services for user "publisher"
 function install_all_publisher() {
   OWNER=publisher
-  RAMDISK="/mnt/mysql/$OWNER"
-  RAMDISKSVC=$(systemd-escape "mnt/mysql/$OWNER")
+  RAMDISK="/home/$OWNER/.bknix-var"
+  RAMDISKSVC=$(systemd-escape "home/$OWNER/.bknix-var")
   RAMDISKSIZE=500M
   PROFILES=""
   HTTPD_DOMAIN=$(hostname -f)
 
   [ -f /etc/bknix-ci/install_all_publisher.sh ] && source /etc/bknix-ci/install_all_publisher.sh
 
-  install_user
+  install_user "$OWNER"
   install_ramdisk
 
   for PROFILE in $PROFILES ; do
     case "$PROFILE" in
-      min) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8004 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12224 PHPFPM_PORT=9012 REDIS_PORT=6383 MYSQLD_PORT=3310 install_profile ; ;;
-      old) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8005 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12225 PHPFPM_PORT=9013 REDIS_PORT=6384 MYSQLD_PORT=3311 install_profile ; ;;
-      max) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} HTTPD_PORT=8008 HTTPD_VISIBILITY=all HOSTS_TYPE=none MEMCACHED_PORT=12228 PHPFPM_PORT=9016 REDIS_PORT=6387 MYSQLD_PORT=3314 install_profile ; ;;
+      min) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
+      old) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
+      max) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
     esac
   done
 
@@ -120,7 +120,6 @@ function install_bin() {
   sudo cp -f "$src" "$dest"
 }
 
-
 ## Setup the binaries, data folder, and service for a given profile.
 ##
 ## Pre-condition:
@@ -128,26 +127,18 @@ function install_bin() {
 ##   Optionally, HTTPD_PORT, MEMCACHED_PORT, PHPFPM_PORT, REDIS_PORT are set
 function install_profile() {
   PRFDIR="/nix/var/nix/profiles/bknix-$PROFILE"
-  BKNIXDIR="/home/$OWNER/bknix-$PROFILE"
-  SYSTEMSVC="bknix-$PROFILE"
-  if [ "$OWNER" != "jenkins" ]; then SYSTEMSVC="bknix-$OWNER-$PROFILE"; fi
+  BKIT="/home/$OWNER/bknix-$PROFILE"
+  PREFIX="bknix-$OWNER-$PROFILE"
 
   install_profile_binaries "$PROFILE" "$PRFDIR"
 
-  echo "Initializing data \"$BKNIXDIR\" for profile \"$PRFDIR\""
-  sudo su - "$OWNER" -c "PATH=\"$PRFDIR/bin:$PATH\" BKNIXDIR=\"$BKNIXDIR\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\" HTTPD_PORT=\"$HTTPD_PORT\" HTTPD_VISIBILITY=\"$HTTPD_VISIBILITY\" HOSTS_TYPE=\"$HOSTS_TYPE\" MEMCACHED_PORT=\"$MEMCACHED_PORT\" MYSQLD_PORT=\"$MYSQLD_PORT\" PHPFPM_PORT=\"$PHPFPM_PORT\" REDIS_PORT=\"$REDIS_PORT\" \"$PRFDIR/bin/bknix\" init $FORCE_INIT"
+  echo "Initializing buildkit folder \"$BKIT\""
+  do_func "$(declare -f download_buildkit)" download_buildkit "$PROFILE"
 
   if [ -z "$NO_SYSTEMD" ]; then
-    echo "Creating systemd services \"$SYSTEMSVC\" and \"$SYSTEMSVC-mysqld\""
-    template_render examples/systemd.service > "/etc/systemd/system/${SYSTEMSVC}.service"
-    template_render examples/systemd-mysqld.service > "/etc/systemd/system/${SYSTEMSVC}-mysqld.service"
-
-    echo "Activating systemd services \"$SYSTEMSVC\" and \"$SYSTEMSVC-mysqld\""
-    systemctl daemon-reload
-    systemctl start "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
-    systemctl enable "$SYSTEMSVC" "$SYSTEMSVC-mysqld"
+    install_profile_systemd "$OWNER" "$PROFILE"
   else
-    echo "Skip: Creating/activating systemd services \"$SYSTEMSVC\" and \"bknix-$PROFILE-mysqld\""
+    echo "Skip: Creating/activating systemd services for \"$PREFIX\""
   fi
 }
 
@@ -166,6 +157,46 @@ function install_profile_binaries() {
 
   echo "Creating profile \"$PRFDIR\""
   nix-env -i -p "$PRFDIR" -f . -E "f: f.profiles.$PROFILE"
+}
+
+## Install a full copy of buildkit.
+## usage: install_profile_systemd <user> <profile>
+function install_profile_systemd() {
+  local OWNER="$1"
+  local PROFILE="$2"
+  local SYSDTMP=$(tempfile -p bknix-systemd).d
+  local PREFIX="bknix-$OWNER-$PROFILE"
+  
+  [ -z "$SYSDTMP" ] && echo "Failed to identify temp dir" && exit 99
+  mkdir "$SYSDTMP"
+  chown "$OWNER" "$SYSDTMP"
+
+  echo "Generate systemd services for \"$PREFIX\" in \"$SYSDTMP\""
+
+  function locogen() {
+    set -ex
+    cd "$BKIT/bknix"
+    local YAML=".loco/$OWNER-$PROFILE.yml"
+    loco init -c "$YAML"
+    loco export -c "$YAML" --app="$1" --out="$2"
+  }
+  do_func "$(declare -f locogen)" locogen "$PREFIX" "$SYSDTMP"
+
+  set -x
+    echo "Copy systemd services for \"$PREFIX\" to /etc/systemd/system/"
+    for F in /etc/systemd/system/$PREFIX*.service ; do
+      rm -f "$F"
+    done
+    cp "$SYSDTMP"/"$PREFIX"*.service /etc/systemd/system/
+
+    echo "Activating systemd services for \"$PREFIX\""
+    systemctl daemon-reload
+    systemctl enable /etc/systemd/system/${PREFIX}*service
+    systemctl start ${PREFIX}
+    
+    echo "Cleaning temp files"
+    rm -rf "$SYSDTMP"
+  set +x
 }
 
 ## Create systemd ramdisk unit
@@ -187,12 +218,48 @@ function install_ramdisk() {
 }
 
 ## Create the user, $OWNER
+## usage: install_user <user>
 function install_user() {
+  local OWNER="$1"
   if id "$OWNER" 2>/dev/null 1>/dev/null ; then
     echo "User $OWNER already exists"
   else
     adduser --disabled-password "$OWNER"
   fi
+}
+
+## Initialize a copy of buildkit.
+## NOTE: This runs as $OWNER.
+function download_buildkit() {
+  set -ex
+  local PROFILE="$1"
+  local WORKDIR="$HOME/bknix-$1"
+  cd "$HOME"
+
+  if [ ! -d "$WORKDIR" ]; then
+    git clone https://github.com/civicrm/civicrm-buildkit -bmaster "$WORKDIR"
+    git clone https://github.com/totten/bknix -b loco-ci "$WORKDIR/bknix"
+  else
+    pushd "$WORKDIR" ; git pull ; popd
+    pushd "$WORKDIR/bknix" ; git pull ; popd
+  fi
+}
+
+## Run a function in the context for the given owner/prfdir
+## NOTE: This will drop privileges
+## usage: do_func <function-body> <function-call...>
+## ex: do_func "$(declare -f foobar)" foobar "Hello world"
+function do_func() {
+  ## Ex (input): _escape_args "Hello World" "Alice Bobson"
+  ## Ex (output): Hello\ World Alice\ Bobson
+  function _escape_args() {
+    for v in "$@" ; do printf "%q " "$v" ; done
+  }
+
+  local BKIT="/home/$OWNER/bknix-$PROFILE"
+  local FUNC="$1"
+  shift
+  sudo su - "$OWNER" -c "export PATH=\"$PRFDIR/bin:$PATH\" BKIT=\"$BKIT\" PROFILE=\"$PROFILE\" OWNER=\"$OWNER\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\"; cd \$HOME; $FUNC; $(_escape_args "$@")"
 }
 
 ## usage: init_folder <src-folder> <tgt-folder>
