@@ -268,13 +268,13 @@ function do_func() {
 function init_folder() {
   local src="$1"
   local tgt="$2"
-  if [ -d "$tgt" ]; then
-    echo "Found $tgt"
-    return
+  if [ ! -d "$tgt" ]; then
+    echo "Initializing $tgt using $src"
+    mkdir "$tgt"
   fi
 
-  echo "Initializing $tgt ($src)"
-  cp -r "$src" "$tgt"
+  echo "Identifying new files in $tgt using $src"
+  rsync -va --ignore-existing "$src/./" "$tgt/./"
 }
 
 function template_render() {
