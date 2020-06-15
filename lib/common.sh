@@ -123,7 +123,7 @@ function install_profile() {
   install_profile_binaries "$PROFILE" "$PRFDIR"
 
   echo "Initializing buildkit folder \"$BKIT\""
-  do_func "$(declare -f download_buildkit)" download_buildkit "$PROFILE"
+  do_as_owner "$(declare -f download_buildkit)" download_buildkit "$PROFILE"
 
   if [ -z "$NO_SYSTEMD" ]; then
     install_profile_systemd "$OWNER" "$PROFILE"
@@ -165,12 +165,13 @@ function install_profile_systemd() {
 
   function locogen() {
     set -ex
+    eval $(bknix-profile env)
     cd "$BKIT/bknix"
     local YAML=".loco/$OWNER-$PROFILE.yml"
     loco init -c "$YAML"
     loco export -c "$YAML" --app="$1" --out="$2"
   }
-  do_func "$(declare -f locogen)" locogen "$PREFIX" "$SYSDTMP"
+  do_as_owner "$(declare -f locogen)" locogen "$PREFIX" "$SYSDTMP"
 
   set -x
     echo "Copy systemd services for \"$PREFIX\" to /etc/systemd/system/"
@@ -236,10 +237,15 @@ function download_buildkit() {
 }
 
 ## Run a function in the context for the given owner/prfdir
+##
 ## NOTE: This will drop privileges
-## usage: do_func <function-body> <function-call...>
-## ex: do_func "$(declare -f foobar)" foobar "Hello world"
-function do_func() {
+##
+## Certain key variables -- BKIT, PROFILE, OWNER -- will propagate to the subshell.
+## The PATH will automaically be set to include the PRFDIR.
+##
+## usage: do_as_owner <function-body> <function-call...>
+## ex: do_as_owner "$(declare -f foobar)" foobar "Hello world"
+function do_as_owner() {
   ## Ex (input): _escape_args "Hello World" "Alice Bobson"
   ## Ex (output): Hello\ World Alice\ Bobson
   function _escape_args() {
@@ -249,7 +255,8 @@ function do_func() {
   local BKIT="/home/$OWNER/bknix-$PROFILE"
   local FUNC="$1"
   shift
-  sudo su - "$OWNER" -c "export PATH=\"$PRFDIR/bin:$PATH\" BKIT=\"$BKIT\" PROFILE=\"$PROFILE\" OWNER=\"$OWNER\" HTTPD_DOMAIN=\"$HTTPD_DOMAIN\"; cd \$HOME; $FUNC; $(_escape_args "$@")"
+
+  sudo su - "$OWNER" -c "export PATH=\"$PRFDIR/bin:$PATH\" BKIT=\"$BKIT\" PROFILE=\"$PROFILE\" OWNER=\"$OWNER\" ; cd \$HOME ; $FUNC; $(_escape_args "$@")"
 }
 
 ## usage: init_folder <src-folder> <tgt-folder>
