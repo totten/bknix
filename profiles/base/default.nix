@@ -3,8 +3,10 @@
  */
 let
     pkgs = import (import ../../pins/19.09.nix) {};
+    bkpkgs = import ../../pkgs;
 in [
     pkgs.bzip2
+    bkpkgs.bknixProfile
     pkgs.curl
     pkgs.gettext
     pkgs.git
