@@ -59,13 +59,7 @@ function install_all_jenkins() {
   install_ramdisk
 
   for PROFILE in $PROFILES ; do
-    case "$PROFILE" in
-      dfl) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
-      min) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
-      max) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
-      old) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
-      edge) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
-    esac
+    install_profile
   done
 
   unset OWNER RAMDISK RAMDISKSVC RAMDISKSIZE PROFILES PROFILE HTTPD_DOMAIN
@@ -86,11 +80,7 @@ function install_all_publisher() {
   install_ramdisk
 
   for PROFILE in $PROFILES ; do
-    case "$PROFILE" in
-      min) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
-      old) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
-      max) HTTPD_DOMAIN=${HTTPD_DOMAIN:-localhost} install_profile ; ;;
-    esac
+    install_profile
   done
 
   unset OWNER RAMDISK RAMDISKSVC RAMDISKSIZE PROFILES PROFILE HTTPD_DOMAIN
