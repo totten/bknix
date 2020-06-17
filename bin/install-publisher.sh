@@ -4,7 +4,7 @@
 # Specifically, for each profile:
 #   - Install the binaries in /nix/var/nix/profiles/bknix-$PROFILE
 #   - Initialize a data folder in /home/$OWNER/bknix-$PROFILE
-#   - Add a background service for `bknix run` (systemd)
+#   - Register each service from `.loco/publisher-*.yml` in systemd
 #
 # Pre-requisites:
 #   Use a Debian-like main OS
@@ -32,6 +32,6 @@ source "$BINDIR/../lib/common.sh"
 
 check_reqs
 install_warmup
-install_bin bin/use-bknix.legacy /usr/local/bin/use-bknix
+install_bin bin/use-bknix.arrbuk /usr/local/bin/use-bknix
 #install_all_jenkins
 install_all_publisher

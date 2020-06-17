@@ -43,17 +43,13 @@ if [ -z `which nix` ]; then
   exit 2
 fi
 
-if id "$OWNER" 2>/dev/null 1>/dev/null ; then
-  echo "User $OWNER already exists"
-else
-  adduser --disabled-password "$OWNER"
-fi
+echo TODO: Revise/retest with arrbuk
 
-PROFILE=dfl HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8001 MEMCACHED_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 uninstall_profile
-PROFILE=min HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8002 MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 uninstall_profile
-PROFILE=max HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8003 MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 uninstall_profile
+#PROFILE=dfl HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8001 MEMCACHED_PORT=12221 PHPFPM_PORT=9009 REDIS_PORT=6380 uninstall_profile
+#PROFILE=min HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8002 MEMCACHED_PORT=12222 PHPFPM_PORT=9010 REDIS_PORT=6381 uninstall_profile
+#PROFILE=max HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8003 MEMCACHED_PORT=12223 PHPFPM_PORT=9011 REDIS_PORT=6382 uninstall_profile
 #EDGE# PROFILE=edge HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8004 MEMCACHED_PORT=12224 PHPFPM_PORT=9012 REDIS_PORT=6383 uninstall_profile
 #OLD#  PROFILE=old  HTTPD_DOMAIN=$(hostname -f) HTTPD_PORT=8005 MEMCACHED_PORT=12225 PHPFPM_PORT=9013 REDIS_PORT=6384 uninstall_profile
-uninstall_ramdisk
+#uninstall_ramdisk
 
-echo "NOT IMPLEMENTED: Remove /usr/local/bin/use-bknix"
+#echo "NOT IMPLEMENTED: Remove /usr/local/bin/use-bknix"
