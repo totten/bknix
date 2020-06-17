@@ -23,9 +23,6 @@ is responsible for starting and stopping processes. `bknix` works with a few lau
 * `loco run`: [Loco](https://github.com/totten/loco) runs local processes in the foreground.
   It can be configured by editing the YAML file ([loco.yml](.loco/loco.yml)), by setting environment variables
   (`HTTPD_PORT` et al), and/or by editing the [configuration templates](.loco/config).
-* `bknix run` (*legacy/deprecated*): The original, [built-in launch script](pkgs/launcher). This also runs local processes in the foreground.
-  However, compared to `loco`, the configuration is quirkier and harder to adjust. (Ex: You have to reinstall after making
-  a configuration change. Ex: It launches everything *except* mysqld.)
 * `systemd`: This is a common process manager on Linux hosts. There are templates for using `bknix run` as a `systemd` unit.
   (*These templates should be reworked. This is the main reason why `bknix run` still exists.*)
 

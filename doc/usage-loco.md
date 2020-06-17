@@ -2,9 +2,6 @@
 
 Once you've downloaded the software packages, you can run the software and create new Civi sites.
 
-(*Note: This document uses the `loco` process manager, which is suited for local development.
-CI servers have different workflow based on `systemd`. See [Installation for Jenkins/CI Worker nodes](install-ci.md).*)
-
 ## Quick Version
 
 The highlights of this document can be summarized as a few steps:

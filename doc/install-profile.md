@@ -1,4 +1,8 @@
-# nix-env: Install bknix to a profile folder (*legacy*)
+# nix-env: Install bknix to a profile folder
+
+(*This document is WIP - needs to be re-tested and possibly to reflect some changes.
+This is the most manual installer - it does not require any of the
+install-scripts from `bknix.git`.*)
 
 (*This assumes that you have already [met the basic requirements](requirements.md).*)
 
@@ -13,24 +17,39 @@ or system-level process manager), this may be the most convenient arrangement. I
 This document can be summarized as two steps (three commands):
 
 ```
-me@localhost:~$ sudo -i
+## Step 1. Download the configuration
+me@localhost:~$ git clone https://github.com/totten/bknix
+me@localhost:~$ cd bknix
+
+## Step 2. Download and install the binaries
+me@localhost:~/bknix$ sudo -i
 root@localhost:~$ nix-env -iA cachix -f https://cachix.org/api/v1/install
 root@localhost:~$ cachix use bknix
-root@localhost:~$ nix-env -i \
-  -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl' \
-  -p /nix/var/nix/profiles/bknix-dfl
 root@localhost:~$ exit
-me@localhost:~$ export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
-me@localhost:~$ eval $(bknix env --data-dir "$HOME/bknix")
+me@localhost:~/bknix$ nix-env -i -f . -E 'f: f.profiles.dfl' -p /nix/var/nix/profiles/per-user/$USER/bknix-dfl
+
+## Step 3. (Day-to-day) Open a subshell
+me@localhost:~$ export PATH=/nix/var/nix/profiles/per-user/$USER/bknix-dfl/bin:$PATH; 
+me@localhost:~$ eval $(bknix-profile env)
+me@localhost:~$ eval $(loco env --cwd=$HOME/bknix)
 ```
 
 The rest of this document explains these steps in more depth.  If you
-already understand them, then proceed to [bknix: General usage (legacy)](usage-legacy.md).
+already understand them, then proceed to [bknix: General usage](usage-loco.md).
 
-## Cache Setup
+## Step 1. Download the configuration
 
-This step is technically optional, but it will improve download times --
-allowing you to download build-compiled binaries.
+First, we need to get a copy of `bknix` repository. This provides configuration files which list
+the various packages/programs, and it provides some helper scripts to make use of them.
+
+```bash
+git clone https://github.com/totten/bknix.git
+```
+
+## Step 2. Download and install the binaries
+
+First, we enable a cache to improve installation time. (This step isn't strictly necessary,
+but it will save a lot of time in compilation.)
 
 ```bash
 sudo -i
@@ -38,24 +57,20 @@ nix-env -iA cachix -f https://cachix.org/api/v1/install
 cachix use bknix
 ```
 
-## Download
-
-The command `nix-env -i` will download all of the packages for `dfl`.
+The real work comes next - installing the binaries for the `dfl` profile:
 
 ```bash
-sudo -i
 nix-env -i \
-  -f 'https://github.com/totten/bknix/archive/master.tar.gz' -E 'f: f.profiles.dfl' \
-  -p /nix/var/nix/profiles/bknix-dfl \
+  -f . -E 'f: f.profiles.dfl' \
+  -p /nix/var/nix/profiles/per-user/$USER/bknix-dfl
 ```
 
 Let's break down into a few parts:
 
-* `sudo -i` means *run the command as `root`*
 * `nix-env -i` means *install packages to a live environment*
-* `-f 'https://github.com/totten/bknix/archive/master.tar.gz'` means *download the latest bknix configuration file from Github*
+* `-f .` means *use the configuration files in the current folder* (`~/bknix`).
 * `-E 'f: f.profiles.dfl'` means *evaluate the configuration file and return property `f.profiles.dfl` (the list of packages for `dfl`))*
-* `-p /nix/var/nix/profiles/bknix-dfl` means *put the packages in the shared profile folder `bknix-dfl`*
+* `-p /nix/var/nix/profiles/per-user/$USER/bknix-dfl` means *put the packages in a personalized profile folder, `bknix-dfl`*
 
 The command may take some time when you first it -- it will need to download a combination of pre-compiled binaries and source-code. (It goes
 faster when using pre-compiled binaries; if those aren't available, then it will download source-code and compile it.)
@@ -82,25 +97,24 @@ bzless@        git-http-backend@            lz4_decompress@      mysql_install_d
 ## Environment
 
 After downloading, the programs are available in `/nix/var/nix/profiles/bknix-dfl` but their not ready to use on the command line.  You
-need to setup the environment.
+need to setup the environment. First, we add binaries to our environment:
 
-```
+```bash
 export PATH=/nix/var/nix/profiles/bknix-dfl/bin:$PATH
+eval $(bknix-profile env)
 ```
 
 This ensures that downloaded *commands* are available. Additionally, you need to set some environment
 variables to ensure that each command *stores data in the appropriate folder*.
 
-```
-eval $(bknix env --data-dir "$HOME/bknix")
+```bash
+eval $(loco env --cwd=$HOME/bknix)
 ```
 
-You can run these two statements manually and they will apply to the current shell.
-
-Additionally, to ensure that the environment is configured in the future (when you open new shells or logout/login/reboot), add
+To ensure that the environment is configured in the future (when you open new shells or logout/login/reboot), add
 both statements to your shell initialization script (`~/.profile` or `~/.bashrc`).
 
-Once we know how to open a shell with a well-configured environment, we can proceed to [bknix: General usage (legacy)](usage-legacy.md).
+Once we know how to open a shell with a well-configured environment, we can proceed to [bknix: General usage](usage-loco.md).
 
 ## TIP: IDEs and Environments
 

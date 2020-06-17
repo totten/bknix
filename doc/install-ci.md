@@ -1,10 +1,11 @@
-# Installation for Jenkins/CI Worker nodes (*legacy*)
+# Installation for Jenkins/CI Worker nodes (*arrbuk*)
 
 A Jenkins/CI worker node, we want all profiles to be used concurrently. For each profile:
 
+* There is a configuration file, `.loco/USER-PROFILE.yaml` which lists the services.
 * The binaries are installed to `/nix/var/nix/profiles/bknix-PROFILE/bin`
 * The data directory is `~/bknix-PROFILE`
-* There are systemd services for `bknix run`, for mysqld, and for ramdisks.
+* Each service from the YAML file is installed in `systemd`
 * Each service has its own unique port.
 
 | Service     | dfl Port     | min Port     | max Port     |
