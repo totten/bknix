@@ -9,7 +9,6 @@ let
     pkgs = import (import ../../pins/19.09.nix) {};
     bkpkgs = import ../../pkgs;
 in [
-    bkpkgs.launcher
     bkpkgs.bknixPhpstormAdvisor
     bkpkgs.loco
     bkpkgs.ramdisk
