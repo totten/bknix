@@ -25,7 +25,7 @@ in rec {
    php74 = import ./php74/default.nix;
    transifexClient = import ./transifexClient/default.nix;
    ramdisk = callPackage (fetchTarball https://github.com/totten/ramdisk/archive/v0.1.1.tar.gz) {};
-   loco = callPackage (fetchTarball https://github.com/totten/loco/archive/v0.4.1.tar.gz) {};
+   loco = callPackage (fetchTarball https://github.com/totten/loco/archive/v0.4.2.tar.gz) {};
    # loco = callPackage /PATH/TO/src/loco {};
    launcher = import ./launcher;
 }
