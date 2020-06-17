@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 
-## For systems which use `bin/install-ci.sh` to setup multiple services, this
-## helper script allows you to configure your shell to use one of those services.
+## For systems which use `bin/install-ci.sh` to setup multiple copies of
+## buildkit ("array of buildkits"; arrbuk), this helper script allows you to
+## configure your shell to use one of those services.
 ##
 ## Examples:
 ##   eval $(use-bknix min)
 ##   eval $(use-bknix max)
 ##   eval $(use-bknix dfl)
+##
+## Works with nix binaries in either of:
+##    /nix/var/nix/profiles/per-user/{$USER}/bknix-{$NAME}
+##    /nix/var/nix/profiles/bknix-{$NAME}
+## Works with buildkit data in either of:
+##    {$HOME}/bknix-{$NAME}
+##    {$HOME}/bknix
 
 ###########################################################
 ## Constants
@@ -84,11 +92,7 @@ case "$MODE" in
     CODE=`cd "$BKIT/bknix" && loco env -c ".loco/$OWNER-$PROFILE.yml" --export`
     echo "$CODE"
     eval "$CODE"
-    ## "bknix env" doesn't add itself to PATH - so we add everything
-    ## FIXME: when loco.yml supports recursive variables, remove some of these
-    # echo "export PATH='$PRFDIR/bin:$LOCO_PRJ/civicrm-buildkit/bin:$LOCO_PRJ/civicrm-buildkit/node_modules/.bin':\"\$PATH\" ;"
     echo "export PS1=\"[${TXT_CYAN}bknix-$PROFILE${TXT_RESET}:${TXT_GREEN}\w${TXT_RESET}] \" ;"
-    ## Newer versions of nix's glibc (for linux) require extra env-var for l10n
     bknix-profile env
     if [ -f "$BKIT/bknix/etc/bashrc.local" ]; then
       echo "source \"$BKIT/bknix/etc/bashrc.local\""
