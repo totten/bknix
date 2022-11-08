@@ -1,3 +1,7 @@
+## Deprecated
+
+This repo is deprecated. The code is migrated to https://github.com/civicrm/civicrm-buildkit/tree/master/nix
+
 ## bknix: Build/test environments for civicrm-buildkit
 
 `bknix` is a highly opinionated environment for developing in PHP/JS -- esp for developing patches/add-ons for CiviCRM.
